@@ -17,7 +17,7 @@ namespace Amethyst.Data
             //Creating Admin
             var user = new IdentityUser
             {
-                UserName = "admin",
+                UserName = "admin@gmail.com",
                 Email = "admin@gmail.com",
                 EmailConfirmed = true,
                 PhoneNumberConfirmed = true
