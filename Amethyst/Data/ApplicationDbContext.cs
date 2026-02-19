@@ -17,6 +17,56 @@ namespace Amethyst.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // --- PROFILE CONFIGURATION ---
+            modelBuilder.Entity<Profile>(entity =>
+            {
+                // Grouping table name and all Check Constraints together
+                entity.ToTable("Profile", t =>
+                {
+                    t.HasCheckConstraint("CK_School_Year", "academic_year IN ('Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate')");
+                    t.HasCheckConstraint("CK_User_Notification", "notification_preferences IN ('instant', 'daily_digest', 'urgent-only', 'none')");
+                });
+
+                // Primary Key
+                entity.HasKey(e => e.ProfileId).HasName("PK_Profile");
+
+                // Columns
+                entity.Property(e => e.ProfileId).HasMaxLength(450).HasColumnName("profile_id");
+                entity.Property(e => e.DisplayName).IsRequired().HasMaxLength(100).HasColumnName("display_name");
+                entity.HasIndex(e => e.DisplayName).IsUnique().HasDatabaseName("UQ_Profile_DisplayName");
+
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(100).HasColumnName("name");
+
+                entity.Property(e => e.UserCreationDate)
+                      .HasColumnType("datetime2(3)")
+                      .HasColumnName("user_creation_date")
+                      .HasDefaultValueSql("GETDATE()");
+
+                entity.Property(e => e.LastLoginTime)
+                      .HasColumnType("datetime2(3)")
+                      .HasColumnName("last_login_time");
+
+                entity.Property(e => e.AcademicYear).HasMaxLength(50).HasColumnName("academic_year");
+
+                entity.Property(e => e.Timezone).HasMaxLength(50).HasColumnName("timezone").HasDefaultValue("UTC");
+
+                entity.Property(e => e.NotificationPreferences)
+                      .HasColumnType("varchar(20)")
+                      .HasMaxLength(20)
+                      .HasColumnName("notification_preferences")
+                      .HasDefaultValue("instant");
+
+                entity.Property(e => e.QuietHoursStart).HasColumnType("time").HasColumnName("quiet_hours_start");
+                entity.Property(e => e.QuietHoursEnd).HasColumnType("time").HasColumnName("quiet_hours_end");
+
+                // 1:1 relationship with AspNetUsers (IdentityUser)
+                entity.HasOne<IdentityUser>()
+                      .WithOne()
+                      .HasForeignKey<Profile>(p => p.ProfileId)
+                      .OnDelete(DeleteBehavior.Cascade)
+                      .HasConstraintName("FK_Profile_Users");
+            });
+
             // --- COURSE CONFIGURATION ---
             modelBuilder.Entity<Course>(entity =>
             {
