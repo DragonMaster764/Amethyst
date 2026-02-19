@@ -17,6 +17,23 @@ namespace Amethyst.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // --- COURSE CONFIGURATION ---
+            modelBuilder.Entity<Course>(entity =>
+            {
+                // Unique Constraint (UQ_Course_Study_Session)
+                entity.HasIndex(e => new { e.CourseId, e.ProfileId }).IsUnique();
+
+                // Term Check Constraint
+                entity.ToTable(t => t.HasCheckConstraint("CK_Course_Term", "term IN ('Spring', 'Summer', 'Fall', 'Winter')"));
+
+                // Academic Year Check Constraint
+                entity.ToTable(t => t.HasCheckConstraint("CK_Course_Academic_Year", "academic_year BETWEEN 1900 AND 3000"));
+
+                // Fixed length for Color Label (Hex code like #FFFFFF)
+                entity.Property(e => e.ColorLabel).IsFixedLength().HasMaxLength(7);
+            });
+
+            // --- ASSIGNMENT CONFIGURATION ---
             modelBuilder.Entity<Assignment>(entity =>
             {
                 // 1. Map to Table Name
