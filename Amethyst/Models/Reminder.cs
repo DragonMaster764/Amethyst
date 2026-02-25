@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Amethyst.Models
 {
     public class Reminder
     {
+        [Key]
         public long ReminderId { get; set; }
 
         public string ProfileId { get; set; }
