@@ -37,6 +37,11 @@
                                 </ul>
                             </li>
                         }
+
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            <li><a class="nav-link text-dark" asp-area="" asp-page="/Identity/Pages/Account/Logout">Logout</a></li>
+                        }
                     </ul>
                 </div>
             </div>
