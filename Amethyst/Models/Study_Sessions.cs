@@ -1,10 +1,12 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Amethyst.Models
 {
     public class StudySession
     {
+        [Key]
         public int SessionId { get; set; }
 
         public string ProfileId { get; set; }

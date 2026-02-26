@@ -16,6 +16,10 @@ namespace Amethyst.Data
 
         public DbSet<Tasks> Tasks { get; set; }
 
+        public DbSet<Assignment> Assignments { get; set; }
+        public DbSet<Course> Courses { get; set; }
+        public DbSet<Course> Profile { get; set; }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
@@ -71,14 +75,6 @@ namespace Amethyst.Data
             .HasCheckConstraint("CK_Estimated_Min",
             "estimated_minutes >= 0 AND estimated_minutes <= 10000");
 
-
-        }
-
-        public DbSet<Assignment> Assignments { get; set; }
-        public DbSet<Course> Courses { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
             // --- PROFILE CONFIGURATION ---
             modelBuilder.Entity<Profile>(entity =>
             {
