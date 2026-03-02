@@ -1,0 +1,68 @@
+﻿@page
+@model Amethyst.Pages.Task_Pages.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Tasks</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Tasks.ProfileId" class="control-label"></label>
+                <select asp-for="Tasks.ProfileId" class ="form-control" asp-items="ViewBag.ProfileId" ></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Tasks.Title" class="control-label"></label>
+                <input asp-for="Tasks.Title" class="form-control" />
+                <span asp-validation-for="Tasks.Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Tasks.DueAt" class="control-label"></label>
+                <input asp-for="Tasks.DueAt" class="form-control" />
+                <span asp-validation-for="Tasks.DueAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Tasks.Status" class="control-label"></label>
+                <input asp-for="Tasks.Status" class="form-control" />
+                <span asp-validation-for="Tasks.Status" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Tasks.Priority" class="control-label"></label>
+                <input asp-for="Tasks.Priority" class="form-control" />
+                <span asp-validation-for="Tasks.Priority" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Tasks.EstimatedMinutes" class="control-label"></label>
+                <input asp-for="Tasks.EstimatedMinutes" class="form-control" />
+                <span asp-validation-for="Tasks.EstimatedMinutes" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Tasks.CreatedAt" class="control-label"></label>
+                <input asp-for="Tasks.CreatedAt" class="form-control" />
+                <span asp-validation-for="Tasks.CreatedAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Tasks.UpdatedAt" class="control-label"></label>
+                <input asp-for="Tasks.UpdatedAt" class="form-control" />
+                <span asp-validation-for="Tasks.UpdatedAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
