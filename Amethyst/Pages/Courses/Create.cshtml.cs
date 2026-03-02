@@ -5,11 +5,14 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 using Amethyst.Data;
 using Amethyst.Models;
+using Amethyst.Constants;
 
 namespace Amethyst.Pages.Courses
 {
+    [Authorize(Roles="Student")]
     public class CreateModel : PageModel
     {
         private readonly Amethyst.Data.ApplicationDbContext _context;

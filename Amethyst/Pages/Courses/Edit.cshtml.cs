@@ -1,16 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Amethyst.Data;
+using Amethyst.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Amethyst.Data;
-using Amethyst.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Amethyst.Pages.Courses
 {
+    [Authorize(Roles = "Student")]
     public class EditModel : PageModel
     {
         private readonly Amethyst.Data.ApplicationDbContext _context;
