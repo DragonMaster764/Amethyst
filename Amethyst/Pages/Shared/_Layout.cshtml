@@ -40,10 +40,10 @@
                         @if (User.IsInRole("Student"))
                         {
                             <li class="dropdown nav-item">
-                                <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <a class="nav-link dropdown-toggle" href="#" id="workItemsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     View Work Items
                                 </a>
-                                <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                                <ul class="dropdown-menu" aria-labelledby="workItemsDropdown">
                                     <li><a class="dropdown-item" asp-area="" asp-page="/Assignments/Index">View Assignments</a></li>
                                     <li><a class="dropdown-item" asp-area="" asp-page="/Task_Pages/Index">View Tasks</a></li>
                                 </ul>
