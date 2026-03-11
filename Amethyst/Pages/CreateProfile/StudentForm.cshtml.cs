@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Amethyst.Pages.CreateProfile
 {
-    public class IndexModel : PageModel
+    public class StudentModel : PageModel
     {
         public void OnGet()
         {

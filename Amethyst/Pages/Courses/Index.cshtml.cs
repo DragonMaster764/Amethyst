@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Amethyst.Pages.Courses
@@ -25,7 +26,11 @@ namespace Amethyst.Pages.Courses
 
         public async Task OnGetAsync()
         {
-            Course = await _context.Courses.ToListAsync();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            Course = await _context.Courses
+                .Where(c => c.ProfileId == userId)
+                .ToListAsync();
         }
     }
 }
