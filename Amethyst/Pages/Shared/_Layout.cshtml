@@ -20,18 +20,10 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Dashboard</a>
                         </li>
 
-                        @* Testing purposes, we need to change this later *@
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Courses/Index">Courses</a>
-                        </li>
-                        @* ---------------------------------------------- *@
-
+                        @* ---------------- Admin Taskbar -------------- *@
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="dropdown nav-item">
@@ -42,6 +34,38 @@
                                     <li><a class="dropdown-item" asp-area="" asp-page="/Admin/UserList">View All Users</a></li>
                                 </ul>
                             </li>
+                        }
+
+                        @* ---------------- Student Taskbar -------------- *@
+                        @if (User.IsInRole("Student"))
+                        {
+                            <li class="dropdown nav-item">
+                                <a class="nav-link dropdown-toggle" href="#" id="workItemsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    View Work Items
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="workItemsDropdown">
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/Assignments/Index">View Assignments</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-page="/Task_Pages/Index">View Tasks</a></li>
+                                </ul>
+                            </li>
+                            <li><a class="nav-link text-dark" asp-area="" asp-page="/Courses/Index">My Courses</a></li>
+                            <li><a class="nav-link text-dark" asp-area="" asp-page="/Reminders/Index">Reminders</a></li>
+                            <li><a class="nav-link text-dark" asp-area="" asp-page="/Study_Session/Index">Study Sessions</a></li>
+                            @* Temporarily a dead link below *@
+                            <li><a class="nav-link text-dark" asp-area="" asp-page="">Statistics</a></li>
+                            @* Link to edit their profile information *@
+                            <li><a class="nav-link text-dark" asp-area="" asp-page="">My Profile</a></li>
+                        }
+
+                        @* ---------------- User Taskbar -------------- *@
+                        @if (User.IsInRole("User"))
+                        {
+                            <li><a class="nav-link text-dark" asp-area="" asp-page="/Task_Pages/Index">View Tasks</a></li>
+                            <li><a class="nav-link text-dark" asp-area="" asp-page="/Reminders/Index">Reminders</a></li>
+                            @* Temporarily a dead link below *@
+                            <li><a class="nav-link text-dark" asp-area="" asp-page="">Statistics</a></li>
+                            @* Link to edit their profile information *@
+                            <li><a class="nav-link text-dark" asp-area="" asp-page="">My Profile</a></li>
                         }
 
                         @if (User.Identity.IsAuthenticated)
