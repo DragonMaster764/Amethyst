@@ -36,6 +36,7 @@ namespace Amethyst.Pages.Courses
 
             CourseGroups = courses
                 .GroupBy(c => new { c.Term, c.AcademicYear })
+                .OrderByDescending(g => g.Key)
                 .Select(g => new CourseGroup
                 {
                     Term = g.Key.Term,
