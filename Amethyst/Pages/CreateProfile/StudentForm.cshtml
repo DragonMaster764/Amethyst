@@ -2,3 +2,49 @@
 @model Amethyst.Pages.CreateProfile.IndexModel
 @{
 }
+<div class="studentForm">
+
+    <form class="_studentForm">
+        <!-- User Name -->
+        <h3>What would you like your username to be?:</h3>
+        <label for="display_name">User Name</label><br>
+        <input type="text" id="display_name" name="display_name"><br><br>
+
+        <!-- Name/Nickname -->
+        <h3>Please type your nickname bellow:</h3>
+        <label for="name">Name/Nickname</label><br>
+        <input type="text" id="name" name="name"><br><br>
+
+        <!--Academic Year-->
+        <h3>Select your current acadmic school year:</h3>
+        <label for="academicYear">Academic Year</label><br>
+        <input type="text" id="academicYear" name="academicYear"><br><br>
+
+        <!-- Notification Preferences Dropdown -->
+        <!--('instant', 'daily_digest', 'urgent-only', 'none')) -->
+        <h3>Please select your notification preferences bellow:</h3>
+        <label for="notification_pref">Notification Preferences</label><br>
+        <label for="notification_pref">-- Select Preference --</label><br>
+        <select id="notification_pref" name="notification_pref">
+            <option value="instant">Instant</option>
+            <option value="daily_digest">Daily Digest</option>
+            <option value="urgent_only">Urgent Only</option>
+            <option value="none">No Notifications</option>
+        </select><br><br>
+
+        <!-- Quiet Hours Start -->
+        <h3>When would you like your quiet hours to start?:</h3>
+        <label for="quiet_start">Quiet Hours Start</label><br>
+        <input type="time" id="quiet_start" name="quiet_start"><br><br>
+
+        <!-- Quiet Hours End -->
+        <h3>When would you like your quiet hours to end?:</h3>
+        <label for="quiet_end">Quiet Hours End</label><br>
+        <input type="time" id="quiet_end" name="quiet_end"><br><br>
+
+        <!--Submit Button-->
+        <button type="button">Okay</button>
+    </form>
+
+
+</div>
