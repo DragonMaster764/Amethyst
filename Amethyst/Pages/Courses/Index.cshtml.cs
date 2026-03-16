@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Amethyst.Pages.Courses
@@ -21,11 +22,38 @@ namespace Amethyst.Pages.Courses
             _context = context;
         }
 
-        public IList<Course> Course { get;set; } = default!;
+        public List<CourseGroup> CourseGroups { get; set; } = new();
 
         public async Task OnGetAsync()
         {
-            Course = await _context.Courses.ToListAsync();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var courses = await _context.Courses
+                .Where(c => c.ProfileId == userId)
+                .OrderBy(c => c.AcademicYear)
+                .ThenBy(c => c.Term)
+                .ToListAsync();
+
+            CourseGroups = courses
+                .GroupBy(c => new { c.Term, c.AcademicYear })
+                .OrderByDescending(g => g.Key)
+                .Select(g => new CourseGroup
+                {
+                    Term = g.Key.Term,
+                    AcademicYear = g.Key.AcademicYear,
+                    Courses = g.ToList()
+                })
+                .ToList();
+        }
+
+
+        //Holds each course group (term + academic year) and the courses that belong to that group
+        public class CourseGroup
+        {
+            public string Term { get; set; } = string.Empty;
+            public short AcademicYear { get; set; }
+            public List<Course> Courses { get; set; } = new();
+            public string GroupTitle => $"{Term} {AcademicYear}";
         }
     }
 }
