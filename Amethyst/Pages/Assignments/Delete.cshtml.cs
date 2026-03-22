@@ -29,7 +29,9 @@ namespace Amethyst.Pages.Assignments
                 return NotFound();
             }
 
-            var assignment = await _context.Assignments.FirstOrDefaultAsync(m => m.AssignmentId == id);
+            var assignment = _context.Assignments
+                .Include(a => a.Course)
+                .FirstOrDefault(a => a.AssignmentId == id);
 
             if (assignment == null)
             {
