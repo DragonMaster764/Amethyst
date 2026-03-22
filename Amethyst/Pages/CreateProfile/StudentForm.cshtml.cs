@@ -3,6 +3,7 @@ using Amethyst.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
+using System.Security.Claims;
 
 namespace Amethyst.Pages.CreateProfile
 {
@@ -16,10 +17,21 @@ namespace Amethyst.Pages.CreateProfile
         }
 
         [BindProperty]
-        public Profile NewProfile { get; set; } = new Profile();
+        public Profile InputProfile { get; set; } = new Profile();
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // Check if profile already exists
+            var existingProfile = _context.Profiles.FirstOrDefault(p => p.ProfileId == userId);
+
+            if (existingProfile != null)
+            {
+                return RedirectToPage("/EditProfile", new { id = userId });
+            }
+
+            return Page();
         }
 
         public IActionResult OnPost()
@@ -27,10 +39,29 @@ namespace Amethyst.Pages.CreateProfile
             if (!ModelState.IsValid)
                 return Page();
 
-            NewProfile.ProfileId = Guid.NewGuid().ToString();
-            NewProfile.UserCreationDate = DateTime.UtcNow;
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return RedirectToPage("/Account/Login");
 
-            _context.Profiles.Add(NewProfile);
+            // Check again on POST
+            var existingProfile = _context.Profiles.FirstOrDefault(p => p.ProfileId == userId);
+
+            if (existingProfile != null)
+            {
+                return RedirectToPage("/EditProfile", new { id = userId });
+            }
+
+            // Ensure timezone has a value
+            if (string.IsNullOrWhiteSpace(InputProfile.Timezone))
+                InputProfile.Timezone = "UTC";
+
+            var nowUtc = DateTime.UtcNow;
+
+            InputProfile.ProfileId = userId;
+            InputProfile.UserCreationDate = nowUtc;
+            InputProfile.LastLoginTime = nowUtc;
+
+            _context.Profiles.Add(InputProfile);
             _context.SaveChanges();
 
             return RedirectToPage("/Success");

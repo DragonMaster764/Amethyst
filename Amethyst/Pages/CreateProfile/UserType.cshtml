@@ -1,9 +1,53 @@
 ﻿@page
-@model Amethyst.Pages.CreateProfile.IndexModel
+@model Amethyst.Pages.CreateProfile.UserTypeModel
 @{
 }
-<div>
+<div class="chooseUserType">
 
+
+    <br />
+    <br />
+    <br />
+    <br />
+
+    <h1 style="text-align:center">What Type of Account Would You Like to Create?</h1>
+
+    <div class="button-row">
+        <form method="get" asp-page="/CreateProfile/StudentForm">
+            <button type="submit" class="account-btn student-btn">Student Account</button>
+        </form>
+
+        <form method="get" asp-page="/CreateProfile/UserForm">
+            <button type="submit" class="account-btn user-btn">Regular User Account</button>
+        </form>
+    </div>
+
+    <style>
+        .userType-container {
+            text-align: center;
+            margin-top: 80px;
+        }
+
+        .button-row {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .account-btn {
+            padding: 15px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.2s ease-in-out;
+        }
+    </style>
 
 
 </div>
+
+
+
+
