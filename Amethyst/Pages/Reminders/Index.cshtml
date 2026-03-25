@@ -26,7 +26,7 @@
                 @Html.DisplayNameFor(model => model.Reminder[0].Assignment)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Reminder[0].Task)
+                @Html.DisplayNameFor(model => model.Reminder[0].TaskItem)
             </th>
             <th></th>
         </tr>
@@ -47,7 +47,7 @@
                 @Html.DisplayFor(modelItem => item.Assignment.Priority)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Task.TaskId)
+                @Html.DisplayFor(modelItem => item.TaskItem.TaskId)
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.ReminderId">Edit</a> |

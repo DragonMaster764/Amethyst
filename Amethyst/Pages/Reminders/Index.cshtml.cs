@@ -26,7 +26,7 @@ namespace Amethyst.Pages.Reminders
             Reminder = await _context.Reminders
                 .Include(r => r.Assignment)
                 .Include(r => r.Profile)
-                .Include(r => r.Task).ToListAsync();
+                .Include(r => r.TaskItem).ToListAsync();
         }
     }
 }
