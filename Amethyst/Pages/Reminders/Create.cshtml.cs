@@ -23,7 +23,7 @@ namespace Amethyst.Pages.Reminders
         {
         ViewData["AssignmentId"] = new SelectList(_context.Assignments, "AssignmentId", "Priority");
         ViewData["ProfileId"] = new SelectList(_context.Set<Profile>(), "ProfileId", "ProfileId");
-        ViewData["TaskId"] = new SelectList(_context.Tasks, "TaskId", "TaskId");
+        ViewData["TaskId"] = new SelectList(_context.TaskItems, "TaskId", "TaskId");
             return Page();
         }
 
