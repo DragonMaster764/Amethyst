@@ -46,9 +46,8 @@ namespace Amethyst.Models
         [Column("quiet_hours_end", TypeName = "time")]
         public TimeSpan? QuietHoursEnd { get; set; }
 
-        // Navigation to the Identity user (FK to AspNetUsers.Id)
-        [ForeignKey(nameof(ProfileId))]
-        public virtual IdentityUser? User { get; set; }
+        [NotMapped]
+        public new IdentityUser? User { get; set; }
 
         // Navigation to courses owned by this profile
         public virtual ICollection<Course> Courses { get; set; } = new List<Course>();

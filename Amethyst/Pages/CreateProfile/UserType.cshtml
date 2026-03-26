@@ -4,6 +4,12 @@
 }
 <div class="chooseUserType">
 
+    @if (TempData["Message"] != null)
+    {
+        <script>
+            console.log("@TempData["Message"]");
+        </script>
+    }
 
     <br />
     <br />
@@ -20,6 +26,7 @@
         <form method="get" asp-page="/CreateProfile/UserForm">
             <button type="submit" class="account-btn user-btn">Regular User Account</button>
         </form>
+
     </div>
 
     <style>
@@ -44,7 +51,6 @@
             transition: 0.2s ease-in-out;
         }
     </style>
-
 
 </div>
 

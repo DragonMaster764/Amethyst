@@ -135,8 +135,6 @@ namespace Amethyst.Data
                       .OnDelete(DeleteBehavior.Cascade)
                       .HasConstraintName("FK_Profile_Users");
 
-                // Prevent EF from creating a shadow navigation that causes "UserId" lookups
-                entity.Navigation(e => e.User).AutoInclude(false);
             });
 
             // --- COURSE CONFIGURATION ---
