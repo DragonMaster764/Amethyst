@@ -17,7 +17,7 @@ namespace Amethyst.Pages.Admin
 
         public async Task OnGetAsync()
         {
-            var songs = await _mongoDBService.GetAllAsync();
+            Songs = await _mongoDBService.GetAllAsync();
         }
     }
 }
