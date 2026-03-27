@@ -30,12 +30,38 @@
         background-color: #ff00ff;
         color: white;
     }
+
+    /*  Button Styling  */
+    .btn {
+        color: white;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        opacity: 0.9;
+    }
+
+    /* Individual button colors */
+    .btn-spotify {
+        background-color: #1DB954;
+        border: none;
+    }
+
+    .btn-youtube {
+        background-color: #FF0000;
+        border: none;
+    }
+
+    .btn-apple {
+        background-color: #FA57C1; /* Apple Music pink-ish; can adjust to #000 if you want black */
+        border: none;
+    }
+    /* ---------------------- */
 </style>
 
 <div class="container py-5">
     <div class="text-center mb-5">
-        <h1 class="display-3 text-neon">Study_Songs</h1>
-        <p class="lead">Curated tracks for deep focus and late-night coding.</p>
+        <h1 class="display-3 text-neon">Study Songs List</h1>
     </div>
 
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
@@ -60,8 +86,9 @@
                         </div>
 
                         <div class="d-flex gap-2 mt-auto">
-                            <a href="@song.SpotifySearchUrl" target="_blank" class="btn btn-sm btn-outline-success flex-grow-1">Spotify</a>
-                            <a href="@song.YoutubeSearchUrl" target="_blank" class="btn btn-sm btn-outline-danger flex-grow-1">YouTube</a>
+                            <a href="@song.SpotifySearchUrl" target="_blank" class="btn btn-spotify flex-grow-1">Spotify</a>
+                            <a href="@song.YoutubeSearchUrl" target="_blank" class="btn btn-youtube flex-grow-1">YouTube</a>
+                            <a href="@song.AppleMusicSearchUrl" target="_blank" class="btn btn-apple flex-grow-1">Apple Music</a>
                         </div>
                     </div>
                     <div class="card-footer bg-transparent border-top border-secondary d-flex justify-content-between">
