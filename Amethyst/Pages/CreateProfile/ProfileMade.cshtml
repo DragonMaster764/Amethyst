@@ -2,7 +2,8 @@
 @model Amethyst.Pages.CreateProfile.ProfileMadeModel
 @{
 }
-@* <br />
+
+<br />
 <br />
 <br />
 <br />
@@ -10,7 +11,28 @@
 <h1 style="text-align:center">Your Profile Has Been Created!</h1>
 
 <div class="button-row">
-    <form method="get" asp-page="/CreateProfile/StudentForm">
-        <button type="submit" class="account-btn student-btn">Login Again</button>
-    </form>
-</div> *@
+    <button type="submit" class="account-btn student-btn" asp-page="/Identity/Account/Login">Login Again</button>
+</div>
+<style>
+    .userType-container {
+        text-align: center;
+        margin-top: 80px;
+    }
+
+    .button-row {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        margin-top: 40px;
+    }
+
+    .account-btn {
+        padding: 15px 30px;
+        font-size: 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.2s ease-in-out;
+    }
+</style>
+
