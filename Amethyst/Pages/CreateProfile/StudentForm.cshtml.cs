@@ -3,6 +3,8 @@ using Amethyst.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace Amethyst.Pages.CreateProfile
 {
@@ -17,36 +19,39 @@ namespace Amethyst.Pages.CreateProfile
             _userManager = userManager;
         }
 
-        // Bind the Profile fields coming from the form
         [BindProperty]
-        public Profile InputProfile { get; set; } = new Profile();
+        public Profile InputProfile { get; set; }
 
-        public IActionResult OnPost()
+        public void OnGet()
+        {
+        }
+
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
                 return Page();
 
-            // Get logged-in user's Identity ID
-            string? userId = _userManager.GetUserId(User);
+            var user = await _userManager.GetUserAsync(User);
 
-            if (userId == null)
-                return Challenge(); // Not logged in → redirect to login
+            // --- PROFILE EXISTS GUARD ---
+            var existingProfile = await _context.Profile
+                .FirstOrDefaultAsync(p => p.ProfileId == user.Id);
 
-            // Prevent duplicate profiles
-            var existing = _context.Profiles.FirstOrDefault(p => p.ProfileId == userId);
-            if (existing != null)
-                return RedirectToPage("/EditProfile", new { id = userId });
+            if (existingProfile != null)
+            {
+                TempData["ProfileExists"] = "A profile already exists for your account.";
+                return RedirectToPage("/CreateProfile/EditProfile", new { id = user.Id });
+            }
+            // ----------------------------
 
-            // Fill system fields
-            InputProfile.ProfileId = userId;
+            InputProfile.ProfileId = user.Id;
             InputProfile.UserCreationDate = DateTime.UtcNow;
+            InputProfile.LastLoginTime = null;
 
-            // Insert into DB
-            _context.Profiles.Add(InputProfile);
-            _context.SaveChanges();
+            _context.Profile.Add(InputProfile);
+            await _context.SaveChangesAsync();
 
-            // Redirect to a success page (or wherever you want)
-            return RedirectToPage("/Success");
+            return RedirectToPage("/CreateProfile/ProfileMade");
         }
     }
 }

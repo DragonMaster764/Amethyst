@@ -14,7 +14,7 @@ namespace Amethyst.Data
         public DbSet<Assignment> Assignments { get; set; }
         public DbSet<Course> Courses { get; set; }
 
-        public DbSet<Profile> Profiles { get; set; }
+        public DbSet<Profile> Profile { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

@@ -1,17 +1,16 @@
 ﻿@page
 @model Amethyst.Pages.CreateProfile.ProfileMadeModel
-@{
-}
 
 <br />
 <br />
 <br />
 <br />
-
 <h1 style="text-align:center">Your Profile Has Been Created!</h1>
 
 <div class="button-row">
-    <button type="submit" class="account-btn student-btn" asp-page="/Identity/Account/Login">Finish Profile</button>
+    <a class="account-btn" asp-page="/Index">
+        Go To Home Page
+    </a>
 </div>
 <style>
     .userType-container {
@@ -26,13 +25,25 @@
         margin-top: 40px;
     }
 
-    .account-btn {
+    .account-btn,
+    .account-btn:link,
+    .account-btn:visited {
+        background-color: lightgrey;
         padding: 15px 30px;
         font-size: 18px;
         border: none;
         border-radius: 8px;
         cursor: pointer;
         transition: 0.2s ease-in-out;
+        text-decoration: none !important; /* override underline */
+        color: black !important; /* override blue link color */
+        display: inline-block;
     }
-</style>
 
+    .account-btn:hover {
+        background-color: #d3d3d3;
+        text-decoration: none !important;
+        color: black !important;
+    }
+
+</style>

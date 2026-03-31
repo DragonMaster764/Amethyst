@@ -3,6 +3,8 @@ using Amethyst.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace Amethyst.Pages.CreateProfile
 {
@@ -18,37 +20,50 @@ namespace Amethyst.Pages.CreateProfile
         }
 
         [BindProperty]
-        public Profile InputProfile { get; set; } = new Profile();
+        public Profile InputProfile { get; set; }
 
-        public IActionResult OnPost()
+        public void OnGet()
+        {
+        }
+
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
                 return Page();
 
-            string? userId = _userManager.GetUserId(User);
+            var user = await _userManager.GetUserAsync(User);
 
-            if (userId == null)
-                return Challenge(); // Redirect to login
+            // --- NULL USER GUARD ---
+            if (user == null)
+            {
+                // User is not logged in, redirect them to login
+                return RedirectToPage("/Account/Login");
+            }
+            // ------------------------
 
-            // Prevent duplicate profiles
-            var existing = _context.Profiles.FirstOrDefault(p => p.ProfileId == userId);
-            if (existing != null)
-                return RedirectToPage("/EditProfile", new { id = userId });
+            // --- PROFILE EXISTS GUARD ---
+            var existingProfile = await _context.Profile
+                .FirstOrDefaultAsync(p => p.ProfileId == user.Id);
 
-            // System fields
-            InputProfile.ProfileId = userId;
+            if (existingProfile != null)
+            {
+                TempData["ProfileExists"] = "A profile already exists for your account.";
+                return RedirectToPage("/CreateProfile/EditProfile", new { id = user.Id });
+            }
+            // ----------------------------
+
+            InputProfile.ProfileId = user.Id;
             InputProfile.UserCreationDate = DateTime.UtcNow;
+            InputProfile.LastLoginTime = null;
 
-            // ⭐ Regular users do NOT have an academic year
+            // Regular users must have AcademicYear = null
             InputProfile.AcademicYear = null;
 
-            // Insert into DB
-            _context.Profiles.Add(InputProfile);
-            _context.SaveChanges();
+            _context.Profile.Add(InputProfile);
+            await _context.SaveChangesAsync();
 
-            return RedirectToPage("/Success");
+            return RedirectToPage("/CreateProfile/ProfileMade");
         }
     }
 }
-
 
