@@ -38,7 +38,7 @@ namespace Amethyst.Models
 
         [Column("notification_preferences", TypeName = "varchar(20)")]
         [MaxLength(20)]
-        public string NotificationPreferences { get; set; } = "instant";
+        public string? NotificationPreferences { get; set; } = "instant";
 
         [Column("quiet_hours_start", TypeName = "time")]
         public TimeSpan? QuietHoursStart { get; set; }
@@ -47,9 +47,7 @@ namespace Amethyst.Models
         public TimeSpan? QuietHoursEnd { get; set; }
 
         // Navigation to the Identity user (FK to AspNetUsers.Id)
-        //[ForeignKey(nameof(ProfileId))]
-        [NotMapped]
-        public virtual IdentityUser? User { get; set; }
+        //public virtual IdentityUser? User { get; set; }
 
         // Navigation to courses owned by this profile
         public virtual ICollection<Course> Courses { get; set; } = new List<Course>();

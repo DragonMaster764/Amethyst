@@ -1,7 +1,7 @@
-﻿using Amethyst.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Amethyst.Models;
 
 namespace Amethyst.Data
 {
@@ -17,7 +17,9 @@ namespace Amethyst.Data
 
         public DbSet<Assignment> Assignments { get; set; }
         public DbSet<Course> Courses { get; set; }
-        public DbSet<Course> Profile { get; set; }
+
+        // Fixed: declare Profile as DbSet<Profile>
+        public DbSet<Profile> Profiles { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -29,10 +31,10 @@ namespace Amethyst.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Profile>().Ignore(p => p.User);
+            // Table mappings
             modelBuilder.Entity<UserTask>().ToTable("Tasks");
-            modelBuilder.Entity<Profile>().ToTable("Profile");
 
+            // UserTask -> Profile FK
             modelBuilder.Entity<UserTask>()
                 .HasOne(t => t.Profile)
                 .WithMany()
@@ -40,14 +42,31 @@ namespace Amethyst.Data
                 .HasPrincipalKey(p => p.ProfileId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Profile>()
-                .HasOne(p => p.User)
-                .WithOne()
-                .HasForeignKey<Profile>(p => p.ProfileId)
-                .HasPrincipalKey<IdentityUser>(u => u.Id)
+            // Reminder table configuration
+            modelBuilder.Entity<Reminder>().ToTable("Reminder");
+
+            // Map explicit Reminder relationships so EF uses the existing FK properties
+            modelBuilder.Entity<Reminder>()
+                .HasOne(r => r.Profile)
+                .WithMany()
+                .HasForeignKey(r => r.ProfileId)
+                .HasPrincipalKey(p => p.ProfileId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Reminder table configuration
+            modelBuilder.Entity<Reminder>()
+                .HasOne(r => r.Assignment)
+                .WithMany()
+                .HasForeignKey(r => r.AssignmentId)
+                .HasPrincipalKey(a => a.AssignmentId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Reminder>()
+                .HasOne(r => r.TaskItem)
+                .WithMany()
+                .HasForeignKey(r => r.TaskId)
+                .HasPrincipalKey(t => t.TaskId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<Reminder>()
             .HasCheckConstraint("CK_Reminder_TargetType",
              "(target_type = 'Assignment' AND assignment_id IS NOT NULL AND task_id IS NULL) OR " +
@@ -73,18 +92,9 @@ namespace Amethyst.Data
             .HasCheckConstraint("CK_Actual_Min",
             "actual_minutes IS NULL OR actual_minutes BETWEEN 0 AND 360");
 
-
-            //Will be added if Course PK is composite
-            //modelBuilder.Entity<StudySession>()
-            //    .HasOne(s => s.Course)
-            //    .WithMany(c => c.StudySessions)
-            //    .HasForeignKey(s => new { s.CourseId, s.ProfileId });
-
-            modelBuilder.Entity<UserTask>().ToTable("Tasks");
-
             modelBuilder.Entity<UserTask>()
-    .       HasCheckConstraint("CK_Task_Status",
-            "status IN ('In Progress', 'Not Started', 'Completed')");
+                .HasCheckConstraint("CK_Task_Status",
+                "status IN ('In Progress', 'Not Started', 'Completed')");
 
             modelBuilder.Entity<UserTask>()
             .HasCheckConstraint("CK_Task_Priority",
@@ -136,10 +146,11 @@ namespace Amethyst.Data
                 entity.Property(e => e.QuietHoursStart).HasColumnType("time").HasColumnName("quiet_hours_start");
                 entity.Property(e => e.QuietHoursEnd).HasColumnType("time").HasColumnName("quiet_hours_end");
 
-                // 1:1 relationship with AspNetUsers (IdentityUser)
+                // 1:1 relationship with AspNetUsers (IdentityUser) using shared PK (ProfileId == AspNetUsers.Id)
                 entity.HasOne<IdentityUser>()
                       .WithOne()
                       .HasForeignKey<Profile>(p => p.ProfileId)
+                      .HasPrincipalKey<IdentityUser>(u => u.Id)
                       .OnDelete(DeleteBehavior.Cascade)
                       .HasConstraintName("FK_Profile_Users");
             });

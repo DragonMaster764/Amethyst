@@ -22,6 +22,428 @@ namespace Amethyst.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Amethyst.Models.Assignment", b =>
+                {
+                    b.Property<int>("AssignmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("assignment_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AssignmentId"));
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int")
+                        .HasColumnName("course_id");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("description");
+
+                    b.Property<DateTime?>("DueDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("due_date");
+
+                    b.Property<short?>("EstimatedMinutes")
+                        .HasColumnType("smallint")
+                        .HasColumnName("estimated_minutes");
+
+                    b.Property<string>("Grade")
+                        .HasMaxLength(2)
+                        .HasColumnType("nvarchar(2)")
+                        .HasColumnName("grade");
+
+                    b.Property<decimal?>("Points")
+                        .HasPrecision(6, 2)
+                        .HasColumnType("decimal(6, 2)")
+                        .HasColumnName("points");
+
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)")
+                        .HasColumnName("priority");
+
+                    b.Property<decimal?>("RawPercentage")
+                        .HasPrecision(5, 2)
+                        .HasColumnType("decimal(5, 2)")
+                        .HasColumnName("raw_percentage");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("title");
+
+                    b.Property<decimal?>("TotalPoints")
+                        .HasPrecision(6, 2)
+                        .HasColumnType("decimal(6, 2)")
+                        .HasColumnName("total_points");
+
+                    b.Property<DateTime?>("UpdatedTime")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_time");
+
+                    b.HasKey("AssignmentId");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("Assignment", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Assignment_Priority", "priority IN ('Low', 'Medium', 'High')");
+
+                            t.HasCheckConstraint("CK_Assignment_Status", "status IN ('In Progress', 'Not Started', 'Completed')");
+
+                            t.HasCheckConstraint("CK_Est_Min", "estimated_minutes >= 0 AND estimated_minutes <= 10000");
+                        });
+                });
+
+            modelBuilder.Entity("Amethyst.Models.Course", b =>
+                {
+                    b.Property<int>("CourseId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("course_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CourseId"));
+
+                    b.Property<short>("AcademicYear")
+                        .HasColumnType("smallint")
+                        .HasColumnName("academic_year");
+
+                    b.Property<string>("ColorLabel")
+                        .HasMaxLength(7)
+                        .HasColumnType("nchar(7)")
+                        .HasColumnName("color_label")
+                        .IsFixedLength();
+
+                    b.Property<string>("InstructorName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("instructor_name");
+
+                    b.Property<TimeSpan?>("MeetingTime")
+                        .HasColumnType("time")
+                        .HasColumnName("meeting_time");
+
+                    b.Property<string>("ProfileId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("profile_id");
+
+                    b.Property<string>("Term")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)")
+                        .HasColumnName("term");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("title");
+
+                    b.HasKey("CourseId");
+
+                    b.HasIndex("ProfileId");
+
+                    b.HasIndex("CourseId", "ProfileId")
+                        .IsUnique();
+
+                    b.ToTable("Course", t =>
+                        {
+                            t.HasCheckConstraint("CK_Course_Academic_Year", "academic_year BETWEEN 1900 AND 3000");
+
+                            t.HasCheckConstraint("CK_Course_Term", "term IN ('Spring', 'Summer', 'Fall', 'Winter')");
+                        });
+                });
+
+            modelBuilder.Entity("Amethyst.Models.Profile", b =>
+                {
+                    b.Property<string>("ProfileId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("profile_id");
+
+                    b.Property<string>("AcademicYear")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("academic_year");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("display_name");
+
+                    b.Property<DateTime?>("LastLoginTime")
+                        .HasColumnType("datetime2(3)")
+                        .HasColumnName("last_login_time");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("NotificationPreferences")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasDefaultValue("instant")
+                        .HasColumnName("notification_preferences");
+
+                    b.Property<TimeSpan?>("QuietHoursEnd")
+                        .HasColumnType("time")
+                        .HasColumnName("quiet_hours_end");
+
+                    b.Property<TimeSpan?>("QuietHoursStart")
+                        .HasColumnType("time")
+                        .HasColumnName("quiet_hours_start");
+
+                    b.Property<string>("Timezone")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasDefaultValue("UTC")
+                        .HasColumnName("timezone");
+
+                    b.Property<DateTime>("UserCreationDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2(3)")
+                        .HasColumnName("user_creation_date")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ProfileId")
+                        .HasName("PK_Profile");
+
+                    b.HasIndex("DisplayName")
+                        .IsUnique()
+                        .HasDatabaseName("UQ_Profile_DisplayName");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Profile", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_School_Year", "academic_year IN ('Freshman', 'Sophomore', 'Junior', 'Senior', 'Graduate')");
+
+                            t.HasCheckConstraint("CK_User_Notification", "notification_preferences IN ('instant', 'daily_digest', 'urgent-only', 'none')");
+                        });
+                });
+
+            modelBuilder.Entity("Amethyst.Models.Reminder", b =>
+                {
+                    b.Property<long>("ReminderId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("reminder_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ReminderId"));
+
+                    b.Property<int?>("AssignmentId")
+                        .HasColumnType("int")
+                        .HasColumnName("assignment_id");
+
+                    b.Property<string>("ProfileId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("profile_id");
+
+                    b.Property<DateTime>("RemindAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("remind_at");
+
+                    b.Property<string>("TargetType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("target_type");
+
+                    b.Property<int?>("TaskId")
+                        .HasColumnType("int")
+                        .HasColumnName("task_id");
+
+                    b.HasKey("ReminderId");
+
+                    b.HasIndex("AssignmentId");
+
+                    b.HasIndex("ProfileId");
+
+                    b.HasIndex("TaskId");
+
+                    b.ToTable("Reminder", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Reminder_TargetType", "(target_type = 'Assignment' AND assignment_id IS NOT NULL AND task_id IS NULL) OR (target_type = 'Task' AND task_id IS NOT NULL AND assignment_id IS NULL)");
+                        });
+                });
+
+            modelBuilder.Entity("Amethyst.Models.Student", b =>
+                {
+                    b.Property<long>("StudentID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("StudentID"));
+
+                    b.Property<short?>("GraduationYear")
+                        .HasColumnType("smallint");
+
+                    b.Property<string>("Major")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Minor")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProfileId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("SchoolDistrict")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SchoolName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StudentType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UsState")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("StudentID");
+
+                    b.HasIndex("ProfileId");
+
+                    b.ToTable("Students", t =>
+                        {
+                            t.HasCheckConstraint("CK_Student_Grad_Year", "graduation_year BETWEEN 1900 AND 3000");
+
+                            t.HasCheckConstraint("CK_Student_Type", "student_type IN ('High School', 'College')");
+                        });
+                });
+
+            modelBuilder.Entity("Amethyst.Models.StudySession", b =>
+                {
+                    b.Property<int>("SessionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SessionId"));
+
+                    b.Property<short?>("ActualMinutes")
+                        .HasColumnType("smallint");
+
+                    b.Property<int?>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("EndTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<short?>("PlannedMinutes")
+                        .HasColumnType("smallint");
+
+                    b.Property<string>("ProfileId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("SessionId");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("ProfileId");
+
+                    b.ToTable("StudySessions", t =>
+                        {
+                            t.HasCheckConstraint("CK_Actual_Min", "actual_minutes IS NULL OR actual_minutes BETWEEN 0 AND 360");
+
+                            t.HasCheckConstraint("CK_End_Time", "end_time IS NULL OR end_time >= start_time");
+
+                            t.HasCheckConstraint("CK_Planned_Min", "planned_minutes IS NULL OR planned_minutes BETWEEN 0 AND 360");
+                        });
+                });
+
+            modelBuilder.Entity("Amethyst.Models.UserTask", b =>
+                {
+                    b.Property<int>("TaskId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("task_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TaskId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTime?>("DueAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("due_at");
+
+                    b.Property<short?>("EstimatedMinutes")
+                        .HasColumnType("smallint")
+                        .HasColumnName("estimated_minutes");
+
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("priority");
+
+                    b.Property<string>("ProfileId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("profile_id");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("title");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.HasKey("TaskId");
+
+                    b.HasIndex("ProfileId");
+
+                    b.ToTable("Tasks", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Estimated_Min", "estimated_minutes >= 0 AND estimated_minutes <= 10000");
+
+                            t.HasCheckConstraint("CK_Task_Priority", "priority IN ('Low', 'Medium', 'High')");
+
+                            t.HasCheckConstraint("CK_Task_Status", "status IN ('In Progress', 'Not Started', 'Completed')");
+                        });
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -220,6 +642,107 @@ namespace Amethyst.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Amethyst.Models.Assignment", b =>
+                {
+                    b.HasOne("Amethyst.Models.Course", "Course")
+                        .WithMany("Assignments")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_Assignment_Course");
+
+                    b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("Amethyst.Models.Course", b =>
+                {
+                    b.HasOne("Amethyst.Models.Profile", null)
+                        .WithMany("Courses")
+                        .HasForeignKey("ProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Amethyst.Models.Profile", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
+                        .WithOne()
+                        .HasForeignKey("Amethyst.Models.Profile", "ProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_Profile_Users");
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Amethyst.Models.Reminder", b =>
+                {
+                    b.HasOne("Amethyst.Models.Assignment", "Assignment")
+                        .WithMany()
+                        .HasForeignKey("AssignmentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Amethyst.Models.Profile", "Profile")
+                        .WithMany()
+                        .HasForeignKey("ProfileId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Amethyst.Models.UserTask", "TaskItem")
+                        .WithMany()
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Assignment");
+
+                    b.Navigation("Profile");
+
+                    b.Navigation("TaskItem");
+                });
+
+            modelBuilder.Entity("Amethyst.Models.Student", b =>
+                {
+                    b.HasOne("Amethyst.Models.Profile", "Profile")
+                        .WithMany()
+                        .HasForeignKey("ProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Profile");
+                });
+
+            modelBuilder.Entity("Amethyst.Models.StudySession", b =>
+                {
+                    b.HasOne("Amethyst.Models.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId");
+
+                    b.HasOne("Amethyst.Models.Profile", "Profile")
+                        .WithMany()
+                        .HasForeignKey("ProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Profile");
+                });
+
+            modelBuilder.Entity("Amethyst.Models.UserTask", b =>
+                {
+                    b.HasOne("Amethyst.Models.Profile", "Profile")
+                        .WithMany()
+                        .HasForeignKey("ProfileId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Profile");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -269,6 +792,16 @@ namespace Amethyst.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Amethyst.Models.Course", b =>
+                {
+                    b.Navigation("Assignments");
+                });
+
+            modelBuilder.Entity("Amethyst.Models.Profile", b =>
+                {
+                    b.Navigation("Courses");
                 });
 #pragma warning restore 612, 618
         }

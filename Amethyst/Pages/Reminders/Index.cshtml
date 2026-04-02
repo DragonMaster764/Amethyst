@@ -41,13 +41,22 @@
                 @Html.DisplayFor(modelItem => item.RemindAt)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Profile.ProfileId)
+                @if (item.Profile != null)
+                {
+                    @item.Profile.Name;
+                }
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Assignment.Priority)
+                @if (item.TargetType == "Assignment" && item.Assignment != null)
+                {
+                    @item.Assignment.Title
+                }
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.TaskItem.TaskId)
+                @if (item.TargetType == "Task" && item.TaskItem != null)
+                {
+                    @item.TaskItem.Title
+                }
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.ReminderId">Edit</a> |
