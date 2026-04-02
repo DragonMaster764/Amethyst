@@ -1,49 +1,17 @@
 ﻿@page
 @model Amethyst.Pages.CreateProfile.ProfileMadeModel
 
-<br />
-<br />
-<br />
-<br />
-<h1 style="text-align:center">Your Profile Has Been Created!</h1>
-
-<div class="button-row">
-    <a class="account-btn" asp-page="/Index">
-        Go To Home Page
-    </a>
+<div class="alert alert-success" role="alert">
+    <h4>Your Profile Has Been Created Successfully!</h4>
+    <p>You will be redirected to the login page shortly.</p>
 </div>
-<style>
-    .userType-container {
-        text-align: center;
-        margin-top: 80px;
-    }
 
-    .button-row {
-        display: flex;
-        justify-content: center;
-        gap: 40px;
-        margin-top: 40px;
-    }
+<form id="logoutForm" method="post" asp-page-handler="Logout"></form>
 
-    .account-btn,
-    .account-btn:link,
-    .account-btn:visited {
-        background-color: lightgrey;
-        padding: 15px 30px;
-        font-size: 18px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: 0.2s ease-in-out;
-        text-decoration: none !important; /* override underline */
-        color: black !important; /* override blue link color */
-        display: inline-block;
-    }
+<script>
+    // Wait 3 seconds, then submit the logout form
+    setTimeout(() => {
+        document.getElementById('logoutForm').submit();
+    }, 3000);
+</script>
 
-    .account-btn:hover {
-        background-color: #d3d3d3;
-        text-decoration: none !important;
-        color: black !important;
-    }
-
-</style>

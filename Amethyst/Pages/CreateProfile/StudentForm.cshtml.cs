@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace Amethyst.Pages.CreateProfile
 {
     public class StudentFormModel : PageModel
@@ -20,7 +19,7 @@ namespace Amethyst.Pages.CreateProfile
         }
 
         [BindProperty]
-        public Profile InputProfile { get; set; }
+        public Profile InputProfile { get; set; } = new Profile();
 
         public void OnGet()
         {
@@ -32,6 +31,13 @@ namespace Amethyst.Pages.CreateProfile
                 return Page();
 
             var user = await _userManager.GetUserAsync(User);
+            
+            //if (user == null) return Page();
+            
+            if (user == null)
+            {
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
+            }
 
             // --- PROFILE EXISTS GUARD ---
             var existingProfile = await _context.Profile

@@ -37,7 +37,7 @@ namespace Amethyst.Pages.CreateProfile
             if (user == null)
             {
                 // User is not logged in, redirect them to login
-                return RedirectToPage("/Account/Login");
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
             }
             // ------------------------
 
