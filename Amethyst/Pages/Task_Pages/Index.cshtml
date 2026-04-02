@@ -14,34 +14,34 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Tasks[0].Title)
+                @Html.DisplayNameFor(model => model.TaskItems[0].Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Tasks[0].DueAt)
+                @Html.DisplayNameFor(model => model.TaskItems[0].DueAt)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Tasks[0].Status)
+                @Html.DisplayNameFor(model => model.TaskItems[0].Status)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Tasks[0].Priority)
+                @Html.DisplayNameFor(model => model.TaskItems[0].Priority)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Tasks[0].EstimatedMinutes)
+                @Html.DisplayNameFor(model => model.TaskItems[0].EstimatedMinutes)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Tasks[0].CreatedAt)
+                @Html.DisplayNameFor(model => model.TaskItems[0].CreatedAt)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Tasks[0].UpdatedAt)
+                @Html.DisplayNameFor(model => model.TaskItems[0].UpdatedAt)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Tasks[0].Profile)
+                @Html.DisplayNameFor(model => model.TaskItems[0].Profile)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Tasks) {
+@foreach (var item in Model.TaskItems) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Title)
