@@ -7,7 +7,6 @@ namespace Amethyst.Data
 {
     public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     {
-
         public DbSet<Reminder> Reminders { get; set; }
 
         public DbSet<Student> Students { get; set; }
