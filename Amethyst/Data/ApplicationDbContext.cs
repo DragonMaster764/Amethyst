@@ -10,7 +10,9 @@ namespace Amethyst.Data
         public DbSet<Reminder> Reminders { get; set; }
         public DbSet<Student> Students { get; set; }
         public DbSet<StudySession> StudySessions { get; set; }
-        public DbSet<Tasks> Tasks { get; set; }
+
+        public DbSet<UserTask> TaskItems { get; set; }
+
         public DbSet<Assignment> Assignments { get; set; }
         public DbSet<Course> Courses { get; set; }
 
@@ -24,6 +26,24 @@ namespace Amethyst.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Profile>().Ignore(p => p.User);
+            modelBuilder.Entity<UserTask>().ToTable("Tasks");
+            modelBuilder.Entity<Profile>().ToTable("Profile");
+
+            modelBuilder.Entity<UserTask>()
+                .HasOne(t => t.Profile)
+                .WithMany()
+                .HasForeignKey(t => t.ProfileId)
+                .HasPrincipalKey(p => p.ProfileId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Profile>()
+                .HasOne(p => p.User)
+                .WithOne()
+                .HasForeignKey<Profile>(p => p.ProfileId)
+                .HasPrincipalKey<IdentityUser>(u => u.Id)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // Reminder table configuration
             modelBuilder.Entity<Reminder>()
@@ -51,17 +71,26 @@ namespace Amethyst.Data
                 .HasCheckConstraint("CK_Actual_Min",
                 "actual_minutes IS NULL OR actual_minutes BETWEEN 0 AND 360");
 
-            modelBuilder.Entity<Tasks>()
-                .HasCheckConstraint("CK_Task_Status",
-                "status IN ('In Progress', 'Not Started', 'Completed')");
 
-            modelBuilder.Entity<Tasks>()
-                .HasCheckConstraint("CK_Task_Priority",
-                "priority IN ('Low', 'Medium', 'High')");
+            //Will be added if Course PK is composite
+            //modelBuilder.Entity<StudySession>()
+            //    .HasOne(s => s.Course)
+            //    .WithMany(c => c.StudySessions)
+            //    .HasForeignKey(s => new { s.CourseId, s.ProfileId });
 
-            modelBuilder.Entity<Tasks>()
-                .HasCheckConstraint("CK_Estimated_Min",
-                "estimated_minutes >= 0 AND estimated_minutes <= 10000");
+            modelBuilder.Entity<UserTask>().ToTable("Tasks");
+
+            modelBuilder.Entity<UserTask>()
+    .       HasCheckConstraint("CK_Task_Status",
+            "status IN ('In Progress', 'Not Started', 'Completed')");
+
+            modelBuilder.Entity<UserTask>()
+            .HasCheckConstraint("CK_Task_Priority",
+            "priority IN ('Low', 'Medium', 'High')");
+
+            modelBuilder.Entity<UserTask>()
+            .HasCheckConstraint("CK_Estimated_Min",
+            "estimated_minutes >= 0 AND estimated_minutes <= 10000");
 
             // --- PROFILE CONFIGURATION ---
             modelBuilder.Entity<Profile>(entity =>

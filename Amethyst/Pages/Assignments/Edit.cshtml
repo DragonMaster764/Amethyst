@@ -1,0 +1,98 @@
+﻿@page
+@model Amethyst.Pages.Assignments.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Assignment</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Assignment.AssignmentId" />
+            <div class="form-group">
+                <label asp-for="Assignment.CourseId" class="control-label"></label>
+                <select asp-for="Assignment.CourseId" class="form-control" asp-items="ViewBag.CourseId" ></select>
+                <span asp-validation-for="Assignment.CourseId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+<span class="text-danger">*</span>
+                <label asp-for="Assignment.Title" class="control-label"></label>
+                <input asp-for="Assignment.Title" class="form-control" aria-required="true"/>
+                <span asp-validation-for="Assignment.Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Assignment.Description" class="control-label"></label>
+                <input asp-for="Assignment.Description" class="form-control" />
+                <span asp-validation-for="Assignment.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Assignment.DueDate" class="control-label"></label>
+                <input asp-for="Assignment.DueDate" class="form-control" />
+                <span asp-validation-for="Assignment.DueDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+<span class="text-danger">*</span>
+                <label asp-for="Assignment.Status" class="control-label"></label>
+                <select asp-for="Assignment.Status" class="form-control">
+                    <option value="">-- Select Status --</option>
+                    <option value="Not Started">Not Started</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                </select>
+                <span asp-validation-for="Assignment.Status" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+<span class="text-danger">*</span>
+                <label asp-for="Assignment.Priority" class="control-label"></label>
+                <select asp-for="Assignment.Priority" class="form-control">
+                    <option value="">-- Select Priority --</option>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                </select>
+                <span asp-validation-for="Assignment.Priority" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Assignment.EstimatedMinutes" class="control-label"></label>
+                <input asp-for="Assignment.EstimatedMinutes" class="form-control" />
+                <span asp-validation-for="Assignment.EstimatedMinutes" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Assignment.Points" class="control-label"></label>
+                <input asp-for="Assignment.Points" class="form-control" />
+                <span asp-validation-for="Assignment.Points" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Assignment.TotalPoints" class="control-label"></label>
+                <input asp-for="Assignment.TotalPoints" class="form-control" />
+                <span asp-validation-for="Assignment.TotalPoints" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Assignment.RawPercentage" class="control-label"></label>
+                <input asp-for="Assignment.RawPercentage" class="form-control" />
+                <span asp-validation-for="Assignment.RawPercentage" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Assignment.Grade" class="control-label"></label>
+                <input asp-for="Assignment.Grade" class="form-control" />
+                <span asp-validation-for="Assignment.Grade" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

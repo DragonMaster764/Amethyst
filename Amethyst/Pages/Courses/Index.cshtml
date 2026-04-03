@@ -1,0 +1,60 @@
+﻿@page
+@model Amethyst.Pages.Courses.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+
+@if (!Model.CourseGroups.Any())
+{
+    <p>No courses found.</p>
+}
+else
+{
+    var groupIndex = 0;
+
+    foreach (var group in Model.CourseGroups)
+    {
+        var collapseId = $"collapseGroup{groupIndex}";
+        groupIndex++;
+
+        @* Remove the styling later and replace it in CSS *@
+        <div style="border: 2px solid black;" class="course-group" aria-labelledby="group-@group.Term-@group.AcademicYear">
+
+            <h3 class="mb-2"
+                data-bs-toggle="collapse"
+                data-bs-target="@( "#" + collapseId )"
+                aria-controls="@collapseId"
+                aria-expanded="false"
+                role="button"
+                style="cursor:pointer;"
+                id="group-@group.Term-@group.AcademicYear"
+            >
+                @group.GroupTitle
+            </h3>
+
+            <div class="collapse" id="@collapseId">
+                @foreach (var item in group.Courses)
+                {
+                    <div style="border: 2px solid @item.ColorLabel;">
+                        <h4>@item.Title</h4>
+                        <h4>Instructor: @item.InstructorName</h4>
+                        <h4>Meeting Time: @item.MeetingTime</h4>
+
+                        @* Add button to view related assignments?*@
+
+                        <a asp-page="./Edit" asp-route-id="@item.CourseId">Edit</a> |
+                        <a asp-page="./Details" asp-route-id="@item.CourseId">Details</a> |
+                        <a asp-page="./Delete" asp-route-id="@item.CourseId">Delete</a>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+}

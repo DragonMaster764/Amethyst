@@ -1,0 +1,55 @@
+﻿@page
+@model Amethyst.Pages.Reminders.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>Reminder</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Reminder.ReminderId" />
+            <div class="form-group">
+                <label asp-for="Reminder.ProfileId" class="control-label"></label>
+                <select asp-for="Reminder.ProfileId" class="form-control" asp-items="ViewBag.ProfileId" ></select>
+                <span asp-validation-for="Reminder.ProfileId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Reminder.TargetType" class="control-label"></label>
+                <input asp-for="Reminder.TargetType" class="form-control" />
+                <span asp-validation-for="Reminder.TargetType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Reminder.AssignmentId" class="control-label"></label>
+                <select asp-for="Reminder.AssignmentId" class="form-control" asp-items="ViewBag.AssignmentId" ></select>
+                <span asp-validation-for="Reminder.AssignmentId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Reminder.TaskId" class="control-label"></label>
+                <select asp-for="Reminder.TaskId" class="form-control" asp-items="ViewBag.TaskId" ></select>
+                <span asp-validation-for="Reminder.TaskId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Reminder.RemindAt" class="control-label"></label>
+                <input asp-for="Reminder.RemindAt" class="form-control" />
+                <span asp-validation-for="Reminder.RemindAt" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

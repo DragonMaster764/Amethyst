@@ -1,0 +1,72 @@
+﻿@page
+@model Amethyst.Pages.Study_Session.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.StudySession[0].StartTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StudySession[0].EndTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StudySession[0].PlannedMinutes)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StudySession[0].ActualMinutes)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StudySession[0].Notes)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StudySession[0].Profile)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StudySession[0].Course)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.StudySession) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PlannedMinutes)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ActualMinutes)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Notes)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Profile.ProfileId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Course.ProfileId)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.SessionId">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.SessionId">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.SessionId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,102 @@
+﻿@page
+@model Amethyst.Pages.Assignments.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Assignment[0].Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Assignment[0].Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Assignment[0].DueDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Assignment[0].Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Assignment[0].Priority)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Assignment[0].EstimatedMinutes)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Assignment[0].Points)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Assignment[0].TotalPoints)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Assignment[0].RawPercentage)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Assignment[0].Grade)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Assignment[0].UpdatedTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Assignment[0].Course)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Assignment) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DueDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Priority)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EstimatedMinutes)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Points)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalPoints)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RawPercentage)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Grade)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UpdatedTime)
+            </td>
+            <td style="border: 2px solid @item.Course.ColorLabel;">
+                @Html.DisplayFor(modelItem => item.Course.Title)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.AssignmentId">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.AssignmentId">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.AssignmentId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
