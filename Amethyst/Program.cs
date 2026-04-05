@@ -1,21 +1,43 @@
+//using Amethyst.Data;
 using Amethyst.Data;
+using Amethyst.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Amethyst.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages(options =>
+{
+    // Identity route mappings
+    options.Conventions.AddPageRoute("/Identity/Account/Login", "/Account/Login");
+    options.Conventions.AddPageRoute("/Identity/Account/Register", "/Account/Register");
+    options.Conventions.AddPageRoute("/Identity/Account/Logout", "/Account/Logout");
 
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationDbContext")));
+    options.Conventions.AddPageRoute("/Identity/Account/ConfirmEmail", "/Account/ConfirmEmail");
+    options.Conventions.AddPageRoute("/Identity/Account/RegisterConfirmation", "/Account/RegisterConfirmation");
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultUI()
-    .AddDefaultTokenProviders();
+    options.Conventions.AddPageRoute("/Identity/Account/ForgotPassword", "/Account/ForgotPassword");
+    options.Conventions.AddPageRoute("/Identity/Account/ForgotPasswordConfirmation", "/Account/ForgotPasswordConfirmation");
+    options.Conventions.AddPageRoute("/Identity/Account/ResetPassword", "/Account/ResetPassword");
+    options.Conventions.AddPageRoute("/Identity/Account/ResetPasswordConfirmation", "/Account/ResetPasswordConfirmation");
+
+    options.Conventions.AddPageRoute("/Identity/Account/AccessDenied", "/Account/AccessDenied");
+
+    options.Conventions.AddPageRoute("/Identity/Account/Manage/Index", "/Account/Manage");
+});
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationDbContext")));
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = true;
+})
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
+
 builder.Services.AddControllersWithViews();
-
 builder.Services.AddSingleton<MongoDBServices>();
 
 var app = builder.Build();
@@ -24,7 +46,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -44,3 +65,4 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+

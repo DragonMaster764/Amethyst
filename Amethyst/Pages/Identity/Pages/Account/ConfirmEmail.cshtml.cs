@@ -42,12 +42,12 @@ namespace Amethyst.Areas.Identity.Pages.Account
 
             if (result.Succeeded)
             {
-                // Auto-login after confirming email
                 await _signInManager.SignInAsync(user, isPersistent: false);
-
-                // Redirect to your onboarding step
-                return RedirectToPage("/CreateProfile/UserType");
+                StatusMessage = "Thank you for confirming your email.";
+                return Page(); // <-- This is the key change
             }
+
+
 
             StatusMessage = "Error confirming your email.";
             return Page();

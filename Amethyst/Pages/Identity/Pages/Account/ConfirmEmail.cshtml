@@ -2,43 +2,23 @@
 @model ConfirmEmailModel
 @{
     ViewData["Title"] = "Confirm email";
+    Layout = "/Pages/Shared/_Layout.cshtml"; // <-- ADD THIS
 }
 
 <h1>@ViewData["Title"]</h1>
+
 <partial name="_StatusMessage" model="Model.StatusMessage" />
 
 <br />
 <br />
 <br />
 <br />
-<h1 style="text-align:center">Click the button bellow to start creating your profile!</h1>
+
+<h1 style="text-align:center">Click the button below to start creating your profile!</h1>
 
 <div class="button-row">
     <form method="get" asp-page="/CreateProfile/UserType">
         <button type="submit" class="account-btn student-btn">Create Profile</button>
     </form>
-
-    <style>
-        .userType-container {
-            text-align: center;
-            margin-top: 80px;
-        }
-
-        .button-row {
-            display: flex;
-            justify-content: center;
-            gap: 40px;
-            margin-top: 40px;
-        }
-
-        .account-btn {
-            padding: 15px 30px;
-            font-size: 18px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: 0.2s ease-in-out;
-        }
-    </style>
-
 </div>
+

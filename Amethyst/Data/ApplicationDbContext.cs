@@ -78,19 +78,19 @@ namespace Amethyst.Data
             //    .WithMany(c => c.StudySessions)
             //    .HasForeignKey(s => new { s.CourseId, s.ProfileId });
 
-            modelBuilder.Entity<UserTask>().ToTable("Tasks");
+            //modelBuilder.Entity<UserTask>().ToTable("Tasks");
 
             modelBuilder.Entity<UserTask>()
-    .       HasCheckConstraint("CK_Task_Status",
-            "status IN ('In Progress', 'Not Started', 'Completed')");
+                .HasCheckConstraint("CK_Task_Status",
+                "status IN ('In Progress', 'Not Started', 'Completed')");
 
             modelBuilder.Entity<UserTask>()
-            .HasCheckConstraint("CK_Task_Priority",
-            "priority IN ('Low', 'Medium', 'High')");
+                .HasCheckConstraint("CK_Task_Priority",
+                "priority IN ('Low', 'Medium', 'High')");
 
             modelBuilder.Entity<UserTask>()
-            .HasCheckConstraint("CK_Estimated_Min",
-            "estimated_minutes >= 0 AND estimated_minutes <= 10000");
+                .HasCheckConstraint("CK_Estimated_Min",
+                "estimated_minutes >= 0 AND estimated_minutes <= 10000");
 
             // --- PROFILE CONFIGURATION ---
             modelBuilder.Entity<Profile>(entity =>
