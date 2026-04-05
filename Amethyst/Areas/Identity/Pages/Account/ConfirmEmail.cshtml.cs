@@ -1,24 +1,24 @@
-﻿using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+#nullable disable
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Amethyst.Areas.Identity.Pages.Account
+namespace Amethyst.Pages.Account
 {
+    [AllowAnonymous]
     public class ConfirmEmailModel : PageModel
     {
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
 
-        public ConfirmEmailModel(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public ConfirmEmailModel(UserManager<IdentityUser> userManager)
         {
             _userManager = userManager;
-            _signInManager = signInManager;
         }
 
         [TempData]
@@ -42,17 +42,12 @@ namespace Amethyst.Areas.Identity.Pages.Account
 
             if (result.Succeeded)
             {
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                StatusMessage = "Thank you for confirming your email.";
-                return Page(); // <-- This is the key change
+                StatusMessage = "Thank you for confirming your email. Click the button below to create your profile.";
+                return Page();
             }
-
-
 
             StatusMessage = "Error confirming your email.";
             return Page();
         }
     }
 }
-
-
