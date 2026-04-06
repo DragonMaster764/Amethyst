@@ -2,77 +2,155 @@
 @model Amethyst.Pages.Task_Pages.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Tasks";
 }
 
-<h1>Index</h1>
+<link rel="stylesheet" href="~/css/tasks.css" asp-append-version="true" />
 
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskItems[0].Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskItems[0].DueAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskItems[0].Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskItems[0].Priority)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskItems[0].EstimatedMinutes)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskItems[0].CreatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskItems[0].UpdatedAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TaskItems[0].Profile)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.TaskItems) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DueAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Priority)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EstimatedMinutes)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UpdatedAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Profile.ProfileId)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.TaskId">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.TaskId">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.TaskId">Delete</a>
-            </td>
-        </tr>
+<div class="tasks-page">
+
+    <!-- Header -->
+    <section class="tasks-header amethyst-panel">
+        <div class="tasks-header-text">
+            <h1>Tasks</h1>
+            <p>Manage your daily to-dos, priorities, and progress.</p>
+        </div>
+
+        <div class="tasks-header-action">
+            <a asp-page="Create" class="amethyst-btn-primary">Create New</a>
+        </div>
+    </section>
+
+    <!-- Summary -->
+    <section class="tasks-summary amethyst-panel">
+        <div class="tasks-summary-grid">
+            <div class="tasks-stat amethyst-card">
+                <h3>Total Tasks</h3>
+                <div class="tasks-stat-value">@Model.TaskItems.Count</div>
+            </div>
+
+            <div class="tasks-stat amethyst-card">
+                <h3>Completed</h3>
+                <div class="tasks-stat-value">
+                    @Model.TaskItems.Count(t => t.Status != null && t.Status.ToLower() == "completed")
+                </div>
+            </div>
+
+            <div class="tasks-stat amethyst-card">
+                <h3>Due Soon</h3>
+                <div class="tasks-stat-value">
+                    @Model.TaskItems.Count(t => t.DueAt.HasValue && t.DueAt.Value >= DateTime.Now && t.DueAt.Value <= DateTime.Now.AddDays(7))
+                </div>
+            </div>
+
+            <div class="tasks-stat amethyst-card">
+                <h3>High Priority</h3>
+                <div class="tasks-stat-value">
+                    @Model.TaskItems.Count(t => t.Priority != null && t.Priority.ToLower() == "high")
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Table -->
+    <section class="tasks-table-panel amethyst-panel">
+        <div class="tasks-table-card amethyst-card">
+            <div class="table-responsive">
+                <table class="tasks-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Due</th>
+                            <th>Status</th>
+                            <th>Priority</th>
+                            <th>Time</th>
+                            <th>Created</th>
+                            <th>Updated</th>
+                            <th>Profile</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in Model.TaskItems)
+                    {
+                        <tr>
+                            <td class="task-title-cell">
+                                <span class="task-title">@item.Title</span>
+                            </td>
+
+                            <td>
+                                <span class="info-pill">
+                                    @(item.DueAt.HasValue ? item.DueAt.Value.ToString("M/d/yy h:mm tt") : "--")
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="status-badge @GetStatusClass(item.Status)">
+                                    @item.Status
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="priority-badge @GetPriorityClass(item.Priority)">
+                                    @item.Priority
+                                </span>
+                            </td>
+
+                            <td>
+                                @(item.EstimatedMinutes?.ToString() ?? "--") min
+                            </td>
+
+                            <td>
+                                @item.CreatedAt.ToString("M/d/yy")
+                            </td>
+
+                            <td>
+                                @item.UpdatedAt.ToString("M/d/yy")
+                            </td>
+
+                            <td>
+                                <span class="profile-chip">
+                                    @(item.Profile?.ProfileId ?? "--")
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="task-actions">
+                                    <a asp-page="./Edit" asp-route-id="@item.TaskId" class="table-action-link">Edit</a>
+                                    <a asp-page="./Details" asp-route-id="@item.TaskId" class="table-action-link">Details</a>
+                                    <a asp-page="./Delete" asp-route-id="@item.TaskId" class="table-action-link delete-link">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+
+@functions {
+    public string GetStatusClass(string? status)
+    {
+        return status?.ToLower() switch
+        {
+            "completed" => "status-completed",
+            "in progress" => "status-progress",
+            "not started" => "status-not-started",
+            "missing" => "status-missing",
+            _ => "status-default"
+        };
+    }
+
+    public string GetPriorityClass(string? priority)
+    {
+        return priority?.ToLower() switch
+        {
+            "high" => "priority-high",
+            "medium" => "priority-medium",
+            "low" => "priority-low",
+            _ => "priority-default"
+        };
+    }
 }
-    </tbody>
-</table>

@@ -4,26 +4,40 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Amethyst</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="icon" type="image/png" href="~/favicon.png" asp-append-version="true" />
+    <link rel="shortcut icon" href="~/favicon.png" asp-append-version="true" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Amethyst.styles.css" asp-append-version="true" />
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">Amethyst</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+        <nav class="navbar navbar-expand-lg amethyst-navbar">
+            <div class="container amethyst-navbar-inner">
+
+                <!-- Brand / Logo -->
+                <a class="navbar-brand amethyst-brand" asp-area="" asp-page="/Index">
+                    <img src="~/images/amethyst-logo.png" alt="Amethyst logo" class="amethyst-logo" />
+                    <span>Amethyst</span>
+                </a>
+
+                <!-- Mobile Toggle -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#amethystNavbar"
+                        aria-controls="amethystNavbar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+
+                <!-- Navbar Content -->
+                <div class="collapse navbar-collapse" id="amethystNavbar">
+
+                    <ul class="navbar-nav amethyst-nav-links mx-auto">
+
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Dashboard</a>
+                            <a class="nav-link" asp-area="" asp-page="/Index">Dashboard</a>
                         </li>
 
-                        @* ---------------- Admin Taskbar -------------- *@
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="dropdown nav-item">
@@ -37,7 +51,6 @@
                             </li>
                         }
 
-                        @* ---------------- Student Taskbar -------------- *@
                         @if (User.IsInRole("Student"))
                         {
                             <li class="dropdown nav-item">
@@ -49,31 +62,48 @@
                                     <li><a class="dropdown-item" asp-area="" asp-page="/Task_Pages/Index">View Tasks</a></li>
                                 </ul>
                             </li>
-                            <li><a class="nav-link text-dark" asp-area="" asp-page="/Courses/Index">My Courses</a></li>
-                            <li><a class="nav-link text-dark" asp-area="" asp-page="/Reminders/Index">Reminders</a></li>
-                            <li><a class="nav-link text-dark" asp-area="" asp-page="/Study_Session/Index">Study Sessions</a></li>
-                            @* Temporarily a dead link below *@
-                            <li><a class="nav-link text-dark" asp-area="" asp-page="">Statistics</a></li>
-                            @* Link to edit their profile information *@
-                            <li><a class="nav-link text-dark" asp-area="" asp-page="">My Profile</a></li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/Courses/Index">My Courses</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/Reminders/Index">Reminders</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/Study_Session/Index">Study Sessions</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="">Statistics</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="">My Profile</a>
+                            </li>
                         }
 
-                        @* ---------------- User Taskbar -------------- *@
                         @if (User.IsInRole("User"))
                         {
-                            <li><a class="nav-link text-dark" asp-area="" asp-page="/Task_Pages/Index">View Tasks</a></li>
-                            <li><a class="nav-link text-dark" asp-area="" asp-page="/Reminders/Index">Reminders</a></li>
-                            @* Temporarily a dead link below *@
-                            <li><a class="nav-link text-dark" asp-area="" asp-page="">Statistics</a></li>
-                            @* Link to edit their profile information *@
-                            <li><a class="nav-link text-dark" asp-area="" asp-page="">My Profile</a></li>
-                        }
-
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <li><a class="nav-link text-dark" asp-area="" asp-page="/Identity/Pages/Account/Logout">Logout</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/Task_Pages/Index">View Tasks</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/Reminders/Index">Reminders</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="">Statistics</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="">My Profile</a>
+                            </li>
                         }
                     </ul>
+
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        <div class="amethyst-logout-wrap">
+                            <a class="amethyst-logout-btn" asp-area="" asp-page="/Identity/Pages/Account/Logout">Logout</a>
+                        </div>
+                    }
+
                 </div>
             </div>
         </nav>
