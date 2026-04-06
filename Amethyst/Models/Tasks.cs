@@ -41,4 +41,3 @@ namespace Amethyst.Models
         public Profile? Profile { get; set; }
     }
 }
-

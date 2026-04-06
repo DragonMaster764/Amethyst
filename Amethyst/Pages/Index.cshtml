@@ -1,10 +1,159 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome, @(User.Identity.Name)</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="dashboard-page">
+
+    <!-- Welcome Banner -->
+    <section class="dashboard-banner amethyst-panel">
+        <div class="dashboard-banner-text">
+            <h1>
+                Welcome, @(User.Identity?.Name?.Split('@')[0] ?? "Micah")!
+            </h1>
+            <p>Let’s make today productive!</p>
+        </div>
+
+        <div class="dashboard-banner-action">
+            <a href="#" class="amethyst-btn-primary">Chat with Amy</a>
+        </div>
+    </section>
+
+    <!-- Summary Cards -->
+    <section class="dashboard-summary amethyst-panel">
+        <div class="summary-grid">
+
+            <div class="summary-card amethyst-card">
+                <h3>Assignments Due<br />This Week</h3>
+                <div class="summary-value">2</div>
+                <a href="#" class="summary-link">View</a>
+            </div>
+
+            <div class="summary-card amethyst-card">
+                <h3>Tasks Due Today</h3>
+                <div class="summary-value">3</div>
+                <a href="#" class="summary-link">View</a>
+            </div>
+
+            <div class="summary-card amethyst-card">
+                <h3>Active Courses</h3>
+                <div class="summary-value">5</div>
+                <a href="#" class="summary-link">View</a>
+            </div>
+
+            <div class="summary-card amethyst-card">
+                <h3>Upcoming Study<br />Sessions</h3>
+                <div class="study-session-list">
+                    <div class="session-pill">Sat 3:00 pm - 5:00 pm</div>
+                    <div class="session-pill">Tue 9:15 am - 10:30 am</div>
+                </div>
+                <a href="#" class="summary-link">View</a>
+            </div>
+
+            <div class="summary-card amethyst-card">
+                <h3>Reminders</h3>
+                <div class="summary-value">3</div>
+                <a href="#" class="summary-link">View</a>
+            </div>
+
+            <div class="summary-card amethyst-card progress-card">
+                <h3>Weekly Progress</h3>
+                <div class="progress-circle">
+                    <span>78%</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="dashboard-main amethyst-panel">
+        <div class="dashboard-main-grid">
+
+            <!-- Upcoming Assignments -->
+            <div class="dashboard-block amethyst-card">
+                <h2>Upcoming Assignments</h2>
+
+                <div class="assignment-grid">
+                    <div class="assignment-item lilac-box">
+                        <p><strong>Assignment 1</strong></p>
+                        <p>Course A</p>
+                        <p>Due: 4/7/26</p>
+                        <a href="#" class="mini-view">View</a>
+                    </div>
+
+                    <div class="assignment-item lilac-box">
+                        <p><strong>Assignment 2</strong></p>
+                        <p>Course B</p>
+                        <p>Due: 4/10/26</p>
+                        <a href="#" class="mini-view">View</a>
+                    </div>
+
+                    <div class="assignment-item lilac-box">
+                        <p><strong>Assignment 3</strong></p>
+                        <p>Course B</p>
+                        <p>Due: 4/22/26</p>
+                        <a href="#" class="mini-view">View</a>
+                    </div>
+
+                    <div class="assignment-item lilac-box">
+                        <p><strong>Assignment 4</strong></p>
+                        <p>Course C</p>
+                        <p>Due: 5/1/26</p>
+                        <a href="#" class="mini-view">View</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Today's Tasks -->
+            <div class="dashboard-block amethyst-card">
+                <h2>Today’s Tasks</h2>
+
+                <div class="task-list">
+                    <div class="task-row">
+                        <input type="checkbox" />
+                        <span>Task 1 - Blah Blah Blah</span>
+                    </div>
+                    <div class="task-row">
+                        <input type="checkbox" />
+                        <span>Task 2 - Blah Blah Blah</span>
+                    </div>
+                    <div class="task-row">
+                        <input type="checkbox" />
+                        <span>Task 3 - Blah Blah Blah</span>
+                    </div>
+                    <div class="task-row">
+                        <input type="checkbox" />
+                        <span>Task 4 - Blah Blah Blah</span>
+                    </div>
+                    <div class="task-row">
+                        <input type="checkbox" />
+                        <span>Task 5 - Blah Blah Blah</span>
+                    </div>
+                    <div class="task-row">
+                        <input type="checkbox" />
+                        <span>Task 6 - Blah Blah Blah</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Study Music -->
+            <div class="dashboard-block amethyst-card study-music-card">
+                <div class="study-music-header">
+                    <h2>Study Music</h2>
+                    <div class="study-music-helper">
+                        <p>Need help choosing study music?</p>
+                        <a href="#" class="helper-btn">Open Playlist Helper</a>
+                    </div>
+                </div>
+
+                <div class="music-player-mockup">
+                    <img src="~/images/spotify-mockup.png" alt="Study playlist player" />
+                </div>
+            </div>
+
+        </div>
+    </section>
+
 </div>

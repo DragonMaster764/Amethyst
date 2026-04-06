@@ -2,59 +2,120 @@
 @model Amethyst.Pages.Courses.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Courses";
 }
 
-<h1>Index</h1>
+<link rel="stylesheet" href="~/css/courses.css" asp-append-version="true" />
 
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
+<div class="courses-page">
 
-@if (!Model.CourseGroups.Any())
-{
-    <p>No courses found.</p>
-}
-else
-{
-    var groupIndex = 0;
-
-    foreach (var group in Model.CourseGroups)
-    {
-        var collapseId = $"collapseGroup{groupIndex}";
-        groupIndex++;
-
-        @* Remove the styling later and replace it in CSS *@
-        <div style="border: 2px solid black;" class="course-group" aria-labelledby="group-@group.Term-@group.AcademicYear">
-
-            <h3 class="mb-2"
-                data-bs-toggle="collapse"
-                data-bs-target="@( "#" + collapseId )"
-                aria-controls="@collapseId"
-                aria-expanded="false"
-                role="button"
-                style="cursor:pointer;"
-                id="group-@group.Term-@group.AcademicYear"
-            >
-                @group.GroupTitle
-            </h3>
-
-            <div class="collapse" id="@collapseId">
-                @foreach (var item in group.Courses)
-                {
-                    <div style="border: 2px solid @item.ColorLabel;">
-                        <h4>@item.Title</h4>
-                        <h4>Instructor: @item.InstructorName</h4>
-                        <h4>Meeting Time: @item.MeetingTime</h4>
-
-                        @* Add button to view related assignments?*@
-
-                        <a asp-page="./Edit" asp-route-id="@item.CourseId">Edit</a> |
-                        <a asp-page="./Details" asp-route-id="@item.CourseId">Details</a> |
-                        <a asp-page="./Delete" asp-route-id="@item.CourseId">Delete</a>
-                    </div>
-                }
-            </div>
+    <section class="courses-header amethyst-panel">
+        <div class="courses-header-text">
+            <h1>My Courses</h1>
+            <p>Organize your semester, instructors, and meeting times in one place.</p>
         </div>
+
+        <div class="courses-header-action">
+            <a asp-page="Create" class="amethyst-btn-primary">Create New</a>
+        </div>
+    </section>
+
+    @if (!Model.CourseGroups.Any())
+    {
+        <section class="courses-empty amethyst-panel">
+            <div class="amethyst-card empty-card">
+                <h2>No courses found yet</h2>
+                <p>Add your first course to start building your semester view.</p>
+                <a asp-page="Create" class="amethyst-btn-primary">Create Course</a>
+            </div>
+        </section>
     }
-}
+    else
+    {
+        var groupIndex = 0;
+
+        <section class="courses-groups">
+            @foreach (var group in Model.CourseGroups)
+            {
+                var collapseId = $"collapseGroup{groupIndex}";
+                groupIndex++;
+
+                <div class="course-group amethyst-panel" aria-labelledby="group-@group.Term-@group.AcademicYear">
+
+                    <button class="course-group-header"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="@( "#" + collapseId )"
+                            aria-controls="@collapseId"
+                            aria-expanded="true"
+                            id="group-@group.Term-@group.AcademicYear">
+                        <span class="group-title">@group.GroupTitle</span>
+                        <span class="group-toggle-text">View Courses</span>
+                    </button>
+
+                    <div class="collapse show" id="@collapseId">
+                        <div class="course-card-grid">
+                            @foreach (var item in group.Courses)
+                            {
+                                <div class="course-card amethyst-card">
+                                    <div class="course-card-top">
+                                        <div class="course-accent"
+                                             style="background-color:@(string.IsNullOrWhiteSpace(item.ColorLabel) ? "#B9A3E3" : item.ColorLabel);">
+                                        </div>
+
+                                        <div class="course-header-block">
+                                            <div class="course-title-row">
+                                                <h3>@item.Title</h3>
+                                                <span class="semester-pill">@group.GroupTitle</span>
+                                            </div>
+
+                                            <div class="course-meta-chips">
+                                                <span class="meta-chip neutral-chip">Course</span>
+
+                                                <span class="meta-chip color-chip"
+                                                      style="background-color:@(string.IsNullOrWhiteSpace(item.ColorLabel) ? "#EFE6FC" : item.ColorLabel + "22");
+                                                             border: 1px solid @(string.IsNullOrWhiteSpace(item.ColorLabel) ? "#B9A3E3" : item.ColorLabel);
+                                                             color:@(string.IsNullOrWhiteSpace(item.ColorLabel) ? "#7C5BA7" : item.ColorLabel);">
+                                                    Theme Color
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="course-details-grid">
+                                        <div class="course-detail-box">
+                                            <span class="detail-label">Instructor</span>
+                                            <span class="detail-value @(string.IsNullOrWhiteSpace(item.InstructorName) ? "detail-empty" : "")">
+                                                @(string.IsNullOrWhiteSpace(item.InstructorName) ? "No instructor assigned" : item.InstructorName)
+                                            </span>
+                                        </div>
+
+                                        <div class="course-detail-box">
+                                            <span class="detail-label">Meeting Time</span>
+                                            <span class="detail-value @(item.MeetingTime == null ? "detail-empty" : "")">
+                                                @if (item.MeetingTime != null)
+                                                {
+                                                    @item.MeetingTime
+                                                }
+                                                else
+                                                {
+                                                    @:Time not set
+                                                }
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="course-actions">
+                                        <a asp-page="./Edit" asp-route-id="@item.CourseId" class="table-action-link">Edit</a>
+                                        <a asp-page="./Details" asp-route-id="@item.CourseId" class="table-action-link">Details</a>
+                                        <a asp-page="./Delete" asp-route-id="@item.CourseId" class="table-action-link delete-link">Delete</a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </section>
+    }
+</div>
