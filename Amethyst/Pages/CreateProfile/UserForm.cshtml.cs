@@ -42,7 +42,7 @@ namespace Amethyst.Pages.CreateProfile
             // ------------------------
 
             // --- PROFILE EXISTS GUARD ---
-            var existingProfile = await _context.Profile
+            var existingProfile = await _context.Profiles
                 .FirstOrDefaultAsync(p => p.ProfileId == user.Id);
 
             if (existingProfile != null)
@@ -59,7 +59,7 @@ namespace Amethyst.Pages.CreateProfile
             // Regular users must have AcademicYear = null
             InputProfile.AcademicYear = null;
 
-            _context.Profile.Add(InputProfile);
+            _context.Profiles.Add(InputProfile);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("/CreateProfile/ProfileMade");
