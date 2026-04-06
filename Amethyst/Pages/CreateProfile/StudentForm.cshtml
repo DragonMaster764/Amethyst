@@ -1,4 +1,72 @@
 ﻿@page
-@model Amethyst.Pages.CreateProfile.IndexModel
+@model Amethyst.Pages.CreateProfile.StudentFormModel
 @{
 }
+<div class="studentForm">
+
+    <form method="post" class="_studentForm">
+
+        <input type="hidden" id="timezoneField" asp-for="InputProfile.Timezone" />
+
+        <h6>What would you like your username to be?:</h6>
+        <input asp-for="InputProfile.DisplayName" placeholder="User Name" /><br><br>
+
+        <h6>Please type your nickname below:</h6>
+        <input asp-for="InputProfile.Name" placeholder="Name / Nickname" /><br><br>
+
+        <h6>Select your current academic school year:</h6>
+        <input asp-for="InputProfile.AcademicYear" placeholder="Academic Year" /><br><br>
+
+        <h6>Please select your notification preferences below:</h6>
+        <select asp-for="InputProfile.NotificationPreferences">
+            <option value="">-- Select Preference --</option>
+            <option value="instant">Instant</option>
+            <option value="daily_digest">Daily Digest</option>
+            <option value="urgent-only">Urgent Only</option>
+            <option value="none">No Notifications</option>
+        </select><br><br>
+
+        <h6>Quiet Hours</h6>
+        <p>During quiet hours, you are to not be disturbed...</p>
+
+        <h6>When would you like your quiet hours to start?:</h6>
+        <input asp-for="InputProfile.QuietHoursStart" type="time" /><br><br>
+
+        <h6>When would you like your quiet hours to end?:</h6>
+        <input asp-for="InputProfile.QuietHoursEnd" type="time" /><br><br>
+
+        <button type="submit">Okay</button>
+
+    </form>
+
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            const tzField = document.getElementById("timezoneField");
+            if (tzField && !tzField.value) {
+                tzField.value = tz;
+            }
+        });
+    </script>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
