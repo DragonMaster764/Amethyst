@@ -3,9 +3,11 @@ using Amethyst.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Amethyst.Pages.CreateProfile
 {
+    [Authorize]
     public class UserTypeModel : PageModel
     {
         private readonly ApplicationDbContext _context;

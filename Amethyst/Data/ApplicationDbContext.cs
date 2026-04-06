@@ -118,11 +118,11 @@ namespace Amethyst.Data
                 entity.Property(e => e.QuietHoursEnd).HasColumnType("time").HasColumnName("quiet_hours_end");
 
                 // 1:1 relationship with AspNetUsers (IdentityUser)
-                entity.HasOne<IdentityUser>()
-                      .WithOne()
-                      .HasForeignKey<Profile>(p => p.ProfileId)
-                      .OnDelete(DeleteBehavior.Cascade)
-                      .HasConstraintName("FK_Profile_Users");
+                //entity.HasOne<IdentityUser>()
+                //      .WithOne()
+                //      .HasForeignKey<Profile>(p => p.ProfileId)
+                //      .OnDelete(DeleteBehavior.Cascade)
+                //      .HasConstraintName("FK_Profile_Users");
             });
 
             // --- COURSE CONFIGURATION ---

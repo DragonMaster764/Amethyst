@@ -4,10 +4,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace Amethyst.Pages.CreateProfile
 {
+    [Authorize]
     public class UserFormModel : PageModel
     {
         private readonly ApplicationDbContext _context;
@@ -24,24 +25,36 @@ namespace Amethyst.Pages.CreateProfile
 
         public void OnGet()
         {
+
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
+            // Validate model
             if (!ModelState.IsValid)
-                return Page();
+            {
+                var errors = ModelState
+                    .Where(x => x.Value != null && x.Value.Errors.Count > 0)
+                    .Select(x => $"{x.Key}: {string.Join(", ", x.Value!.Errors.Select(e => e.ErrorMessage))}")
+                    .ToList();
 
+                foreach (var error in errors)
+                {
+                    Console.WriteLine("MODEL ERROR: " + error);
+                }
+
+                throw new Exception("ModelState invalid: " + string.Join(" | ", errors));
+            }
+
+            // Get logged-in user
             var user = await _userManager.GetUserAsync(User);
 
-            // --- NULL USER GUARD ---
             if (user == null)
             {
-                // User is not logged in, redirect them to login
                 return RedirectToPage("/Account/Login", new { area = "Identity" });
             }
-            // ------------------------
 
-            // --- PROFILE EXISTS GUARD ---
+            // Check if profile already exists
             var existingProfile = await _context.Profiles
                 .FirstOrDefaultAsync(p => p.ProfileId == user.Id);
 
@@ -50,19 +63,34 @@ namespace Amethyst.Pages.CreateProfile
                 TempData["ProfileExists"] = "A profile already exists for your account.";
                 return RedirectToPage("/CreateProfile/EditProfile", new { id = user.Id });
             }
-            // ----------------------------
 
+            // Assign identity user ID as profile ID
             InputProfile.ProfileId = user.Id;
             InputProfile.UserCreationDate = DateTime.UtcNow;
             InputProfile.LastLoginTime = null;
 
-            // Regular users must have AcademicYear = null
+            // Regular users do not have academic year
             InputProfile.AcademicYear = null;
 
-            _context.Profiles.Add(InputProfile);
-            await _context.SaveChangesAsync();
+            // Ensure timezone is never null
+            if (string.IsNullOrWhiteSpace(InputProfile.Timezone))
+                InputProfile.Timezone = "UTC";
 
+            // Insert profile
+            try
+            {
+                _context.Profiles.Add(InputProfile);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Profile save failed: " + ex.Message, ex);
+            }
+
+            // Redirect to success page
             return RedirectToPage("/CreateProfile/ProfileMade");
         }
+
+
     }
 }
