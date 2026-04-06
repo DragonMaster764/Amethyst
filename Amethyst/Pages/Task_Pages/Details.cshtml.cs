@@ -19,7 +19,7 @@ namespace Amethyst.Pages.Task_Pages
             _context = context;
         }
 
-        public Tasks Tasks { get; set; } = default!;
+        public UserTask TaskItem { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -28,14 +28,14 @@ namespace Amethyst.Pages.Task_Pages
                 return NotFound();
             }
 
-            var tasks = await _context.Tasks.FirstOrDefaultAsync(m => m.TaskId == id);
+            var tasks = await _context.TaskItems.FirstOrDefaultAsync(m => m.TaskId == id);
             if (tasks == null)
             {
                 return NotFound();
             }
             else
             {
-                Tasks = tasks;
+                TaskItem = tasks;
             }
             return Page();
         }
