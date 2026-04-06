@@ -7,51 +7,60 @@
 
 <h1>Create</h1>
 
-<h4>Tasks</h4>
+<h4>UserTask</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="form-group">
-                <label asp-for="Tasks.ProfileId" class="control-label"></label>
-                <select asp-for="Tasks.ProfileId" class ="form-control" asp-items="ViewBag.ProfileId" ></select>
+                <label asp-for="TaskItem.ProfileId" class="control-label"></label>
+                <select asp-for="TaskItem.ProfileId" class="form-control" asp-items="ViewBag.ProfileId"></select>
             </div>
+
             <div class="form-group">
-                <label asp-for="Tasks.Title" class="control-label"></label>
-                <input asp-for="Tasks.Title" class="form-control" />
-                <span asp-validation-for="Tasks.Title" class="text-danger"></span>
+                <label asp-for="TaskItem.Title" class="control-label"></label>
+                <input asp-for="TaskItem.Title" class="form-control" />
+                <span asp-validation-for="TaskItem.Title" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="Tasks.DueAt" class="control-label"></label>
-                <input asp-for="Tasks.DueAt" class="form-control" />
-                <span asp-validation-for="Tasks.DueAt" class="text-danger"></span>
+                <label asp-for="TaskItem.DueAt" class="control-label"></label>
+                <input asp-for="TaskItem.DueAt" class="form-control" />
+                <span asp-validation-for="TaskItem.DueAt" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="Tasks.Status" class="control-label"></label>
-                <input asp-for="Tasks.Status" class="form-control" />
-                <span asp-validation-for="Tasks.Status" class="text-danger"></span>
+                <label asp-for="TaskItem.Status" class="control-label"></label>
+                <input asp-for="TaskItem.Status" class="form-control" />
+                <span asp-validation-for="TaskItem.Status" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="Tasks.Priority" class="control-label"></label>
-                <input asp-for="Tasks.Priority" class="form-control" />
-                <span asp-validation-for="Tasks.Priority" class="text-danger"></span>
+                <label asp-for="TaskItem.Priority" class="control-label"></label>
+                <input asp-for="TaskItem.Priority" class="form-control" />
+                <span asp-validation-for="TaskItem.Priority" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="Tasks.EstimatedMinutes" class="control-label"></label>
-                <input asp-for="Tasks.EstimatedMinutes" class="form-control" />
-                <span asp-validation-for="Tasks.EstimatedMinutes" class="text-danger"></span>
+                <label asp-for="TaskItem.EstimatedMinutes" class="control-label"></label>
+                <input asp-for="TaskItem.EstimatedMinutes" class="form-control" />
+                <span asp-validation-for="TaskItem.EstimatedMinutes" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="Tasks.CreatedAt" class="control-label"></label>
-                <input asp-for="Tasks.CreatedAt" class="form-control" />
-                <span asp-validation-for="Tasks.CreatedAt" class="text-danger"></span>
+                <label asp-for="TaskItem.CreatedAt" class="control-label"></label>
+                <input asp-for="TaskItem.CreatedAt" class="form-control" />
+                <span asp-validation-for="TaskItem.CreatedAt" class="text-danger"></span>
             </div>
+
             <div class="form-group">
-                <label asp-for="Tasks.UpdatedAt" class="control-label"></label>
-                <input asp-for="Tasks.UpdatedAt" class="form-control" />
-                <span asp-validation-for="Tasks.UpdatedAt" class="text-danger"></span>
+                <label asp-for="TaskItem.UpdatedAt" class="control-label"></label>
+                <input asp-for="TaskItem.UpdatedAt" class="form-control" />
+                <span asp-validation-for="TaskItem.UpdatedAt" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

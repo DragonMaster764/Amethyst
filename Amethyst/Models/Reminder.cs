@@ -25,6 +25,6 @@ namespace Amethyst.Models
 
         public Assignment Assignment { get; set; }
 
-        public Tasks Task { get; set; }
+        public UserTask TaskItem { get; set; }
     }
 }
