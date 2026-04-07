@@ -17,7 +17,7 @@ namespace Amethyst.Data
 
         public DbSet<Assignment> Assignments { get; set; }
         public DbSet<Course> Courses { get; set; }
-        public DbSet<Course> Profile { get; set; }
+        public DbSet<Profile> Profiles { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -29,7 +29,7 @@ namespace Amethyst.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Profile>().Ignore(p => p.User);
+            //modelBuilder.Entity<Profile>().Ignore(p => p.User);
             modelBuilder.Entity<UserTask>().ToTable("Tasks");
             modelBuilder.Entity<Profile>().ToTable("Profile");
 
@@ -40,12 +40,12 @@ namespace Amethyst.Data
                 .HasPrincipalKey(p => p.ProfileId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Profile>()
-                .HasOne(p => p.User)
-                .WithOne()
-                .HasForeignKey<Profile>(p => p.ProfileId)
-                .HasPrincipalKey<IdentityUser>(u => u.Id)
-                .OnDelete(DeleteBehavior.Restrict);
+            //modelBuilder.Entity<Profile>()
+            //    .HasOne(p => p.User)
+            //    .WithOne()
+            //    .HasForeignKey<Profile>(p => p.ProfileId)
+            //    .HasPrincipalKey<IdentityUser>(u => u.Id)
+            //    .OnDelete(DeleteBehavior.Restrict);
 
             // Reminder table configuration
             modelBuilder.Entity<Reminder>()
@@ -137,11 +137,11 @@ namespace Amethyst.Data
                 entity.Property(e => e.QuietHoursEnd).HasColumnType("time").HasColumnName("quiet_hours_end");
 
                 // 1:1 relationship with AspNetUsers (IdentityUser)
-                entity.HasOne<IdentityUser>()
-                      .WithOne()
-                      .HasForeignKey<Profile>(p => p.ProfileId)
-                      .OnDelete(DeleteBehavior.Cascade)
-                      .HasConstraintName("FK_Profile_Users");
+                //entity.HasOne<IdentityUser>()
+                //      .WithOne()
+                //      .HasForeignKey<Profile>(p => p.ProfileId)
+                //      .OnDelete(DeleteBehavior.Cascade)
+                //      .HasConstraintName("FK_Profile_Users");
             });
 
             // --- COURSE CONFIGURATION ---
