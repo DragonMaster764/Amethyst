@@ -148,7 +148,8 @@ header {
 .amethyst-navbar-inner {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  justify-content: space-between;
+  gap: 1.25rem;
 }
 
 .amethyst-brand {
@@ -180,7 +181,9 @@ header {
 .amethyst-nav-links {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.15rem;
+  width: auto;
+  flex: 0 1 auto;
 }
 
 .amethyst-nav-links .nav-link {
@@ -254,8 +257,9 @@ header {
 
 @media (max-width: 991.98px) {
   .amethyst-navbar {
-    padding: 1rem;
-  }
+  padding: 0.9rem 1.4rem;
+  min-height: 92px;
+}
 
   .amethyst-brand {
     font-family: var(--font-display);
@@ -851,4 +855,72 @@ textarea,
 .profile-chip,
 .time-pill {
   font-family: var(--font-body);
+}
+.amethyst-navbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+.amethyst-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  width: auto;
+  flex: 0 1 auto;
+}
+
+.amethyst-logout-wrap {
+  display: flex;
+  align-items: center;
+  margin-left: 2rem;
+  flex-shrink: 0;
+}
+
+.amethyst-logout-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #8a68bc 0%, #7c5ba7 100%);
+  color: white !important;
+  font-weight: 800;
+  font-size: 1rem;
+  padding: 0.85rem 1.45rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  box-shadow: 0 10px 18px rgba(124, 91, 167, 0.18);
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.amethyst-logout-btn:hover {
+  background: linear-gradient(180deg, #6f4d9b 0%, #5e3f87 100%);
+  color: white !important;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 20px rgba(124, 91, 167, 0.24);
+}
+.summary-card {
+  min-height: 215px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+  padding: 1rem 1rem 0.9rem;
+}
+
+.no-action-card {
+  justify-content: center;
+  gap: 1rem;
+}
+
+.no-action-card h3 {
+  margin-bottom: 0;
+}
+
+.no-action-card .summary-value {
+  margin: 0;
+}
+.summary-link-placeholder {
+  visibility: hidden;
 }
