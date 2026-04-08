@@ -81,7 +81,7 @@
         <div class="card shadow-sm border-0 rounded-4 mt-4">
             <div class="card-body p-4">
                 <h5 class="card-title mb-3">🎧 Your Curated Playlist</h5>
-                <p class="card-text" style="white-space: pre-wrap;">@Model.PlaylistResult</p>
+                <p class="card-text">@Html.Raw(Model.PlaylistResult)</p>
             </div>
         </div>
     }

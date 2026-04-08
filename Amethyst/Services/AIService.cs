@@ -92,17 +92,17 @@ namespace Amethyst.Services
 
             var prompt = $"""
                 You are a music curator assistant. A student is looking for study songs that match how they feel.
-        
+
                 Below is a JSON array of available songs from our database. You MUST only recommend songs from this list — do not invent or suggest songs that are not in it.
-        
+
                 Available songs:
                 {songsJson}
-        
+
                 The student says: "{userMoodInput}"
-        
+
                 Based on their mood and preferences, recommend a curated playlist by selecting songs from the list above.
                 For each song you pick, briefly explain (1 sentence) why it fits their mood.
-                Format your response as a numbered list. End with a short encouraging note for their study session.
+                Format your response as an HTML ordered list (`<ol>`). Each song should be in `<li>` with the song title in `<strong>` tags. End with a short encouraging note in a `<p>`.
                 """;
 
             var payload = new
