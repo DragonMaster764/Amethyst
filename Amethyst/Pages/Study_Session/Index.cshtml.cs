@@ -25,7 +25,8 @@ namespace Amethyst.Pages.Study_Session
         {
             StudySession = await _context.StudySessions
                 .Include(s => s.Course)
-                .Include(s => s.Profile).ToListAsync();
+                .Include(s => s.Profile)
+                .ToListAsync();
         }
     }
 }

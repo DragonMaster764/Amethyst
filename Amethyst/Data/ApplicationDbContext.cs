@@ -61,15 +61,15 @@ namespace Amethyst.Data
             .HasCheckConstraint("CK_Student_Grad_Year",
              "graduation_year BETWEEN 1900 AND 3000");
 
-            modelBuilder.Entity<StudySession>()
+            modelBuilder.Entity<StudySession>().ToTable("Study_Session")
             .HasCheckConstraint("CK_End_Time",
             "end_time IS NULL OR end_time >= start_time");
 
-            modelBuilder.Entity<StudySession>()
+            modelBuilder.Entity<StudySession>().ToTable("Study_Session")
             .HasCheckConstraint("CK_Planned_Min",
             "planned_minutes IS NULL OR planned_minutes BETWEEN 0 AND 360");
 
-            modelBuilder.Entity<StudySession>()
+            modelBuilder.Entity<StudySession>().ToTable("Study_Session")
             .HasCheckConstraint("CK_Actual_Min",
             "actual_minutes IS NULL OR actual_minutes BETWEEN 0 AND 360");
 
