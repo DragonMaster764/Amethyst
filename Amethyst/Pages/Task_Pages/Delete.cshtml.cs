@@ -20,7 +20,7 @@ namespace Amethyst.Pages.Task_Pages
         }
 
         [BindProperty]
-        public Tasks Tasks { get; set; } = default!;
+        public UserTask TaskItem { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -29,7 +29,7 @@ namespace Amethyst.Pages.Task_Pages
                 return NotFound();
             }
 
-            var tasks = await _context.Tasks.FirstOrDefaultAsync(m => m.TaskId == id);
+            var tasks = await _context.TaskItems.FirstOrDefaultAsync(m => m.TaskId == id);
 
             if (tasks == null)
             {
@@ -37,7 +37,7 @@ namespace Amethyst.Pages.Task_Pages
             }
             else
             {
-                Tasks = tasks;
+                TaskItem = tasks;
             }
             return Page();
         }
@@ -49,11 +49,11 @@ namespace Amethyst.Pages.Task_Pages
                 return NotFound();
             }
 
-            var tasks = await _context.Tasks.FindAsync(id);
+            var tasks = await _context.TaskItems.FindAsync(id);
             if (tasks != null)
             {
-                Tasks = tasks;
-                _context.Tasks.Remove(Tasks);
+                TaskItem = tasks;
+                _context.TaskItems.Remove(TaskItem);
                 await _context.SaveChangesAsync();
             }
 

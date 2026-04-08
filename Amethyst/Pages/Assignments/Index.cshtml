@@ -2,101 +2,142 @@
 @model Amethyst.Pages.Assignments.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Assignments";
 }
 
-<h1>Index</h1>
+<link rel="stylesheet" href="~/css/assignments.css" asp-append-version="true" />
 
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Assignment[0].Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Assignment[0].Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Assignment[0].DueDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Assignment[0].Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Assignment[0].Priority)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Assignment[0].EstimatedMinutes)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Assignment[0].Points)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Assignment[0].TotalPoints)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Assignment[0].RawPercentage)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Assignment[0].Grade)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Assignment[0].UpdatedTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Assignment[0].Course)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.Assignment) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DueDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Priority)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EstimatedMinutes)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Points)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TotalPoints)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RawPercentage)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Grade)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UpdatedTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Course.ProfileId)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.AssignmentId">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.AssignmentId">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.AssignmentId">Delete</a>
-            </td>
-        </tr>
+<div class="assignments-page">
+
+    <!-- Header -->
+    <section class="assignments-header amethyst-panel">
+        <div class="assignments-header-text">
+            <h1>Assignments</h1>
+            <p>Track deadlines, priorities, and scores in one place.</p>
+        </div>
+
+        <div class="assignments-header-action">
+            <a asp-page="Create" class="amethyst-btn-primary">Create New</a>
+        </div>
+    </section>
+
+    @if (!Model.Assignment.Any())
+    {
+        <section class="assignments-empty amethyst-panel">
+            <div class="amethyst-card assignments-empty-card">
+                <h2>No assignments yet</h2>
+                <p>Add your first assignment to get started.</p>
+                <a asp-page="Create" class="amethyst-btn-primary">Create Assignment</a>
+            </div>
+        </section>
+    }
+    else
+    {
+        <!-- Stats -->
+        <section class="assignments-summary amethyst-panel">
+            <div class="assignments-summary-grid">
+                <div class="assignments-stat amethyst-card">
+                    <h3>Total Assignments</h3>
+                    <div class="assignments-stat-value">@Model.Assignment.Count</div>
+                </div>
+
+                <div class="assignments-stat amethyst-card">
+                    <h3>Completed</h3>
+                    <div class="assignments-stat-value">
+                        @Model.Assignment.Count(a => a.Status != null && a.Status.ToLower() == "completed")
+                    </div>
+                </div>
+
+                <div class="assignments-stat amethyst-card">
+                    <h3>Due Soon</h3>
+                    <div class="assignments-stat-value">
+                        @Model.Assignment.Count(a => a.DueDate.HasValue && a.DueDate.Value >= DateTime.Now && a.DueDate.Value <= DateTime.Now.AddDays(7))
+                    </div>
+                </div>
+
+                <div class="assignments-stat amethyst-card">
+                    <h3>Average Grade</h3>
+                    <div class="assignments-stat-value">
+                        @{
+                            var gradedAssignments = Model.Assignment
+                                .Where(a => a.RawPercentage.HasValue && a.RawPercentage.Value > 0)
+                                .ToList();
+                        }
+
+                        @if (gradedAssignments.Any())
+                        {
+                            @(Math.Round(gradedAssignments.Average(a => a.RawPercentage ?? 0) * 100) + "%")
+                        }
+                        else
+                        {
+                            @:--
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cards -->
+        <section class="assignments-grid-wrap amethyst-panel">
+            <div class="assignments-grid">
+                @foreach (var item in Model.Assignment)
+                {
+                    var dueText = item.DueDate.HasValue
+                        ? item.DueDate.Value.ToString("M/d/yy | h:mm tt").ToLower()
+                        : "--";
+
+                    var minutesText = item.EstimatedMinutes.HasValue
+                        ? $"{item.EstimatedMinutes.Value} mins"
+                        : "-- mins";
+
+                    var priorityText = !string.IsNullOrWhiteSpace(item.Priority)
+                        ? item.Priority
+                        : "No Priority";
+
+                    var scoreText = $"{(item.Points?.ToString() ?? "-")}/{(item.TotalPoints?.ToString() ?? "-")}";
+
+                    <div class="assignment-card lilac-card">
+                        <div class="assignment-card-content">
+                            <h3>@item.Title</h3>
+
+                            <p class="assignment-due">
+                                Due : @dueText
+                            </p>
+
+                            <div class="assignment-meta">
+                                <span class="time-pill">@minutesText</span>
+                                <span class="priority-pill @GetPriorityClass(item.Priority)">@priorityText</span>
+                            </div>
+
+                            <div class="assignment-bottom">
+                                <span class="assignment-score">@scoreText</span>
+
+                                <a asp-page="./Details" asp-route-id="@item.AssignmentId" class="mini-view-btn">
+                                    View
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="assignment-hover-actions">
+                            <a asp-page="./Edit" asp-route-id="@item.AssignmentId" class="table-action-link">Edit</a>
+                            <a asp-page="./Delete" asp-route-id="@item.AssignmentId" class="table-action-link delete-link">Delete</a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+</div>
+
+@functions {
+    public string GetPriorityClass(string? priority)
+    {
+        return priority?.ToLower() switch
+        {
+            "high" => "priority-high",
+            "medium" => "priority-medium",
+            "low" => "priority-low",
+            _ => "priority-default"
+        };
+    }
 }
-    </tbody>
-</table>

@@ -1,0 +1,22 @@
+﻿@page
+@model ConfirmEmailModel
+@{
+    ViewData["Title"] = "Confirm email";
+}
+
+
+
+<h1>@ViewData["Title"]</h1>
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+<br />
+<br />
+<br />
+<br />
+
+<h1 style="text-align:center">Click the button below to start creating your profile!</h1>
+
+<div class="button-row">
+    <form method="get" asp-page="/CreateProfile/UserType">
+        <button type="submit" class="account-btn student-btn">Create Profile</button>
+    </form>
+</div>

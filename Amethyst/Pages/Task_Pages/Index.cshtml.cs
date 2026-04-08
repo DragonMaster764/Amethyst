@@ -19,12 +19,12 @@ namespace Amethyst.Pages.Task_Pages
             _context = context;
         }
 
-        public IList<Tasks> Tasks { get;set; } = default!;
+        public IList<UserTask> TaskItems { get;set; } = default!;
 
         public async Task OnGetAsync()
         {
-            Tasks = await _context.Tasks
-                .Include(t => t.Profile).ToListAsync();
+            //TaskItems = await _context.TaskItems.Include(t => t.Profile).ToListAsync();
+            TaskItems = await _context.TaskItems.ToListAsync();
         }
     }
 }

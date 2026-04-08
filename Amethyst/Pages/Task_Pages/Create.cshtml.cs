@@ -26,7 +26,7 @@ namespace Amethyst.Pages.Task_Pages
         }
 
         [BindProperty]
-        public Tasks Tasks { get; set; } = default!;
+        public UserTask TaskItem { get; set; } = default!;
 
         // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
@@ -36,7 +36,7 @@ namespace Amethyst.Pages.Task_Pages
                 return Page();
             }
 
-            _context.Tasks.Add(Tasks);
+            _context.TaskItems.Add(TaskItem);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
