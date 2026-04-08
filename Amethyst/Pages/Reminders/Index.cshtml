@@ -5,7 +5,7 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>My Reminders</h1>
 
 <p>
     <a asp-page="Create">Create New</a>
@@ -41,13 +41,13 @@
                 @Html.DisplayFor(modelItem => item.RemindAt)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Profile.ProfileId)
+                @Html.DisplayFor(modelItem => item.Profile.DisplayName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Assignment.Priority)
+                @Html.DisplayFor(modelItem => item.Assignment.Title)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.TaskItem.TaskId)
+                @Html.DisplayFor(modelItem => item.TaskItem.Title)
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.ReminderId">Edit</a> |
