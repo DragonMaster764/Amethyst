@@ -908,19 +908,3 @@ textarea,
   text-align: center;
   padding: 1rem 1rem 0.9rem;
 }
-
-.no-action-card {
-  justify-content: center;
-  gap: 1rem;
-}
-
-.no-action-card h3 {
-  margin-bottom: 0;
-}
-
-.no-action-card .summary-value {
-  margin: 0;
-}
-.summary-link-placeholder {
-  visibility: hidden;
-}
