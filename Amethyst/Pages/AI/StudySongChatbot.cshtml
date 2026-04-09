@@ -1,0 +1,106 @@
+﻿@page
+@model Amethyst.Pages.StudySongChatbotModel
+@{
+    ViewData["Title"] = "Study Song Chatbot";
+}
+
+<div class="container py-5" style="max-width: 700px;">
+
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold">🎵 Study Song Chatbot</h1>
+        <p class="text-muted lead">
+            Tell us how you're feeling and we'll pick the perfect songs
+            from our collection to match your study session.
+        </p>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-body p-4">
+
+            <!-- Mood quick-pick badges -->
+            <p class="text-muted small mb-2">Quick picks — click to fill in:</p>
+            <div class="d-flex flex-wrap gap-2 mb-3" id="chips">
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill"
+                        onclick="appendChip('focused and calm')">
+                    Focused & calm
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill"
+                        onclick="appendChip('stressed, need to relax')">
+                    Stressed out
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill"
+                        onclick="appendChip('low energy, need motivation')">
+                    Low energy
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill"
+                        onclick="appendChip('happy and productive')">
+                    Happy & productive
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill"
+                        onclick="appendChip('pulling an all-nighter')">
+                    All-nighter mode
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill"
+                        onclick="appendChip('need something ambient with no lyrics')">
+                    No lyrics please
+                </button>
+            </div>
+
+            <form method="post" onsubmit="handleSubmit()">
+                <div class="mb-3">
+                    <label asp-for="UserMoodInput" class="form-label fw-semibold">
+                        Describe your mood or vibe
+                    </label>
+                    <textarea asp-for="UserMoodInput"
+                              class="form-control"
+                              rows="4"
+                              placeholder="e.g. I'm a bit anxious before an exam and need something calming but not too slow..."></textarea>
+                    <span asp-validation-for="UserMoodInput" class="text-danger small"></span>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                        <span id="btnText">Build My Playlist 🎶</span>
+                        <span id="spinner" class="spinner-border spinner-border-sm d-none" role="status"></span>
+                    </button>
+                </div>
+            </form>
+
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="alert alert-danger mt-3" role="alert">
+                    ⚠️ @Model.ErrorMessage
+                </div>
+            }
+
+        </div>
+    </div>
+
+    @if (Model.HasResult)
+    {
+        <div class="card shadow-sm border-0 rounded-4 mt-4">
+            <div class="card-body p-4">
+                <h5 class="card-title mb-3">🎧 Your Curated Playlist</h5>
+                <p class="card-text">@Html.Raw(Model.PlaylistResult)</p>
+            </div>
+        </div>
+    }
+
+</div>
+
+<script>
+    function appendChip(text) {
+        const ta = document.getElementById('UserMoodInput');
+        ta.value = ta.value ? ta.value + ', ' + text : text;
+        ta.focus();
+    }
+
+    function handleSubmit() {
+        const btn = document.getElementById('submitBtn');
+        const txt = document.getElementById('btnText');
+        const spin = document.getElementById('spinner');
+        btn.disabled = true;
+        txt.textContent = 'Building your playlist...';
+        spin.classList.remove('d-none');
+    }
+</script>
