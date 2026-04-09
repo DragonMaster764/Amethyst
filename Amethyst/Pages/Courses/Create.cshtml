@@ -49,7 +49,12 @@
             </div>
             <div class="form-group">
                 <label asp-for="Course.ColorLabel" class="control-label"></label>
-                <input asp-for="Course.ColorLabel" type="color" class="form-control form-control-color" />
+                <div class="input-group">
+                    <span class="input-group-text p-0" style="width:40px;">
+                        <input id="colorPicker" type="color" value='@(Model?.Course?.ColorLabel ?? "#000000")' style="border:0; width:100%; height:100%;" aria-hidden="true" />
+                    </span>
+                    <input asp-for="Course.ColorLabel" id="colorText" type="text" class="form-control" placeholder="#RRGGBB" pattern="^#([0-9A-Fa-f]{6})$" maxlength="7" />
+                </div>
                 <span asp-validation-for="Course.ColorLabel" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -65,4 +70,51 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        (function () {
+            const colorInput = document.getElementById('colorPicker');
+            const textInput = document.getElementById('colorText');
+
+            if (!colorInput || !textInput) return;
+
+            // Initialize inputs from model/value
+            const initialText = textInput.value && textInput.value.trim();
+            if (!initialText) {
+                // if model text empty, seed it from color picker value
+                textInput.value = (colorInput.value || '#000000').toUpperCase();
+            } else {
+                // if model text present and valid, set the color picker
+                if (/^#([0-9A-Fa-f]{6})$/.test(initialText)) {
+                    try { colorInput.value = initialText; } catch (e) { /* invalid value ignored */ }
+                }
+            }
+
+            // Color picker -> text box
+            colorInput.addEventListener('input', function () {
+                textInput.value = colorInput.value.toUpperCase();
+            });
+
+            // Text box -> color picker (only when valid hex)
+            textInput.addEventListener('input', function () {
+                const v = textInput.value.trim();
+                if (/^#([0-9A-Fa-f]{6})$/.test(v)) {
+                    try { colorInput.value = v; } catch (e) { }
+                }
+            });
+
+            // Normalize on blur: accept #RGB -> convert to #RRGGBB and uppercase
+            textInput.addEventListener('blur', function () {
+                let v = textInput.value.trim();
+                if (/^#([0-9A-Fa-f]{3})$/.test(v)) {
+                    v = '#' + v[1] + v[1] + v[2] + v[2] + v[3] + v[3];
+                }
+                if (/^#([0-9A-Fa-f]{6})$/.test(v)) {
+                    v = v.toUpperCase();
+                    textInput.value = v;
+                    try { colorInput.value = v; } catch (e) { }
+                }
+            });
+        })();
+    </script>
 }
