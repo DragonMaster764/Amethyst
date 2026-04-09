@@ -2,71 +2,214 @@
 @model Amethyst.Pages.Study_Session.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "My Study Sessions";
 }
 
-<h1>Index</h1>
+<link rel="stylesheet" href="~/css/study_sessions.css" asp-append-version="true" />
 
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.StudySession[0].StartTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StudySession[0].EndTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StudySession[0].PlannedMinutes)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StudySession[0].ActualMinutes)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StudySession[0].Notes)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StudySession[0].Profile)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StudySession[0].Course)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.StudySession) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PlannedMinutes)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ActualMinutes)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Notes)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Profile.DisplayName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Course.CourseId)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.SessionId">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.SessionId">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.SessionId">Delete</a>
-            </td>
-        </tr>
+<div class="study-sessions-page">
+    <div class="study-sessions-header amethyst-panel">
+        <div>
+            <h1>My Study Sessions</h1>
+            <p>Plan your study time and keep track of what you actually completed.</p>
+        </div>
+
+        <a asp-page="Create" class="amethyst-btn-primary">+ Create New Session</a>
+    </div>
+
+    @{
+        var minuteOptions = new int[] { 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 75, 90, 105, 120, 135, 150, 165, 180 };
+    }
+
+    @if (Model.StudySession == null || !Model.StudySession.Any())
+    {
+        <div class="study-empty-state amethyst-card">
+            <h2>No study sessions yet</h2>
+            <p>Create your first study session to get started.</p>
+        </div>
+    }
+    else
+    {
+        <div class="study-session-list">
+            @foreach (var item in Model.StudySession)
+            {
+                var isPast = item.EndTime.HasValue && item.EndTime.Value < DateTime.Now;
+
+                <section class="study-session-card amethyst-card @(isPast ? "past-session" : "upcoming-session")">
+                    <div class="study-session-topbar">
+                        <a asp-page="./Details" asp-route-id="@item.SessionId" class="session-view-btn">View</a>
+
+                        <div class="session-status-chip @(isPast ? "past-chip" : "upcoming-chip")">
+                            @(isPast ? "Past Session" : "Upcoming Session")
+                        </div>
+                    </div>
+
+                    <div class="study-session-title-wrap">
+                        <p class="session-kicker">Course</p>
+                        <h2 class="session-course">
+                            @(item.Course != null ? item.Course.Title : "General Study Session")
+                        </h2>
+                    </div>
+
+                    <div class="study-session-details">
+                        <div class="detail-box">
+                            <span class="detail-label detail-label-strong">Start Time</span>
+                            <span class="detail-value">@item.StartTime.ToString("MMM d, yyyy • h:mm tt")</span>
+                        </div>
+
+                        <div class="detail-box">
+                            <span class="detail-label detail-label-strong">End Time</span>
+                            <span class="detail-value">
+                                @(item.EndTime.HasValue ? item.EndTime.Value.ToString("MMM d, yyyy • h:mm tt") : "No end time")
+                            </span>
+                        </div>
+
+                        <div class="detail-box">
+                            <div class="detail-header-row">
+                                <span class="detail-label detail-label-strong">Planned Minutes</span>
+                                <button type="button" class="minutes-toggle-btn" onclick="toggleMinutesPicker('planned-@item.SessionId')">
+                                    Update
+                                </button>
+                            </div>
+
+                            <span class="detail-value detail-minutes-value">
+                                @(item.PlannedMinutes.HasValue ? $"{item.PlannedMinutes} minutes" : "Not set")
+                            </span>
+
+                            <div id="planned-@item.SessionId" class="minutes-picker-panel">
+                                <form method="post" asp-page-handler="UpdatePlannedMinutes" class="minutes-update-form">
+                                    <input type="hidden" name="SessionId" value="@item.SessionId" />
+                                    <input type="hidden" name="PlannedMinutesInput" id="planned-input-@item.SessionId" value="@(item.PlannedMinutes.HasValue ? item.PlannedMinutes.ToString() : "")" />
+
+                                    <div class="minutes-button-grid">
+                                        @foreach (var minute in minuteOptions)
+                                        {
+                                            <button type="button"
+                                                    class="minute-choice-btn"
+                                                    onclick="selectMinuteOption('planned-input-@item.SessionId', this, @minute)">
+                                                @minute min
+                                            </button>
+                                        }
+                                    </div>
+
+                                    <div class="minutes-picker-actions">
+                                        <button type="submit" class="session-save-btn">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="detail-box">
+                            <div class="detail-header-row">
+                                <span class="detail-label detail-label-strong">Actual Minutes</span>
+
+                                @if (isPast)
+                                {
+                                    <button type="button" class="minutes-toggle-btn" onclick="toggleMinutesPicker('actual-@item.SessionId')">
+                                        Update
+                                    </button>
+                                }
+                            </div>
+
+                            <span class="detail-value detail-minutes-value">
+                                @(item.ActualMinutes.HasValue ? $"{item.ActualMinutes} minutes" : "Not entered yet")
+                            </span>
+
+                            @if (isPast)
+                            {
+                                <div id="actual-@item.SessionId" class="minutes-picker-panel">
+                                    <form method="post" asp-page-handler="UpdateActualMinutes" class="minutes-update-form">
+                                        <input type="hidden" name="SessionId" value="@item.SessionId" />
+                                        <input type="hidden" name="ActualMinutesInput" id="actual-input-@item.SessionId" value="@(item.ActualMinutes.HasValue ? item.ActualMinutes.ToString() : "")" />
+
+                                        <div class="minutes-button-grid">
+                                            @foreach (var minute in minuteOptions)
+                                            {
+                                                <button type="button"
+                                                        class="minute-choice-btn"
+                                                        onclick="selectMinuteOption('actual-input-@item.SessionId', this, @minute)">
+                                                    @minute min
+                                                </button>
+                                            }
+                                        </div>
+
+                                        <div class="minutes-picker-actions">
+                                            <button type="submit" class="session-save-btn">Save</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="study-session-notes">
+                        <div class="notes-header-row">
+                            <span class="detail-label detail-label-strong">Session Notes</span>
+                        </div>
+
+                        <form method="post" asp-page-handler="UpdateNotes" class="notes-form">
+                            <input type="hidden" name="SessionId" value="@item.SessionId" />
+
+                            <textarea
+                                name="NotesInput"
+                                id="notes-@item.SessionId"
+                                class="session-notes-textarea"
+                                maxlength="500"
+                                rows="5"
+                                oninput="updateCharacterCount('notes-@item.SessionId', 'notes-count-@item.SessionId', 500)">@(item.Notes ?? "")</textarea>
+
+                            <div class="notes-footer-row">
+                                <span id="notes-count-@item.SessionId" class="notes-character-count">
+                                    @(500 - ((item.Notes ?? "").Length)) characters remaining
+                                </span>
+
+                                <button type="submit" class="session-save-btn">Save Notes</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="study-session-actions">
+                        <a asp-page="./Edit" asp-route-id="@item.SessionId" class="session-action-link">Edit</a>
+                        <a asp-page="./Delete" asp-route-id="@item.SessionId" class="session-action-link delete-link">Delete</a>
+                    </div>
+                </section>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function toggleMinutesPicker(panelId) {
+            const panel = document.getElementById(panelId);
+            if (panel) {
+                panel.classList.toggle('show');
+            }
+        }
+
+        function selectMinuteOption(hiddenInputId, buttonElement, minuteValue) {
+            const hiddenInput = document.getElementById(hiddenInputId);
+            if (hiddenInput) {
+                hiddenInput.value = minuteValue;
+            }
+
+            const grid = buttonElement.closest('.minutes-button-grid');
+            if (grid) {
+                const buttons = grid.querySelectorAll('.minute-choice-btn');
+                buttons.forEach(btn => btn.classList.remove('selected'));
+            }
+
+            buttonElement.classList.add('selected');
+        }
+
+        function updateCharacterCount(textareaId, counterId, maxLength) {
+            const textarea = document.getElementById(textareaId);
+            const counter = document.getElementById(counterId);
+
+            if (!textarea || !counter) return;
+
+            const remaining = maxLength - textarea.value.length;
+            counter.textContent = `${remaining} characters remaining`;
+        }
+    </script>
 }
-    </tbody>
-</table>
