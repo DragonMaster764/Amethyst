@@ -22,17 +22,24 @@
             <div class="form-group">
                 <span class="text-danger">*</span>
                 <label asp-for="Course.Term" class="control-label"></label>
-                <input asp-for="Course.Term" class="form-control" aria-required="true"/>
+                <select asp-for="Course.Term" class="form-control" aria-required="true">
+                    <option value="">-- Select Term --</option>
+                    <option value="Fall">Fall</option>
+                    <option value="Winter">Winter</option>
+                    <option value="Spring">Spring</option>
+                    <option value="Summer">Summer</option>
+                </select>
                 <span asp-validation-for="Course.Term" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Course.AcademicYear" class="control-label"></label>
-                <input asp-for="Course.AcademicYear" class="form-control" />
+                @* Possibly change below's code *@
+                <input asp-for="Course.AcademicYear" type="number" min="1900" max="9999" step="1" placeholder="YYYY" />
                 <span asp-validation-for="Course.AcademicYear" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Course.MeetingTime" class="control-label"></label>
-                <input asp-for="Course.MeetingTime" class="form-control" />
+                <input asp-for="Course.MeetingTime" type="time" class="form-control" asp-format="{0:hh\\:mm}" step="60" />
                 <span asp-validation-for="Course.MeetingTime" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -42,7 +49,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Course.ColorLabel" class="control-label"></label>
-                <input asp-for="Course.ColorLabel" class="form-control" />
+                <input asp-for="Course.ColorLabel" type="color" class="form-control form-control-color" />
                 <span asp-validation-for="Course.ColorLabel" class="text-danger"></span>
             </div>
             <div class="form-group">
