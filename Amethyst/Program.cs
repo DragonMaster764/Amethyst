@@ -2,6 +2,7 @@ using Amethyst.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Amethyst.Services;
+using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +16,14 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.Sign
     .AddDefaultTokenProviders();
 builder.Services.AddControllersWithViews();
 
+// Register MongoDB client from configuration so IMongoClient can be injected
+var mongoSettings = builder.Configuration.GetSection("MongoDBSettings");
+var mongoConnectionString = mongoSettings["ConnectionString"] ?? throw new InvalidOperationException("MongoDBSettings:ConnectionString is not configured.");
+builder.Services.AddSingleton<IMongoClient>(_ => new MongoClient(mongoConnectionString));
+
 builder.Services.AddSingleton<MongoDBServices>();
+
+builder.Services.AddHttpClient<AIService>();
 
 var app = builder.Build();
 
