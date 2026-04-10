@@ -2,61 +2,56 @@
 @model Amethyst.Pages.Study_Session.CreateModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Study Session";
 }
 
-<h1>Create</h1>
+<link rel="stylesheet" href="~/css/study_session_edit.css" asp-append-version="true" />
 
-<h4>StudySession</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
+<div class="study-edit-page">
+    <div class="study-edit-header amethyst-panel">
+        <div>
+            <p class="edit-kicker">Study Sessions</p>
+            <h1>Create Study Session</h1>
+            <p>Choose a course and schedule a new study session.</p>
+        </div>
+    </div>
+
+    <div class="study-edit-card amethyst-card">
+        <form method="post" class="study-edit-form">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="StudySession.ProfileId" class="control-label"></label>
-                <select asp-for="StudySession.ProfileId" class ="form-control" asp-items="ViewBag.ProfileId" ></select>
+
+            <div class="form-grid">
+                <div class="form-field full-width">
+                    <label asp-for="StudySession.CourseId" class="form-label">Course</label>
+                    <select asp-for="StudySession.CourseId" asp-items="Model.CourseOptions" class="form-select">
+                        <option value="">Select a course</option>
+                    </select>
+                    <span asp-validation-for="StudySession.CourseId" class="text-danger"></span>
+                </div>
+
+                <div class="form-field">
+                    <label asp-for="StudySession.StartTime" class="form-label">Start Time</label>
+                    <input asp-for="StudySession.StartTime" class="form-control" type="datetime-local" />
+                    <span asp-validation-for="StudySession.StartTime" class="text-danger"></span>
+                </div>
+
+                <div class="form-field">
+                    <label asp-for="StudySession.EndTime" class="form-label">End Time</label>
+                    <input asp-for="StudySession.EndTime" class="form-control" type="datetime-local" />
+                    <span asp-validation-for="StudySession.EndTime" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="StudySession.CourseId" class="control-label"></label>
-                <select asp-for="StudySession.CourseId" class ="form-control" asp-items="ViewBag.CourseId" ></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="StudySession.StartTime" class="control-label"></label>
-                <input asp-for="StudySession.StartTime" class="form-control" />
-                <span asp-validation-for="StudySession.StartTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StudySession.EndTime" class="control-label"></label>
-                <input asp-for="StudySession.EndTime" class="form-control" />
-                <span asp-validation-for="StudySession.EndTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StudySession.PlannedMinutes" class="control-label"></label>
-                <input asp-for="StudySession.PlannedMinutes" class="form-control" />
-                <span asp-validation-for="StudySession.PlannedMinutes" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StudySession.ActualMinutes" class="control-label"></label>
-                <input asp-for="StudySession.ActualMinutes" class="form-control" />
-                <span asp-validation-for="StudySession.ActualMinutes" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StudySession.Notes" class="control-label"></label>
-                <input asp-for="StudySession.Notes" class="form-control" />
-                <span asp-validation-for="StudySession.Notes" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+
+            <div class="study-edit-actions">
+                <button type="submit" class="amethyst-btn-primary action-btn">Save</button>
+                <a asp-page="./Index" class="amethyst-btn-secondary action-btn back-btn">Back to List</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-page="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

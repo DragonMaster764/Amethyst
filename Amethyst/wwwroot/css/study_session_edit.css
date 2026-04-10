@@ -1,0 +1,93 @@
+.study-edit-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding: 0.25rem 0 1rem;
+}
+
+.study-edit-header {
+  padding: 1.45rem 1.6rem;
+}
+
+.edit-kicker {
+  margin: 0 0 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--secondary-text-mauve);
+}
+
+.study-edit-header h1 {
+  margin-bottom: 0.3rem;
+  font-size: clamp(2.2rem, 4vw, 3rem);
+}
+
+.study-edit-header p:last-child {
+  margin: 0;
+  font-weight: 600;
+}
+
+.study-edit-card {
+  padding: 1.5rem;
+}
+
+.study-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+.study-edit-actions {
+  display: flex;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  margin-top: 0.25rem;
+}
+
+.action-btn {
+  min-width: 170px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.back-btn {
+  text-decoration: none;
+}
+
+@media (max-width: 767.98px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .study-edit-actions {
+    flex-direction: column;
+  }
+
+  .action-btn {
+    width: 100%;
+  }
+}
+.back-btn {
+  text-decoration: none;
+  border-radius: 999px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

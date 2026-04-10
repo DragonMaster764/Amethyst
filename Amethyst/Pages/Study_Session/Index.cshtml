@@ -37,7 +37,10 @@
 
                 <section class="study-session-card amethyst-card @(isPast ? "past-session" : "upcoming-session")">
                     <div class="study-session-topbar">
-                        <a asp-page="./Details" asp-route-id="@item.SessionId" class="session-view-btn">View</a>
+                        <div class="session-top-actions">
+                            <a asp-page="./Details" asp-route-id="@item.SessionId" class="session-view-btn">View</a>
+                            <a asp-page="./Edit" asp-route-id="@item.SessionId" class="session-modify-btn">Modify</a>
+                        </div>
 
                         <div class="session-status-chip @(isPast ? "past-chip" : "upcoming-chip")">
                             @(isPast ? "Past Session" : "Upcoming Session")
@@ -54,16 +57,40 @@
                             </div>
 
                             <div class="study-session-details">
-                                <div class="detail-box">
-                                    <span class="detail-label detail-label-strong">Start Time</span>
-                                    <span class="detail-value">@item.StartTime.ToString("MMM d, yyyy • h:mm tt")</span>
+                                <div class="detail-box time-detail-box">
+                                    <div class="time-box-layout">
+                                        <div class="time-box-left">
+                                            <span class="detail-label detail-label-strong">Start Time</span>
+                                            <span class="time-date">@item.StartTime.ToString("dddd, MMMM d, yyyy")</span>
+                                        </div>
+
+                                        <div class="time-box-right">
+                                            <span class="time-box-caption">Begins</span>
+                                            <span class="time-pill large">@item.StartTime.ToString("h:mm tt")</span>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div class="detail-box">
-                                    <span class="detail-label detail-label-strong">End Time</span>
-                                    <span class="detail-value">
-                                        @(item.EndTime.HasValue ? item.EndTime.Value.ToString("MMM d, yyyy • h:mm tt") : "No end time")
-                                    </span>
+                                <div class="detail-box time-detail-box">
+                                    @if (item.EndTime.HasValue)
+                                    {
+                                        <div class="time-box-layout">
+                                            <div class="time-box-left">
+                                                <span class="detail-label detail-label-strong">End Time</span>
+                                                <span class="time-date">@item.EndTime.Value.ToString("dddd, MMMM d, yyyy")</span>
+                                            </div>
+
+                                            <div class="time-box-right">
+                                                <span class="time-box-caption">Ends</span>
+                                                <span class="time-pill large">@item.EndTime.Value.ToString("h:mm tt")</span>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="detail-label detail-label-strong">End Time</span>
+                                        <span class="detail-value">No end time</span>
+                                    }
                                 </div>
 
                                 <div class="detail-box">
@@ -249,11 +276,6 @@
                                     </div>
                                 </form>
                             </div>
-
-                            <div class="study-session-actions">
-                                <a asp-page="./Edit" asp-route-id="@item.SessionId" class="session-action-link">Edit</a>
-                                <a asp-page="./Delete" asp-route-id="@item.SessionId" class="session-action-link delete-link">Delete</a>
-                            </div>
                         </div>
 
                         <aside class="pomodoro-panel" data-session-id="@item.SessionId">
@@ -355,6 +377,9 @@
                                 </div>
                             </div>
                         </aside>
+                    </div>
+                    <div class="study-session-actions">
+                        <a asp-page="./Delete" asp-route-id="@item.SessionId" class="session-action-link delete-link">Delete</a>
                     </div>
                 </section>
             }
