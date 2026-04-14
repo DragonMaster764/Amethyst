@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -12,9 +9,9 @@ namespace Amethyst.Pages.Reminders
 {
     public class DeleteModel : PageModel
     {
-        private readonly Amethyst.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public DeleteModel(Amethyst.Data.ApplicationDbContext context)
+        public DeleteModel(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -29,16 +26,19 @@ namespace Amethyst.Pages.Reminders
                 return NotFound();
             }
 
-            var reminder = await _context.Reminders.FirstOrDefaultAsync(m => m.ReminderId == id);
+            var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var reminder = await _context.Reminders
+                .Include(r => r.Assignment)
+                .Include(r => r.TaskItem)
+                .FirstOrDefaultAsync(r => r.ReminderId == id && r.ProfileId == loggedInUserId);
 
             if (reminder == null)
             {
                 return NotFound();
             }
-            else
-            {
-                Reminder = reminder;
-            }
+
+            Reminder = reminder;
             return Page();
         }
 
@@ -49,11 +49,14 @@ namespace Amethyst.Pages.Reminders
                 return NotFound();
             }
 
-            var reminder = await _context.Reminders.FindAsync(id);
+            var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var reminder = await _context.Reminders
+                .FirstOrDefaultAsync(r => r.ReminderId == id && r.ProfileId == loggedInUserId);
+
             if (reminder != null)
             {
-                Reminder = reminder;
-                _context.Reminders.Remove(Reminder);
+                _context.Reminders.Remove(reminder);
                 await _context.SaveChangesAsync();
             }
 

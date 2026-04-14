@@ -2,51 +2,53 @@
 @model Amethyst.Pages.Reminders.DeleteModel
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Clear Reminder";
+    var reminderTitle = Model.Reminder.Assignment != null
+        ? Model.Reminder.Assignment.Title
+        : Model.Reminder.TaskItem != null
+            ? Model.Reminder.TaskItem.Title
+            : "Reminder";
 }
 
-<h1>Delete</h1>
+<link rel="stylesheet" href="~/css/reminders.css" asp-append-version="true" />
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Reminder</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Reminder.TargetType)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Reminder.TargetType)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Reminder.RemindAt)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Reminder.RemindAt)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Reminder.Profile)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Reminder.Profile.ProfileId)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Reminder.Assignment)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Reminder.Assignment.Priority)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Reminder.TaskItem)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Reminder.TaskItem.TaskId)
-        </dd>
-    </dl>
-    
-    <form method="post">
-        <input type="hidden" asp-for="Reminder.ReminderId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-page="./Index">Back to List</a>
-    </form>
+<div class="reminder-delete-page">
+    <div class="reminder-delete-header amethyst-panel">
+        <div>
+            <p class="delete-kicker">Reminders</p>
+            <h1>Clear Reminder</h1>
+            <p>This will permanently remove the reminder from your list.</p>
+        </div>
+    </div>
+
+    <div class="reminder-delete-card amethyst-card">
+        <div class="reminder-delete-summary">
+            <div class="delete-detail-card">
+                <span class="delete-detail-label">Reminder Title</span>
+                <h2 class="delete-detail-title">@reminderTitle</h2>
+            </div>
+
+            <div class="delete-detail-card">
+                <span class="delete-detail-label">Target Type</span>
+                <div class="reminder-type-pill @(Model.Reminder.TargetType == "Assignment" ? "assignment-pill" : "task-pill")">
+                    @Model.Reminder.TargetType
+                </div>
+            </div>
+
+            <div class="delete-detail-card">
+                <span class="delete-detail-label">Remind At</span>
+                <p class="delete-detail-time">@Model.Reminder.RemindAt.ToString("dddd, MMMM d, yyyy")</p>
+                <span class="delete-time-pill">@Model.Reminder.RemindAt.ToString("h:mm tt")</span>
+            </div>
+        </div>
+
+        <form method="post" class="reminder-delete-form">
+            <input type="hidden" asp-for="Reminder.ReminderId" />
+
+            <div class="reminder-delete-actions">
+                <button type="submit" class="reminder-delete-confirm-btn">Delete Reminder</button>
+                <a asp-page="./Index" class="amethyst-btn-secondary reminder-delete-cancel-btn">Back to List</a>
+            </div>
+        </form>
+    </div>
 </div>

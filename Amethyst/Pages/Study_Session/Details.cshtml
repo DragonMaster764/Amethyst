@@ -2,60 +2,106 @@
 @model Amethyst.Pages.Study_Session.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Study Session Details";
 }
 
-<h1>Details</h1>
+<link rel="stylesheet" href="~/css/study-session-details.css" asp-append-version="true" />
 
-<div>
-    <h4>StudySession</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.StudySession.StartTime)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.StudySession.StartTime)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.StudySession.EndTime)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.StudySession.EndTime)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.StudySession.PlannedMinutes)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.StudySession.PlannedMinutes)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.StudySession.ActualMinutes)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.StudySession.ActualMinutes)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.StudySession.Notes)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.StudySession.Notes)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.StudySession.Profile)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.StudySession.Profile.ProfileId)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.StudySession.Course)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.StudySession.Course.ProfileId)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.StudySession.SessionId">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
+<div class="study-session-details-page">
+    <div class="details-header amethyst-panel">
+        <div class="details-header-text">
+            <p class="details-kicker">Study Session</p>
+            <h1>@(Model.StudySession.Course != null ? Model.StudySession.Course.Title : "General Study Session")</h1>
+            <p class="details-subtext">Review your session timing, progress, and notes.</p>
+        </div>
+
+        <div class="details-header-actions">
+            <a asp-page="./Index" class="details-secondary-btn">Back to Sessions</a>
+            <a asp-page="./Edit" asp-route-id="@Model.StudySession.SessionId" class="amethyst-btn-primary">Edit Session</a>
+        </div>
+    </div>
+
+    <div class="details-status-row">
+        <span class="session-status-chip @(Model.IsPastSession ? "past-chip" : "upcoming-chip")">
+            @(Model.IsPastSession ? "Past Session" : "Upcoming Session")
+        </span>
+    </div>
+
+    <div class="details-grid">
+        <section class="amethyst-card details-card">
+            <h2>Session Summary</h2>
+
+            <div class="details-info-grid">
+                <div class="detail-box">
+                    <span class="detail-label">Course</span>
+                    <span class="detail-value">@(Model.StudySession.Course != null ? Model.StudySession.Course.Title : "General Study Session")</span>
+                </div>
+
+                <div class="detail-box">
+                    <span class="detail-label">Start Time</span>
+                    <span class="detail-value">@Model.StudySession.StartTime.ToString("dddd, MMMM d, yyyy")</span>
+                    <span class="time-pill">@Model.StudySession.StartTime.ToString("h:mm tt")</span>
+                </div>
+
+                <div class="detail-box">
+                    <span class="detail-label">End Time</span>
+                    @if (Model.StudySession.EndTime.HasValue)
+                    {
+                        <span class="detail-value">@Model.StudySession.EndTime.Value.ToString("dddd, MMMM d, yyyy")</span>
+                        <span class="time-pill">@Model.StudySession.EndTime.Value.ToString("h:mm tt")</span>
+                    }
+                    else
+                    {
+                        <span class="detail-value">No end time set</span>
+                    }
+                </div>
+
+                <div class="detail-box">
+                    <span class="detail-label">Session Length</span>
+                    <span class="detail-value">
+                        @(Model.SessionLengthMinutes.HasValue ? $"{Model.SessionLengthMinutes} minutes" : "Not available")
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <section class="amethyst-card details-card">
+            <h2>Progress</h2>
+
+            <div class="details-info-grid">
+                <div class="detail-box">
+                    <span class="detail-label">Planned Minutes</span>
+                    <span class="detail-value">
+                        @(Model.StudySession.PlannedMinutes.HasValue ? $"{Model.StudySession.PlannedMinutes} minutes" : "Not set")
+                    </span>
+                </div>
+
+                <div class="detail-box">
+                    <span class="detail-label">Actual Minutes</span>
+                    <span class="detail-value">
+                        @(Model.StudySession.ActualMinutes.HasValue ? $"{Model.StudySession.ActualMinutes} minutes" : "Not entered yet")
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <section class="amethyst-card details-card notes-card">
+            <h2>Session Notes</h2>
+
+            @if (!string.IsNullOrWhiteSpace(Model.StudySession.Notes))
+            {
+                <div class="notes-display">
+                    @Model.StudySession.Notes
+                </div>
+            }
+            else
+            {
+                <p class="notes-empty">No notes have been added for this study session yet.</p>
+            }
+        </section>
+    </div>
+
+    <div class="details-bottom-actions">
+        <a asp-page="./Delete" asp-route-id="@Model.StudySession.SessionId" class="details-delete-btn">Delete Session</a>
+    </div>
 </div>
