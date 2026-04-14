@@ -6,11 +6,11 @@ namespace Amethyst.Services
     {
         private readonly IMongoCollection<Study_Songs> _collection;
 
-        public MongoDBServices(IConfiguration configuration)
+        public MongoDBServices()
         {
-            MongoClient client = new MongoClient(configuration["MongoDBSettings:ConnectionString"]);
-            IMongoDatabase database = client.GetDatabase(configuration["MongoDBSettings:DatabaseName"]);
-            _collection = database.GetCollection<Study_Songs>(configuration["MongoDBSettings:CollectionName"]);
+            MongoClient client = new MongoClient(Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING"));
+            IMongoDatabase database = client.GetDatabase(Environment.GetEnvironmentVariable("MONGO_DB_NAME"));
+            _collection = database.GetCollection<Study_Songs>(Environment.GetEnvironmentVariable("MONGO_DB_COLLECTION_NAME"));
         }
 
         public async Task<List<Study_Songs>> GetAllAsync() =>
