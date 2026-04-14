@@ -9,8 +9,9 @@
     <link rel="icon" type="image/png" href="~/favicon.png" asp-append-version="true" />
     <link rel="shortcut icon" href="~/favicon.png" asp-append-version="true" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Amethyst.styles.css" asp-append-version="true" />
 </head>
@@ -36,10 +37,6 @@
 
                     <ul class="navbar-nav amethyst-nav-links mx-auto">
 
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-page="/Index">Dashboard</a>
-                        </li>
-
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="dropdown nav-item">
@@ -55,6 +52,9 @@
 
                         @if (User.IsInRole("Student"))
                         {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/Index">Dashboard</a>
+                            </li>
                             <li class="dropdown nav-item">
                                 <a class="nav-link dropdown-toggle" href="#" id="workItemsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     View Work Items
@@ -78,12 +78,15 @@
                                 <a class="nav-link" asp-area="" asp-page="">Statistics</a>
                             </li>*@
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-page="">My Profile</a>
+                                <a class="nav-link" asp-area="" asp-page="/EditProfile/EditProfile">My Profile</a>
                             </li>
                         }
 
                         @if (User.IsInRole("User"))
                         {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/Index">Dashboard</a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-page="/Task_Pages/Index">View Tasks</a>
                             </li>
@@ -94,7 +97,7 @@
                                 <a class="nav-link" asp-area="" asp-page="">Statistics</a>
                             </li>*@
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-page="">My Profile</a>
+                                <a class="nav-link" asp-area="" asp-page="/EditProfile/EditProfile">My Profile</a>
                             </li>
                         }
                     </ul>
