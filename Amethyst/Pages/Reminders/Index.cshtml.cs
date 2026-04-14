@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Amethyst.Data;
@@ -12,21 +8,25 @@ namespace Amethyst.Pages.Reminders
 {
     public class IndexModel : PageModel
     {
-        private readonly Amethyst.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public IndexModel(Amethyst.Data.ApplicationDbContext context)
+        public IndexModel(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        public IList<Reminder> Reminder { get;set; } = default!;
+        public IList<Reminder> Reminder { get; set; } = default!;
 
         public async Task OnGetAsync()
         {
+            var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             Reminder = await _context.Reminders
                 .Include(r => r.Assignment)
-                .Include(r => r.Profile)
-                .Include(r => r.TaskItem).ToListAsync();
+                .Include(r => r.TaskItem)
+                .Where(r => r.ProfileId == loggedInUserId)
+                .OrderBy(r => r.RemindAt)
+                .ToListAsync();
         }
     }
 }
