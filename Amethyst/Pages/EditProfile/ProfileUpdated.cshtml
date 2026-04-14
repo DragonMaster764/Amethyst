@@ -1,25 +1,18 @@
 ﻿@page
-@model Amethyst.Pages.CreateProfile.UserTypeModel
+@model Amethyst.Pages.EditProfile.ProfileUpdatedModel
 @{
 }
-<div class="chooseUserType">
-    <br />
-    <br />
-    <br />
-    <br />
 
-    <h1 style="text-align:center">What Type of Account Would You Like to Create?</h1>
+<br />
+<br />
+<br />
+<br />
+<h1 style="text-align:center">Your Profile Has Been Updated!</h1>
 
-    <div class="button-row">
-        <form method="get" asp-page="/CreateProfile/StudentForm">
-            <button type="submit" class="account-btn">Student Account</button>
-        </form>
-
-        <form method="get" asp-page="/CreateProfile/UserForm">
-            <button type="submit" class="account-btn">Regular User Account</button>
-        </form>
-
-    </div>
+<div class="button-row">
+    <a class="account-btn" asp-page="/Index">
+        Go To Dashboard
+    </a>
 </div>
 <style>
     .userType-container {
