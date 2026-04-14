@@ -20,15 +20,50 @@
 
     <div class="button-row">
         <form method="get" asp-page="/CreateProfile/StudentForm">
-            <button type="submit" class="account-btn student-btn">Student Account</button>
+            <button type="submit" class="account-btn">Student Account</button>
         </form>
 
         <form method="get" asp-page="/CreateProfile/UserForm">
-            <button type="submit" class="account-btn user-btn">Regular User Account</button>
+            <button type="submit" class="account-btn">Regular User Account</button>
         </form>
 
     </div>
 </div>
+<style>
+    .userType-container {
+        text-align: center;
+        margin-top: 80px;
+    }
+
+    .button-row {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        margin-top: 40px;
+    }
+
+    .account-btn,
+    .account-btn:link,
+    .account-btn:visited {
+        background-color: #7C5BA7;
+        padding: 15px 30px;
+        font-size: 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.2s ease-in-out;
+        text-decoration: none !important; /* override underline */
+        color: #FFFDFC !important; /* override blue link color */
+        display: inline-block;
+    }
+
+        .account-btn:hover {
+            background-color: #B9A3E3;
+            text-decoration: none !important;
+            color: #FFFDFC !important;
+        }
+
+</style>
 
 
 
