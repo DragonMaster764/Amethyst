@@ -1,12 +1,14 @@
-﻿using System;
+﻿using Amethyst.Models;
+using Microsoft.EntityFrameworkCore; // update to your actual namespace
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
+using SQLitePCL;
+using System;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using MongoDB.Driver;
-using Amethyst.Models; // update to your actual namespace
 
 namespace Amethyst.Services
 {
@@ -18,10 +20,13 @@ namespace Amethyst.Services
         private readonly string _model;
         private readonly IMongoCollection<Study_Songs> _studySongs;
 
-        public AIService(HttpClient httpClient, IConfiguration config, ILogger<AIService> logger, IMongoClient mongoClient)
+        private readonly Amethyst.Data.ApplicationDbContext _context;
+
+        public AIService(HttpClient httpClient, IConfiguration config, ILogger<AIService> logger, IMongoClient mongoClient, Amethyst.Data.ApplicationDbContext context)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
 
             // Gemini settings from appsettings.json under AISettings
             var aiSettings = config.GetSection("AISettings");
@@ -114,6 +119,109 @@ namespace Amethyst.Services
             };
 
             return await PostToGeminiAsync(payload);
+        }
+
+        // Let the user get feedback about their productivity habits
+        public async Task<string> PersonalFeedbackAsync(string userInput, string userID)
+        {
+            if (string.IsNullOrWhiteSpace(userInput))
+                throw new ArgumentNullException(nameof(userInput));
+
+            //Current upcoming uncompleted assignments
+            var assignments = await _context.Assignments
+                .Where(a => a.Course.ProfileId == userID && a.DueDate > DateTime.Now && a.Status != "Completed")
+                .OrderBy(a => a.DueDate)
+                .ThenBy(a => a.Priority)
+                .Take(5)
+                .ToListAsync();
+
+            //Terms used for ordering courses by current term
+            var termOrder = new Dictionary<string, int>
+            {
+                { "Winter", 0 },
+                { "Spring", 1 },
+                { "Summer", 2 },
+                { "Fall", 3 }
+            };
+
+            // Determine the most recent (AcademicYear, Term) pair reliably, then load all courses for that pair.
+            var latestTermPair = await _context.Courses
+                .Where(c => c.ProfileId == userID)
+                .Select(c => new { c.Term, c.AcademicYear })
+                .Distinct()
+                .OrderByDescending(x => x.AcademicYear)
+                .ThenByDescending(x => x.Term == "Fall" ? 3
+                                       : x.Term == "Summer" ? 2
+                                       : x.Term == "Spring" ? 1
+                                       : x.Term == "Winter" ? 0
+                                       : -1)
+                .FirstOrDefaultAsync();
+
+            var courses = latestTermPair is null
+                ? new List<Course>()
+                : await _context.Courses
+                    .Where(c => c.ProfileId == userID
+                                && c.AcademicYear == latestTermPair.AcademicYear
+                                && c.Term == latestTermPair.Term)
+                    .ToListAsync();
+
+            var tasks = await _context.TaskItems
+                .Where(t => t.Profile.ProfileId == userID && t.DueAt > DateTime.Now && t.Status != "Completed")
+                .OrderBy(t => t.DueAt)
+                .ThenBy(t => t.Priority)
+                .Take(5)
+                .ToListAsync();
+
+            // Build assignment context
+            var assignmentContext = assignments.Any()
+                ? string.Join("\n", assignments.Select(a =>
+                    $"- {a.Title} (Due: {a.DueDate:MM/dd/yyyy}, Description: {a.Description}, Priority: {a.Priority}, Status: {a.Status}, Course: {a.Course.Title ?? "Unknown"}, Total Points: {a.TotalPoints}, Estimated Minutes: {a.EstimatedMinutes})"))
+                : "No upcoming assignments.";
+
+            // Build courses context
+            var courseContext = courses.Any()
+                ? string.Join("\n", courses.Select(c =>
+                    $"- {c.Title} ({c.Term} {c.AcademicYear}), Meeting Time: {c.MeetingTime}"))
+                : "No current courses found.";
+
+            // Build tasks context
+            var taskContext = tasks.Any()
+                ? string.Join("\n", tasks.Select(t =>
+                    $"- {t.Title} (Due: {t.DueAt:MM/dd/yyyy}, Priority: {t.Priority}, Status: {t.Status}, Estimated Minutes: {t.EstimatedMinutes})"))
+                : "No upcoming tasks.";
+
+            // Build final prompt
+            var systemPrompt = $"""
+                You are Amy, a friendly and focused productivity assistant for students.
+                Your job is to help the student decide what to work on, how to start, and how to manage their time.
+                Keep responses concise, encouraging, and actionable. Do not overwhelm them with too much at once.
+                Never mention that you were given data — just respond naturally as if you know their situation.
+                Format your response as clean HTML using only <p>, <ul>, <li>, and <strong> tags. Do not include <html>, <head>, <body>, or any CSS.
+
+                Current date: {DateTime.Now:MM/dd/yyyy}
+
+                Student's current courses ({latestTermPair?.Term} {latestTermPair?.AcademicYear}):
+                {courseContext}
+
+                Upcoming assignments (next 7 days, sorted by due date):
+                {assignmentContext}
+
+                Upcoming tasks (sorted by due date):
+                {taskContext}
+
+                Student message: {userInput}
+                """;
+
+            var payload = new
+            {
+                contents = new[]
+                {
+                    new { parts = new[] { new { text = systemPrompt } } }
+                }
+            };
+
+            return await PostToGeminiAsync(payload);
+
         }
 
         // Send a specific StudySong document + a question to Gemini
