@@ -51,6 +51,11 @@ namespace Amethyst.Pages.Reminders
         {
             var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
+            if (string.IsNullOrEmpty(loggedInUserId))
+            {
+                return Challenge();
+            }
+
             var existingReminder = await _context.Reminders
                 .FirstOrDefaultAsync(r => r.ReminderId == Reminder.ReminderId && r.ProfileId == loggedInUserId);
 
@@ -59,7 +64,16 @@ namespace Amethyst.Pages.Reminders
                 return NotFound();
             }
 
-            if (Reminder.TargetType == "Assignment")
+            ModelState.Remove("Reminder.ProfileId");
+            ModelState.Remove("Reminder.Profile");
+            ModelState.Remove("Reminder.Assignment");
+            ModelState.Remove("Reminder.TaskItem");
+
+            if (string.IsNullOrWhiteSpace(Reminder.TargetType))
+            {
+                ModelState.AddModelError("Reminder.TargetType", "Please select a target type.");
+            }
+            else if (Reminder.TargetType == "Assignment")
             {
                 if (!Reminder.AssignmentId.HasValue)
                 {
@@ -86,7 +100,14 @@ namespace Amethyst.Pages.Reminders
                 ModelState.AddModelError("Reminder.TargetType", "Please select a valid target type.");
             }
 
-            existingReminder.RemindAt = Reminder.RemindAt;
+            existingReminder.RemindAt = new DateTime(
+                Reminder.RemindAt.Year,
+                Reminder.RemindAt.Month,
+                Reminder.RemindAt.Day,
+                Reminder.RemindAt.Hour,
+                Reminder.RemindAt.Minute,
+                0
+            );
 
             if (!ModelState.IsValid)
             {
@@ -97,6 +118,7 @@ namespace Amethyst.Pages.Reminders
             await _context.SaveChangesAsync();
             return RedirectToPage("./Index");
         }
+
         private async Task LoadDropdownsAsync(string? profileId)
         {
             var assignments = await _context.Assignments
