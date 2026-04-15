@@ -5,16 +5,19 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Amethyst.Data;
 using Amethyst.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace Amethyst.Pages.EditProfile
 {
     public class EditProfileModel : PageModel
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public EditProfileModel(ApplicationDbContext context)
+        public EditProfileModel(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         [BindProperty]
@@ -24,8 +27,8 @@ namespace Amethyst.Pages.EditProfile
 
         public async Task<IActionResult> OnGetAsync()
         {
-            // Get logged-in user ID
-            var userId = User?.Identity?.Name;
+            // Get the REAL Identity user ID (GUID)
+            var userId = _userManager.GetUserId(User);
             if (userId == null)
                 return RedirectToPage("/Account/Login");
 
@@ -35,14 +38,10 @@ namespace Amethyst.Pages.EditProfile
 
             if (profile == null)
             {
-                // If no profile exists, redirect to create one
                 return RedirectToPage("/CreateProfile/UserType");
             }
 
-            // Bind to form
             InputProfile = profile;
-
-            // Determine if this user is a student
             IsStudentProfile = !string.IsNullOrEmpty(profile.AcademicYear);
 
             return Page();
@@ -50,7 +49,7 @@ namespace Amethyst.Pages.EditProfile
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var userId = User?.Identity?.Name;
+            var userId = _userManager.GetUserId(User);
             if (userId == null)
                 return RedirectToPage("/Account/Login");
 
@@ -58,9 +57,8 @@ namespace Amethyst.Pages.EditProfile
                 .FirstOrDefaultAsync(p => p.ProfileId == userId);
 
             if (profile == null)
-                return RedirectToPage("/CreateProfile/StudentForm");
+                return RedirectToPage("/CreateProfile/UserType");
 
-            // ⭐ Add this right here
             if (!ModelState.IsValid)
                 return Page();
 
@@ -72,7 +70,6 @@ namespace Amethyst.Pages.EditProfile
             profile.QuietHoursEnd = InputProfile.QuietHoursEnd;
             profile.Timezone = InputProfile.Timezone;
 
-            // Only update AcademicYear if this user is a student
             if (!string.IsNullOrEmpty(profile.AcademicYear))
             {
                 profile.AcademicYear = InputProfile.AcademicYear;
@@ -82,7 +79,7 @@ namespace Amethyst.Pages.EditProfile
 
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("/ProfileUpdated");
+            return RedirectToPage("/EditProfile/ProfileUpdated");
         }
     }
 }
