@@ -22,23 +22,23 @@ namespace Amethyst.Services
 
         private readonly Amethyst.Data.ApplicationDbContext _context;
 
-        public AIService(HttpClient httpClient, IConfiguration config, ILogger<AIService> logger, IMongoClient mongoClient, Amethyst.Data.ApplicationDbContext context)
+        public AIService(HttpClient httpClient, ILogger<AIService> logger, IMongoClient mongoClient, Amethyst.Data.ApplicationDbContext context)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _context = context ?? throw new ArgumentNullException(nameof(context));
 
             // Gemini settings from appsettings.json under AISettings
-            var aiSettings = config.GetSection("AISettings");
-            _apiKey = aiSettings["ApiKey"] ?? throw new InvalidOperationException("AISettings:ApiKey is not configured.");
-            _model = aiSettings["Model"] ?? "gemini-2.0-flash";
-            var baseAddress = aiSettings["BaseAddress"] ?? "https://generativelanguage.googleapis.com/v1beta/";
+            //var aiSettings = config.GetSection("AISettings");
+            _apiKey = Environment.GetEnvironmentVariable("GEMINI_API_KEY") ?? throw new InvalidOperationException("AISettings:ApiKey is not configured.");
+            _model = Environment.GetEnvironmentVariable("GEMINI_MODEL") ?? "gemini-2.0-flash";
+            var baseAddress = Environment.GetEnvironmentVariable("GEMINI_BASE_ADDRESS") ?? "https://generativelanguage.googleapis.com/v1beta/";
             _httpClient.BaseAddress = new Uri(baseAddress);
 
             // MongoDB — collection name from appsettings.json under MongoDBSettings
-            var mongoSettings = config.GetSection("MongoDBSettings");
-            var databaseName = mongoSettings["DatabaseName"] ?? throw new InvalidOperationException("MongoDBSettings:DatabaseName is not configured.");
-            var collectionName = mongoSettings["CollectionName"] ?? throw new InvalidOperationException("MongoDBSettings:CollectionName is not configured.");
+            //var mongoSettings = config.GetSection("MongoDBSettings");
+            var databaseName = Environment.GetEnvironmentVariable("MONGO_DB_NAME") ?? throw new InvalidOperationException("MongoDBSettings:DatabaseName is not configured.");
+            var collectionName = Environment.GetEnvironmentVariable("MONGO_DB_COLLECTION_NAME") ?? throw new InvalidOperationException("MongoDBSettings:CollectionName is not configured.");
             var database = mongoClient.GetDatabase(databaseName);
             _studySongs = database.GetCollection<Study_Songs>(collectionName);
         }
