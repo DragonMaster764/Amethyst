@@ -1,4 +1,4 @@
-using Amethyst.Data;
+﻿using Amethyst.Data;
 using Amethyst.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -81,11 +81,16 @@ namespace Amethyst.Pages.CreateProfile
             {
                 _context.Profiles.Add(InputProfile);
                 await _context.SaveChangesAsync();
+
+
             }
             catch (Exception ex)
             {
                 throw new Exception("Profile save failed: " + ex.Message, ex);
             }
+
+            // ⭐ Assign User role
+            await _userManager.AddToRoleAsync(user, "User");
 
             // Redirect to success page
             return RedirectToPage("/CreateProfile/ProfileMade");
