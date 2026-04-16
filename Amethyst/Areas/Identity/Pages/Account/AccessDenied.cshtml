@@ -1,10 +1,23 @@
 ﻿@page
 @model AccessDeniedModel
 @{
-    ViewData["Title"] = "Access denied";
+    ViewData["Title"] = "Access Denied";
 }
 
-<header>
-    <h1 class="text-danger">@ViewData["Title"]</h1>
-    <p class="text-danger">You do not have access to this resource.</p>
-</header>
+<link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+
+<div class="auth-page">
+    <div class="auth-shell">
+        <div class="auth-card amethyst-card auth-message-card">
+            <div class="auth-header">
+                <p class="auth-kicker">Access Notice</p>
+                <h1>Access Denied</h1>
+                <p class="auth-subtext">You do not have permission to view this resource.</p>
+            </div>
+
+            <div class="auth-links auth-links-centered">
+                <a asp-page="/Index">Return Home</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,22 +1,29 @@
 ﻿@page
 @model ConfirmEmailModel
 @{
-    ViewData["Title"] = "Confirm email";
+    ViewData["Title"] = "Confirm Email";
 }
 
+<link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
 
+<div class="auth-page">
+    <div class="auth-shell">
+        <div class="auth-card amethyst-card auth-message-card">
+            <div class="auth-header">
+                <p class="auth-kicker">Email Confirmed</p>
+                <h1>Confirm Email</h1>
+                <p class="auth-subtext">Your email has been confirmed. You’re ready for the next step.</p>
+            </div>
 
-<h1>@ViewData["Title"]</h1>
-<partial name="_StatusMessage" model="Model.StatusMessage" />
-<br />
-<br />
-<br />
-<br />
+            <div class="status-message-wrap">
+                <partial name="_StatusMessage" model="Model.StatusMessage" />
+            </div>
 
-<h1 style="text-align:center">Click the button below to start creating your profile!</h1>
-
-<div class="button-row">
-    <form method="get" asp-page="/CreateProfile/UserType">
-        <button type="submit" class="account-btn student-btn">Create Profile</button>
-    </form>
+            <div class="auth-action-center">
+                <form method="get" asp-page="/CreateProfile/UserType">
+                    <button type="submit" class="auth-submit-btn auth-submit-btn-inline">Create Profile</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>

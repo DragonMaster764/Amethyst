@@ -1,24 +1,29 @@
 ﻿@page
 @model Amethyst.Pages.CreateProfile.UserTypeModel
 @{
+    ViewData["Title"] = "Choose Account Type";
 }
-<div class="chooseUserType">
-    <br />
-    <br />
-    <br />
-    <br />
 
-    <h1 style="text-align:center">What Type of Account Would You Like to Create?</h1>
+<link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
 
-    <div class="button-row">
-        <form method="get" asp-page="/CreateProfile/StudentForm">
-            <button type="submit" class="account-btn student-btn">Student Account</button>
-        </form>
+<div class="auth-page">
+    <div class="auth-shell">
+        <div class="auth-card amethyst-card auth-message-card">
+            <div class="auth-header">
+                <p class="auth-kicker">Create Profile</p>
+                <h1>Choose Account Type</h1>
+                <p class="auth-subtext">Select the account type that best matches how you’ll use Amethyst.</p>
+            </div>
 
-        <form method="get" asp-page="/CreateProfile/UserForm">
-            <button type="submit" class="account-btn user-btn">Regular User Account</button>
-        </form>
+            <div class="auth-choice-grid">
+                <form method="get" asp-page="/CreateProfile/StudentForm">
+                    <button type="submit" class="auth-submit-btn auth-submit-btn-inline">Student Account</button>
+                </form>
 
+                <form method="get" asp-page="/CreateProfile/UserForm">
+                    <button type="submit" class="auth-submit-btn auth-submit-btn-inline">Regular User Account</button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
-

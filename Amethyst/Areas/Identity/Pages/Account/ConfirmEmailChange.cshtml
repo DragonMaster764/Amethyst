@@ -1,8 +1,26 @@
 ﻿@page
 @model ConfirmEmailChangeModel
 @{
-    ViewData["Title"] = "Confirm email change";
+    ViewData["Title"] = "Confirm Email Change";
 }
 
-<h1>@ViewData["Title"]</h1>
-<partial name="_StatusMessage" model="Model.StatusMessage" />
+<link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+
+<div class="auth-page">
+    <div class="auth-shell">
+        <div class="auth-card amethyst-card auth-message-card">
+            <div class="auth-header">
+                <p class="auth-kicker">Email Update</p>
+                <h1>Confirm Email Change</h1>
+            </div>
+
+            <div class="status-message-wrap">
+                <partial name="_StatusMessage" model="Model.StatusMessage" />
+            </div>
+
+            <div class="auth-links auth-links-centered">
+                <a asp-area="Identity" asp-page="/Account/Login">Back to log in</a>
+            </div>
+        </div>
+    </div>
+</div>
