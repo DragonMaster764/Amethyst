@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -13,9 +10,9 @@ namespace Amethyst.Pages.Reminders
 {
     public class EditModel : PageModel
     {
-        private readonly Amethyst.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public EditModel(Amethyst.Data.ApplicationDbContext context)
+        public EditModel(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -23,58 +20,125 @@ namespace Amethyst.Pages.Reminders
         [BindProperty]
         public Reminder Reminder { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(long? id)
+        public SelectList AssignmentOptions { get; set; } = default!;
+        public SelectList TaskOptions { get; set; } = default!;
+        public SelectList TargetTypeOptions { get; set; } = default!;
+
+       public async Task<IActionResult> OnGetAsync(long? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var reminder =  await _context.Reminders.FirstOrDefaultAsync(m => m.ReminderId == id);
+            var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var reminder = await _context.Reminders
+                .FirstOrDefaultAsync(r => r.ReminderId == id && r.ProfileId == loggedInUserId);
+
             if (reminder == null)
             {
                 return NotFound();
             }
+
             Reminder = reminder;
-           ViewData["AssignmentId"] = new SelectList(_context.Assignments, "AssignmentId", "Priority");
-           ViewData["ProfileId"] = new SelectList(_context.Set<Profile>(), "ProfileId", "ProfileId");
-           ViewData["TaskId"] = new SelectList(_context.TaskItems, "TaskId", "TaskId");
+            await LoadDropdownsAsync(loggedInUserId);
+
             return Page();
         }
-
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more information, see https://aka.ms/RazorPagesCRUD.
+        
         public async Task<IActionResult> OnPostAsync()
         {
+            var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(loggedInUserId))
+            {
+                return Challenge();
+            }
+
+            var existingReminder = await _context.Reminders
+                .FirstOrDefaultAsync(r => r.ReminderId == Reminder.ReminderId && r.ProfileId == loggedInUserId);
+
+            if (existingReminder == null)
+            {
+                return NotFound();
+            }
+
+            ModelState.Remove("Reminder.ProfileId");
+            ModelState.Remove("Reminder.Profile");
+            ModelState.Remove("Reminder.Assignment");
+            ModelState.Remove("Reminder.TaskItem");
+
+            if (string.IsNullOrWhiteSpace(Reminder.TargetType))
+            {
+                ModelState.AddModelError("Reminder.TargetType", "Please select a target type.");
+            }
+            else if (Reminder.TargetType == "Assignment")
+            {
+                if (!Reminder.AssignmentId.HasValue)
+                {
+                    ModelState.AddModelError("Reminder.AssignmentId", "Please select an assignment.");
+                }
+
+                existingReminder.TargetType = "Assignment";
+                existingReminder.AssignmentId = Reminder.AssignmentId;
+                existingReminder.TaskId = null;
+            }
+            else if (Reminder.TargetType == "Task")
+            {
+                if (!Reminder.TaskId.HasValue)
+                {
+                    ModelState.AddModelError("Reminder.TaskId", "Please select a task.");
+                }
+
+                existingReminder.TargetType = "Task";
+                existingReminder.TaskId = Reminder.TaskId;
+                existingReminder.AssignmentId = null;
+            }
+            else
+            {
+                ModelState.AddModelError("Reminder.TargetType", "Please select a valid target type.");
+            }
+
+            existingReminder.RemindAt = new DateTime(
+                Reminder.RemindAt.Year,
+                Reminder.RemindAt.Month,
+                Reminder.RemindAt.Day,
+                Reminder.RemindAt.Hour,
+                Reminder.RemindAt.Minute,
+                0
+            );
+
             if (!ModelState.IsValid)
             {
+                await LoadDropdownsAsync(loggedInUserId);
                 return Page();
             }
 
-            _context.Attach(Reminder).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ReminderExists(Reminder.ReminderId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            await _context.SaveChangesAsync();
             return RedirectToPage("./Index");
         }
 
-        private bool ReminderExists(long id)
+        private async Task LoadDropdownsAsync(string? profileId)
         {
-            return _context.Reminders.Any(e => e.ReminderId == id);
+            var assignments = await _context.Assignments
+                .Include(a => a.Course)
+                .Where(a => a.Course != null && a.Course.ProfileId == profileId)
+                .OrderBy(a => a.Title)
+                .ToListAsync();
+
+            var tasks = await _context.TaskItems
+                .Where(t => t.ProfileId == profileId)
+                .OrderBy(t => t.Title)
+                .ToListAsync();
+
+            AssignmentOptions = new SelectList(assignments, "AssignmentId", "Title");
+            TaskOptions = new SelectList(tasks, "TaskId", "Title");
+            TargetTypeOptions = new SelectList(new[]
+            {
+                new { Value = "Assignment", Text = "Assignment" },
+                new { Value = "Task", Text = "Task" }
+            }, "Value", "Text");
         }
     }
 }

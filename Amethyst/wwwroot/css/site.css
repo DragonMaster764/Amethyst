@@ -908,3 +908,24 @@ textarea,
   text-align: center;
   padding: 1rem 1rem 0.9rem;
 }
+.navbar .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.navbar-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.form-control[type="datetime-local"] {
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.form-control[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.8;
+}

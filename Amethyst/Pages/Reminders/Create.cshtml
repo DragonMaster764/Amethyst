@@ -2,50 +2,102 @@
 @model Amethyst.Pages.Reminders.CreateModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Reminder";
 }
 
-<h1>Create</h1>
+<link rel="stylesheet" href="~/css/reminders.css" asp-append-version="true" />
 
-<h4>Reminder</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Reminder.ProfileId" class="control-label"></label>
-                <select asp-for="Reminder.ProfileId" class ="form-control" asp-items="ViewBag.ProfileId" ></select>
+<div class="reminder-create-page">
+    <div class="reminder-create-header amethyst-panel">
+        <div>
+            <p class="create-kicker">Reminders</p>
+            <h1>Create Reminder</h1>
+            <p>Set a reminder for an assignment or task at the time you want.</p>
+        </div>
+    </div>
+
+    <div class="reminder-create-card amethyst-card">
+        <form method="post" class="reminder-create-form">
+            <div asp-validation-summary="ModelOnly" class="text-danger validation-summary"></div>
+
+            <div class="form-grid">
+                <div class="form-field full-width">
+                    <label for="targetTypeSelect" class="form-label">Target Type</label>
+                    <select asp-for="Reminder.TargetType"
+                            asp-items="Model.TargetTypeOptions"
+                            class="form-select"
+                            id="targetTypeSelect">
+                        <option value="">Select a target type</option>
+                    </select>
+                    <span asp-validation-for="Reminder.TargetType" class="text-danger"></span>
+                </div>
+
+                <div class="form-field full-width" id="assignmentField">
+                    <label asp-for="Reminder.AssignmentId" class="form-label">Assignment</label>
+                    <select asp-for="Reminder.AssignmentId"
+                            asp-items="Model.AssignmentOptions"
+                            class="form-select">
+                        <option value="">Select an assignment</option>
+                    </select>
+                    <span asp-validation-for="Reminder.AssignmentId" class="text-danger"></span>
+                </div>
+
+                <div class="form-field full-width" id="taskField">
+                    <label asp-for="Reminder.TaskId" class="form-label">Task</label>
+                    <select asp-for="Reminder.TaskId"
+                            asp-items="Model.TaskOptions"
+                            class="form-select">
+                        <option value="">Select a task</option>
+                    </select>
+                    <span asp-validation-for="Reminder.TaskId" class="text-danger"></span>
+                </div>
+
+                <div class="form-field full-width">
+                    <label asp-for="Reminder.RemindAt" class="form-label">Reminder Time</label>
+                    <input asp-for="Reminder.RemindAt"
+                        type="datetime-local"
+                        class="form-control"
+                        step="60" />
+                    <span asp-validation-for="Reminder.RemindAt" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Reminder.TargetType" class="control-label"></label>
-                <input asp-for="Reminder.TargetType" class="form-control" />
-                <span asp-validation-for="Reminder.TargetType" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Reminder.AssignmentId" class="control-label"></label>
-                <select asp-for="Reminder.AssignmentId" class ="form-control" asp-items="ViewBag.AssignmentId" ></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Reminder.TaskId" class="control-label"></label>
-                <select asp-for="Reminder.TaskId" class ="form-control" asp-items="ViewBag.TaskId" ></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Reminder.RemindAt" class="control-label"></label>
-                <input asp-for="Reminder.RemindAt" class="form-control" />
-                <span asp-validation-for="Reminder.RemindAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+
+            <div class="reminder-create-actions">
+                <button type="submit" class="amethyst-btn-primary action-btn">Save</button>
+                <a asp-page="./Index" class="amethyst-btn-secondary action-btn back-btn">Back to List</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-page="Index">Back to List</a>
-</div>
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        function toggleReminderTargetFields() {
+            const targetType = document.getElementById("targetTypeSelect").value;
+            const assignmentField = document.getElementById("assignmentField");
+            const taskField = document.getElementById("taskField");
+
+            if (targetType === "Assignment") {
+                assignmentField.style.display = "flex";
+                taskField.style.display = "none";
+            } else if (targetType === "Task") {
+                assignmentField.style.display = "none";
+                taskField.style.display = "flex";
+            } else {
+                assignmentField.style.display = "none";
+                taskField.style.display = "none";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const targetTypeSelect = document.getElementById("targetTypeSelect");
+            toggleReminderTargetFields();
+
+            if (targetTypeSelect) {
+                targetTypeSelect.addEventListener("change", toggleReminderTargetFields);
+            }
+        });
+    </script>
 }
