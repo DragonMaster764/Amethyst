@@ -42,7 +42,16 @@ builder.Services.AddSingleton<MongoDBServices>();
 
 builder.Services.AddHttpClient<AIService>();
 
+builder.Services.AddSession();
+builder.Services.AddHttpClient();
+
+builder.Services.AddControllers();
+
 var app = builder.Build();
+
+//Youtube music stuff
+app.UseSession();
+app.MapControllers();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

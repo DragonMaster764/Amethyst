@@ -103,4 +103,7 @@
         txt.textContent = 'Building your playlist...';
         spin.classList.remove('d-none');
     }
+
+    const data = JSON.parse(document.getElementById("playlist-data").textContent);
+    console.log("Received playlist data:", data);
 </script>
