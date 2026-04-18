@@ -78,63 +78,54 @@ namespace Amethyst.Pages
                 return Page();
             }
 
+            // Expecting Songs to be a JSON array of objects like: [{ "title": "...", "artist": "..." }, ...]
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            var parsed = JsonSerializer.Deserialize<List<SongDto>>(Songs, options);
+
+            if (parsed == null || parsed.Count == 0)
+            {
+                ErrorMessage = "Could not parse any songs from the provided data.";
+                return Page();
+            }
+
+            // Build search-friendly strings for each song (title + artist)
+            var songTitles = parsed
+                .Where(s => !string.IsNullOrWhiteSpace(s.title))
+                .Select(s => string.IsNullOrWhiteSpace(s.artist) ? s.title!.Trim() : $"{s.title!.Trim()} - {s.artist!.Trim()}")
+                .ToList();
+
+            if (!songTitles.Any())
+            {
+                ErrorMessage = "Parsed songs did not contain titles.";
+                return Page();
+            }
+
             try
             {
-                // Expecting Songs to be a JSON array of objects like: [{ "title": "...", "artist": "..." }, ...]
-                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var parsed = JsonSerializer.Deserialize<List<SongDto>>(Songs, options);
+                // Use YouTube playlist service to create a playlist and add videos
+                var ytService = new YouTubePlaylistService(accessToken);
+                var playlistUrl = await ytService.CreatePlaylistFromRecommendations(PlaylistName.Trim(), songTitles);
+                PlaylistURL = $"Playlist saved successfully. <a href=\"{playlistUrl}\" target=\"_blank\" rel=\"noopener\">Open on YouTube</a>";
+            }
+            catch(Google.GoogleApiException ex)
+            {
+                Console.WriteLine($"HTTP Status: {ex.HttpStatusCode}");
+                Console.WriteLine($"Error message: {ex.Message}");
 
-                if (parsed == null || parsed.Count == 0)
+                if (ex.Error?.Errors != null)
                 {
-                    ErrorMessage = "Could not parse any songs from the provided data.";
-                    return Page();
-                }
-
-                // Build search-friendly strings for each song (title + artist)
-                var songTitles = parsed
-                    .Where(s => !string.IsNullOrWhiteSpace(s.title))
-                    .Select(s => string.IsNullOrWhiteSpace(s.artist) ? s.title!.Trim() : $"{s.title!.Trim()} - {s.artist!.Trim()}")
-                    .ToList();
-
-                if (!songTitles.Any())
-                {
-                    ErrorMessage = "Parsed songs did not contain titles.";
-                    return Page();
-                }
-
-                try
-                {
-                    // Use YouTube playlist service to create a playlist and add videos
-                    var ytService = new YouTubePlaylistService(accessToken);
-                    var playlistUrl = await ytService.CreatePlaylistFromRecommendations(PlaylistName.Trim(), songTitles);
-                    PlaylistURL = $"Playlist saved successfully. <a href=\"{playlistUrl}\" target=\"_blank\" rel=\"noopener\">Open on YouTube</a>";
-                }
-                catch(Google.GoogleApiException ex)
-                {
-                    Console.WriteLine($"HTTP Status: {ex.HttpStatusCode}");
-                    Console.WriteLine($"Error message: {ex.Message}");
-
-                    if (ex.Error?.Errors != null)
+                    foreach (var err in ex.Error.Errors)
                     {
-                        foreach (var err in ex.Error.Errors)
-                        {
-                            Console.WriteLine($"  Reason: {err.Reason}");
-                            Console.WriteLine($"  Domain: {err.Domain}");
-                            Console.WriteLine($"  Message: {err.Message}");
-                            Console.WriteLine($"  Location: {err.Location}");
-                            Console.WriteLine($"  LocationType: {err.LocationType}");
-                        }
+                        Console.WriteLine($"  Reason: {err.Reason}");
+                        Console.WriteLine($"  Domain: {err.Domain}");
+                        Console.WriteLine($"  Message: {err.Message}");
+                        Console.WriteLine($"  Location: {err.Location}");
+                        Console.WriteLine($"  LocationType: {err.LocationType}");
                     }
                 }
-                
-            }
-            catch (JsonException jex)
-            {
-                ErrorMessage = $"Failed to parse songs JSON: {jex.Message}";
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Failed to save playlist to YouTube: {ex.Message}";
+
+                ErrorMessage = ex.Message + "; A common error is that you don't have a YouTube channel." +
+                    "Please ensure you have a YouTube channel associated with your Google account."; // show something to the user
             }
 
             return Page();
