@@ -15,10 +15,17 @@
     </div>
 
     <div class="card shadow-sm border-0 rounded-4 mt-3 mb-3">
-        <a href="/auth/google/login" class="btn-google">
-            Sign in with Google
-        </a>
-        <p class="hint">if you want to save this playlist to YouTube</p>
+        @if (string.IsNullOrEmpty(HttpContext.Session.GetString("GoogleAccessToken")))
+        {
+            <a href="/auth/google/login?returnUrl=/AI/StudySongChatbot" class="btn-google">
+                Sign in with Google
+            </a>
+            <p class="hint">if you want to save this playlist to YouTube</p>
+        }
+        else
+        {
+            <p style="color: green;">You are signed in with Google. You will be able to save your playlist to YouTube.</p>
+        }
     </div>
 
     <div class="card shadow-sm border-0 rounded-4">
@@ -92,15 +99,7 @@
             </div>
 
             <div class="save-section">
-                @if (string.IsNullOrEmpty(HttpContext.Session.GetString("GoogleAccessToken")))
-                {
-                    <!-- Not connected — show Google sign-in button -->
-                    <a href="/auth/google/login" class="btn-google">
-                        Sign in with Google
-                    </a>
-                    <p class="hint">to save this playlist to YouTube</p>
-                }
-                else
+                @if (!string.IsNullOrEmpty(HttpContext.Session.GetString("GoogleAccessToken")))
                 {
                     <!-- Connected — show the save button -->
                     <form method="post" asp-page-handler="SaveToYouTube">
@@ -112,6 +111,10 @@
                             Save to YouTube
                         </button>
                     </form>
+                }
+                else
+                {
+                    <p class="text-warning">You are not signed in with Google. Please sign in and ask the AI again to save a playlist.</p>
                 }
             </div>
         </div>
