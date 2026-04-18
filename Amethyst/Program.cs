@@ -5,9 +5,9 @@ using Amethyst.Services;
 using MongoDB.Driver;
 using Microsoft.AspNetCore.Authentication.Google;
 
-var builder = WebApplication.CreateBuilder(args);
-
 DotNetEnv.Env.Load();
+var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddEnvironmentVariables();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -18,20 +18,6 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => options.Sign
     .AddDefaultUI()
     .AddDefaultTokenProviders();
 builder.Services.AddControllersWithViews();
-
-builder.Services.AddAuthentication()
-    .AddGoogle("Google", options =>
-    {
-        options.ClientId = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_ID") ?? throw new InvalidOperationException("GOOGLE_CLIENT_ID is not configured.");
-        options.ClientSecret = Environment.GetEnvironmentVariable("GOOGLE_CLIENT_SECRET") ?? throw new InvalidOperationException("GOOGLE_CLIENT_SECRET is not configured.");
-        // Request YouTube scopes so we can manage playlists
-        options.Scope.Add("https://www.googleapis.com/auth/youtube");
-        options.Scope.Add("https://www.googleapis.com/auth/youtube.force-ssl");
-        options.Scope.Add("profile");
-        options.Scope.Add("email");
-        options.SaveTokens = true;            // persist tokens into the authentication properties
-        options.AccessType = "offline";      // request refresh token
-    });
 
 // Register MongoDB client from configuration so IMongoClient can be injected
 //var mongoSettings = builder.Configuration.GetSection("MongoDBSettings");
@@ -66,7 +52,6 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();

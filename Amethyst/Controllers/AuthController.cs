@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NuGet.Common;
 using System.Text.Json;
 
 namespace Amethyst.Controllers
@@ -10,8 +11,10 @@ namespace Amethyst.Controllers
         public AuthController(IConfiguration config) => _config = config;
 
         [HttpGet("login")]
-        public IActionResult Login()
+        public IActionResult Login(string returnUrl = "/")
         {
+            HttpContext.Session.SetString("AuthReturnUrl", returnUrl);
+
             var clientId = _config["Google:ClientId"];
             var redirectUri = _config["Google:RedirectUri"];
             var scope = "https://www.googleapis.com/auth/youtube";
@@ -21,7 +24,9 @@ namespace Amethyst.Controllers
                       $"&redirect_uri={Uri.EscapeDataString(redirectUri)}" +
                       $"&response_type=code" +
                       $"&scope={Uri.EscapeDataString(scope)}" +
-                      $"&access_type=offline";
+                      $"&access_type=offline" +
+                      $"&prompt=consent" +
+                      $"&include_granted_scopes=false";
 
             return Redirect(url);
         }
@@ -41,11 +46,33 @@ namespace Amethyst.Controllers
                     ["grant_type"] = "authorization_code"
                 }));
 
-            var json = await response.Content.ReadFromJsonAsync<JsonElement>();
-            var token = json.GetProperty("access_token").GetString();
+            var body = await response.Content.ReadAsStringAsync();
 
-            HttpContext.Session.SetString("GoogleAccessToken", token);
-            return RedirectToAction("Index", "Home");
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"OAuth token exchange failed: {body}");
+            }
+
+            var json = JsonSerializer.Deserialize<JsonElement>(body);
+
+            var accessToken = json.GetProperty("access_token").GetString();
+
+            Console.WriteLine($"Token received: {accessToken?.Substring(0, 20)}..."); // debug
+
+            var refreshToken = json.TryGetProperty("refresh_token", out var rt)
+                ? rt.GetString()
+                : null;
+
+            HttpContext.Session.SetString("GoogleAccessToken", accessToken);
+
+            if (!string.IsNullOrEmpty(refreshToken))
+                HttpContext.Session.SetString("GoogleRefreshToken", refreshToken);
+
+            var saved = HttpContext.Session.GetString("GoogleAccessToken");
+            Console.WriteLine($"Token saved to session: {saved != null}");
+
+            var returnUrl = HttpContext.Session.GetString("AuthReturnUrl") ?? "/";
+            return LocalRedirect(returnUrl);
         }
     }
 }

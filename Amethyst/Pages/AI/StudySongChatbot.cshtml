@@ -14,6 +14,13 @@
         </p>
     </div>
 
+    <div class="card shadow-sm border-0 rounded-4 mt-3 mb-3">
+        <a href="/auth/google/login" class="btn-google">
+            Sign in with Google
+        </a>
+        <p class="hint">if you want to save this playlist to YouTube</p>
+    </div>
+
     <div class="card shadow-sm border-0 rounded-4">
         <div class="card-body p-4">
 
@@ -83,9 +90,39 @@
                 <h5 class="card-title mb-3">🎧 Your Curated Playlist</h5>
                 <p class="card-text">@Html.Raw(Model.PlaylistResult)</p>
             </div>
+
+            <div class="save-section">
+                @if (string.IsNullOrEmpty(HttpContext.Session.GetString("GoogleAccessToken")))
+                {
+                    <!-- Not connected — show Google sign-in button -->
+                    <a href="/auth/google/login" class="btn-google">
+                        Sign in with Google
+                    </a>
+                    <p class="hint">to save this playlist to YouTube</p>
+                }
+                else
+                {
+                    <!-- Connected — show the save button -->
+                    <form method="post" asp-page-handler="SaveToYouTube">
+                        <span class="text-danger">*</span>
+                        <label for="PlaylistName">Playlist Name</label>
+                        <input type="text" id="PlaylistName" name="PlaylistName" aria-required="true" class="form-control" />
+                        <input type="hidden" id="SongsJSON" name="Songs"/>
+                        <button type="submit" class="btn-youtube">
+                            Save to YouTube
+                        </button>
+                    </form>
+                }
+            </div>
         </div>
     }
 
+    @if (Model.PlaylistURL != null)
+    {
+        <div class="card shadow-sm border-0 rounded-4 mt-3 mb-3">
+            <p>@Html.Raw(Model.PlaylistURL)</p>
+        </div>
+    }
 </div>
 
 <script>
@@ -104,6 +141,35 @@
         spin.classList.remove('d-none');
     }
 
-    const data = JSON.parse(document.getElementById("playlist-data").textContent);
-    console.log("Received playlist data:", data);
+    // Save the JSON produced by the AI into the hidden input safely.
+    // Guard against missing elements and avoid using `textContent` on the parsed object.
+    document.addEventListener('DOMContentLoaded', function () {
+        const playlistEl = document.getElementById('playlist-data');
+        const songsInput = document.getElementById('SongsJSON');
+
+        if (!songsInput) {
+            // No hidden input to store songs — nothing to do.
+            return;
+        }
+
+        if (!playlistEl) {
+            // No playlist payload rendered on the page.
+            return;
+        }
+
+        const raw = (playlistEl.textContent || '').trim();
+        if (!raw) {
+            return;
+        }
+
+        try {
+            // Try to parse JSON; if successful, store a compact JSON string.
+            const parsed = JSON.parse(raw);
+            songsInput.value = JSON.stringify(parsed);
+            console.log('Playlist data parsed and saved to SongsJSON', parsed);
+        } catch (parseErr) {
+            // If it's not valid JSON, throw error
+            console.err('playlist-data is not valid JSON', parseErr);
+        }
+    });
 </script>
