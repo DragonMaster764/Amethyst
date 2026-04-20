@@ -149,7 +149,8 @@ namespace Amethyst.Services
 
             //Current upcoming uncompleted assignments
             var assignments = await _context.Assignments
-                .Where(a => a.Course.ProfileId == userID && a.DueDate > DateTime.Now && a.Status != "Completed")
+                .Include(a => a.Course) // ensure navigation is populated
+                .Where(a => a.Course.ProfileId == userID && a.DueDate.HasValue && a.DueDate > DateTime.Now && a.Status != "Completed")
                 .OrderBy(a => a.DueDate)
                 .ThenBy(a => a.Priority)
                 .Take(5)
@@ -195,7 +196,7 @@ namespace Amethyst.Services
             // Build assignment context
             var assignmentContext = assignments.Any()
                 ? string.Join("\n", assignments.Select(a =>
-                    $"- {a.Title} (Due: {a.DueDate:MM/dd/yyyy}, Description: {a.Description}, Priority: {a.Priority}, Status: {a.Status}, Course: {a.Course.Title ?? "Unknown"}, Total Points: {a.TotalPoints}, Estimated Minutes: {a.EstimatedMinutes})"))
+                    $"- {a.Title} (Due: {(a.DueDate.HasValue ? a.DueDate.Value.ToString("MM/dd/yyyy") : "No due date")}, Description: {a.Description ?? ""}, Priority: {a.Priority}, Status: {a.Status}, Course: {a.Course?.Title ?? "Unknown"}, Total Points: {a.TotalPoints?.ToString() ?? "N/A"}, Estimated Minutes: {a.EstimatedMinutes?.ToString() ?? "N/A"})"))
                 : "No upcoming assignments.";
 
             // Build courses context
