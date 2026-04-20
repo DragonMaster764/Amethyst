@@ -1,0 +1,129 @@
+.assignment-empty-state {
+  grid-column: 1 / -1;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  text-align: center;
+  background: linear-gradient(180deg, #fcf9ff 0%, #f6efff 100%);
+  border-radius: 24px;
+  padding: 1.5rem;
+}
+
+.assignment-empty-state p {
+  margin: 0;
+  color: var(--secondary-text-mauve);
+  font-weight: 600;
+}
+
+.empty-assignment-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.2rem;
+  border-radius: 999px;
+  background-color: #f2c7d8;
+  color: #ffffff;
+  font-weight: 800;
+  text-decoration: none;
+  line-height: 1;
+}
+
+.empty-assignment-btn:hover {
+  background-color: #e7b2c7;
+  color: #ffffff;
+}
+
+.progress-caption {
+  margin-top: 0.75rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--secondary-text-mauve);
+  text-align: center;
+}
+
+.progress-circle {
+  --progress-angle: 0deg;
+  width: 92px;
+  height: 92px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background:
+    conic-gradient(
+      var(--primary-color) 0deg var(--progress-angle),
+      #eadff7 var(--progress-angle) 360deg
+    );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.progress-circle::before {
+  content: "";
+  position: absolute;
+  width: 68px;
+  height: 68px;
+  background: #fffdfc;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(124, 91, 167, 0.05);
+}
+
+.progress-circle span {
+  position: relative;
+  z-index: 1;
+  font-weight: 800;
+  color: var(--headings-plum);
+  font-size: 1rem;
+}
+
+.progress-caption {
+  margin-top: 0.75rem;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--secondary-text-mauve);
+  text-align: center;
+}
+
+.summary-empty-text {
+  font-weight: 700;
+  color: var(--secondary-text-mauve);
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.progress-circle {
+  --progress-value: 0;
+  width: 92px;
+  height: 92px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--primary-color) calc(var(--progress-value) * 1%),
+    #eadff7 0
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.progress-circle::before {
+  content: "";
+  position: absolute;
+  width: 68px;
+  height: 68px;
+  background: #fffdfc;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(124, 91, 167, 0.05);
+}
+
+.progress-circle span {
+  position: relative;
+  z-index: 1;
+  font-weight: 800;
+  color: var(--headings-plum);
+  font-size: 1rem;
+}
