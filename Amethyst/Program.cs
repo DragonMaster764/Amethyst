@@ -20,8 +20,8 @@ builder.Services.AddControllersWithViews();
 
 // Register MongoDB client from configuration so IMongoClient can be injected
 //var mongoSettings = builder.Configuration.GetSection("MongoDBSettings");
-var mongoConnectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING") ?? throw new InvalidOperationException("MongoDBSettings:ConnectionString is not configured.");
-builder.Services.AddSingleton<IMongoClient>(_ => ew MongoClient(mongoConnectionString));
+//var mongoConnectionString = Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING") ?? throw new InvalidOperationException("MongoDBSettings:ConnectionString is not configured.");
+//builder.Services.AddSingleton<IMongoClient>(_ => ew MongoClient(mongoConnectionString));
 
 builder.Services.AddSingleton<MongoDBServices>();
 
