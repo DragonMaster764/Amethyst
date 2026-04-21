@@ -83,7 +83,7 @@ namespace Amethyst.Data
             modelBuilder.Entity<UserTask>().ToTable("Tasks");
 
             modelBuilder.Entity<UserTask>()
-    .       HasCheckConstraint("CK_Task_Status",
+    .HasCheckConstraint("CK_Task_Status",
             "status IN ('In Progress', 'Not Started', 'Completed')");
 
             modelBuilder.Entity<UserTask>()

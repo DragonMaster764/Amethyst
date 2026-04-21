@@ -12,8 +12,9 @@
     <link rel="shortcut icon" href="~/favicon.png" asp-append-version="true" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -52,6 +53,9 @@
 
                         @if (User.IsInRole("Student"))
                         {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/Index">Dashboard</a>
+                            </li>
                             <li class="dropdown nav-item">
                                 <a class="nav-link dropdown-toggle" href="#" id="workItemsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     View Work Items
@@ -79,6 +83,9 @@
                         @if (User.IsInRole("User"))
                         {
                             <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/Index">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-page="/Task_Pages/Index">View Tasks</a>
                             </li>
                             <li class="nav-item">
@@ -88,6 +95,16 @@
                                 <a class="nav-link" asp-area="" asp-page="/EditProfile/EditProfile">My Profile</a>
                             </li>
                         }
+
+                       @*  @if (!User.IsInRole("Admin") && !User.IsInRole("Student") && !User.IsInRole("User"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/Index">Dashboard</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-page="/EditProfile/EditProfile">My Profile</a>
+                            </li>
+                        } *@
                     </ul>
 
                     @if (User.Identity != null && User.Identity.IsAuthenticated)
