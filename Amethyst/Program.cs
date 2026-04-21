@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Amethyst.Services;
 using MongoDB.Driver;
-
-var builder = WebApplication.CreateBuilder(args);
+using Microsoft.AspNetCore.Authentication.Google;
 
 DotNetEnv.Env.Load();
+var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddEnvironmentVariables();
 
 // Add services to the container.
 builder.Services.AddRazorPages();
@@ -27,7 +28,16 @@ builder.Services.AddSingleton<MongoDBServices>();
 
 builder.Services.AddHttpClient<AIService>();
 
+builder.Services.AddSession();
+builder.Services.AddHttpClient();
+
+builder.Services.AddControllers();
+
 var app = builder.Build();
+
+//Youtube music stuff
+app.UseSession();
+app.MapControllers();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -42,7 +52,6 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();
