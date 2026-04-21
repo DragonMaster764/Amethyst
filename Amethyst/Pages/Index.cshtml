@@ -4,6 +4,8 @@
     ViewData["Title"] = "Dashboard";
 }
 
+<link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+
 @if (Model.IsStudent)
 {
     <div class="dashboard-page">
@@ -18,7 +20,7 @@
             </div>
 
             <div class="dashboard-banner-action">
-                <a href="#" class="amethyst-btn-primary">Chat with Amy</a>
+                <a href="./AI/Amy" class="amethyst-btn-primary">Chat with Amy</a>
             </div>
         </section>
 
@@ -27,20 +29,47 @@
             <div class="summary-grid">
 
                 <div class="summary-card amethyst-card">
-                    <h3>Assignments Due<br />This Week</h3>
-                    <div class="summary-value">@Model.AssignmentsDueThisWeekCount</div>
+                    <h3>Total<br />Assignments</h3>
+                    <div class="summary-value">@Model.TotalAssignmentsCount</div>
                     <a href="/Assignments/Index" class="summary-link">View</a>
                 </div>
 
                 <div class="summary-card amethyst-card">
-                    <h3>Tasks Due Today</h3>
-                    <div class="summary-value">@Model.TasksDueTodayCount</div>
+                    <h3>Total Tasks Due</h3>
+                    <div class="summary-value">@Model.TotalTasksDashboardCount</div>
                     <a href="/Task_Pages/Index" class="summary-link">View</a>
                 </div>
 
-                <div class="summary-card amethyst-card">
+                <div class="summary-card amethyst-card courses-summary-card">
                     <h3>Active Courses</h3>
-                    <div class="summary-value">@Model.ActiveCoursesCount</div>
+
+                    @if (Model.ActiveCourses.Any())
+                    {
+                        <div class="course-pill-list">
+                            @foreach (var course in Model.VisibleActiveCourses)
+                            {
+                                var bgColor = string.IsNullOrWhiteSpace(course.ColorLabel) ? "#e6ddf7" : course.ColorLabel;
+                                var textColor = GetContrastTextColor(bgColor);
+
+                                <span class="course-pill"
+                                    style="background-color: @bgColor; color: @textColor;">
+                                    @course.Title
+                                </span>
+                            }
+
+                            @if (Model.RemainingActiveCoursesCount > 0)
+                            {
+                                <span class="course-pill course-pill-more">
+                                    +@Model.RemainingActiveCoursesCount more
+                                </span>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="summary-empty-text">No courses yet</div>
+                    }
+
                     <a href="/Courses/Index" class="summary-link">View</a>
                 </div>
 
@@ -168,7 +197,7 @@
                         <h2>Study Music</h2>
                         <div class="study-music-helper">
                             <p>Need help choosing study music?</p>
-                            <a href="#" class="helper-btn">Open Playlist Helper</a>
+                            <a href="~/AI/StudySongChatbot" class="helper-btn">Open Playlist Helper</a>
                         </div>
                     </div>
 
@@ -217,4 +246,36 @@ else
             </div>
         </section>
     </div>
+}
+
+@functions {
+    public string GetContrastTextColor(string? hexColor)
+    {
+        if (string.IsNullOrWhiteSpace(hexColor))
+        {
+            return "#2f2440";
+        }
+
+        var color = hexColor.Trim().TrimStart('#');
+
+        if (color.Length != 6)
+        {
+            return "#2f2440";
+        }
+
+        try
+        {
+            var r = Convert.ToInt32(color.Substring(0, 2), 16);
+            var g = Convert.ToInt32(color.Substring(2, 2), 16);
+            var b = Convert.ToInt32(color.Substring(4, 2), 16);
+
+            var luminance = (0.299 * r) + (0.587 * g) + (0.114 * b);
+
+            return luminance > 186 ? "#2f2440" : "#ffffff";
+        }
+        catch
+        {
+            return "#2f2440";
+        }
+    }
 }

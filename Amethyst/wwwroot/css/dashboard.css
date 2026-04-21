@@ -127,3 +127,103 @@
   color: var(--headings-plum);
   font-size: 1rem;
 }
+
+.courses-summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.course-pill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  width: 100%;
+  margin-top: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+
+.course-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0.65rem 1rem;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.92rem;
+  line-height: 1.1;
+  color: #ffffff;
+  box-shadow: 0 6px 14px rgba(124, 91, 167, 0.12);
+  max-width: 100%;
+  word-break: break-word;
+}
+
+.summary-empty-text {
+  font-weight: 700;
+  color: var(--secondary-text-mauve);
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.course-pill-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.65rem;
+  width: 100%;
+  margin-top: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+
+.course-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.92rem;
+  line-height: 1.1;
+  color: #ffffff;
+  text-align: center;
+  box-shadow: 0 6px 14px rgba(124, 91, 167, 0.12);
+}
+
+.courses-summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.course-pill-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
+  gap: 0.45rem;
+  width: 100%;
+  margin-top: 0.2rem;
+  margin-bottom: 0.2rem;
+}
+
+.course-pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  line-height: 1;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(124, 91, 167, 0.1);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.course-pill-more {
+  background: linear-gradient(180deg, #f7f2ff 0%, #ede3fb 100%);
+  color: var(--headings-plum);
+}

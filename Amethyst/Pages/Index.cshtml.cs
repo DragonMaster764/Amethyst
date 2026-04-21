@@ -27,9 +27,10 @@ namespace Amethyst.Pages
         public List<UserTask> TodayTasks { get; set; } = new();
         public List<Assignment> UpcomingAssignments { get; set; } = new();
         public List<StudySession> UpcomingStudySessions { get; set; } = new();
+        public List<Course> ActiveCourses { get; set; } = new();
 
-        public int AssignmentsDueThisWeekCount { get; set; }
-        public int TasksDueTodayCount { get; set; }
+        public int TotalAssignmentsCount { get; set; }
+        public int TotalTasksDashboardCount { get; set; }
         public int ActiveCoursesCount { get; set; }
         public int ReminderCount { get; set; }
 
@@ -38,7 +39,13 @@ namespace Amethyst.Pages
         public int CompletedTasksPercentage =>
             TotalTasksCount == 0 ? 0 : (int)Math.Round((double)CompletedTasksCount / TotalTasksCount * 100);
 
-       public async Task OnGetAsync()
+        public List<Course> VisibleActiveCourses =>
+            ActiveCourses.Take(4).ToList();
+
+        public int RemainingActiveCoursesCount =>
+            Math.Max(0, ActiveCourses.Count - 4);
+        
+        public async Task OnGetAsync()
         {
             await LoadDashboardDataAsync();
         }
@@ -85,29 +92,16 @@ namespace Amethyst.Pages
                 return;
             }
 
-            var today = DateTime.Today;
-            var tomorrow = today.AddDays(1);
-            var endOfWeek = today.AddDays(7);
-
             TodayTasks = await _context.TaskItems
                 .Where(t => t.ProfileId == loggedInUserId)
                 .Where(t => t.Status != "Completed")
-                .Where(t => t.DueAt.HasValue && t.DueAt.Value >= today && t.DueAt.Value < tomorrow)
-                .OrderBy(t => t.DueAt)
+                .OrderBy(t => t.DueAt ?? DateTime.MaxValue)
                 .Take(6)
                 .ToListAsync();
 
-            TasksDueTodayCount = TodayTasks.Count;
-
-            if (!TodayTasks.Any())
-            {
-                TodayTasks = await _context.TaskItems
-                    .Where(t => t.ProfileId == loggedInUserId)
-                    .Where(t => t.Status != "Completed")
-                    .OrderBy(t => t.DueAt ?? DateTime.MaxValue)
-                    .Take(6)
-                    .ToListAsync();
-            }
+            TotalTasksDashboardCount = await _context.TaskItems
+                .Where(t => t.ProfileId == loggedInUserId)
+                .CountAsync();
 
             UpcomingAssignments = await _context.Assignments
                 .Include(a => a.Course)
@@ -118,16 +112,46 @@ namespace Amethyst.Pages
                 .Take(4)
                 .ToListAsync();
 
-            AssignmentsDueThisWeekCount = await _context.Assignments
+            TotalAssignmentsCount = await _context.Assignments
                 .Include(a => a.Course)
                 .Where(a => a.Course != null && a.Course.ProfileId == loggedInUserId)
-                .Where(a => a.Status != "Completed")
-                .Where(a => a.DueDate.HasValue && a.DueDate.Value >= today && a.DueDate.Value <= endOfWeek)
                 .CountAsync();
 
-            ActiveCoursesCount = await _context.Courses
+            var allCourses = await _context.Courses
                 .Where(c => c.ProfileId == loggedInUserId)
-                .CountAsync();
+                .ToListAsync();
+
+            int GetTermRank(string? term)
+            {
+                return term?.Trim().ToLower() switch
+                {
+                    "spring" => 4,
+                    "summer" => 3,
+                    "fall" => 2,
+                    "winter" => 1,
+                    _ => 0
+                };
+            }
+
+            var mostCurrentGroup = allCourses
+                .OrderByDescending(c => c.AcademicYear)
+                .ThenByDescending(c => GetTermRank(c.Term))
+                .Select(c => new { c.AcademicYear, c.Term })
+                .FirstOrDefault();
+
+            if (mostCurrentGroup != null)
+            {
+                ActiveCourses = allCourses
+                    .Where(c => c.AcademicYear == mostCurrentGroup.AcademicYear && c.Term == mostCurrentGroup.Term)
+                    .OrderBy(c => c.Title)
+                    .ToList();
+            }
+            else
+            {
+                ActiveCourses = new List<Course>();
+            }
+
+            ActiveCoursesCount = ActiveCourses.Count;
 
             ReminderCount = await _context.Reminders
                 .Where(r => r.ProfileId == loggedInUserId)
@@ -139,6 +163,15 @@ namespace Amethyst.Pages
                 .OrderBy(s => s.StartTime)
                 .Take(2)
                 .ToListAsync();
+
+            if (!UpcomingStudySessions.Any())
+            {
+                UpcomingStudySessions = await _context.StudySessions
+                    .Where(s => s.ProfileId == loggedInUserId)
+                    .OrderBy(s => s.StartTime)
+                    .Take(2)
+                    .ToListAsync();
+            }
 
             TotalTasksCount = await _context.TaskItems
                 .Where(t => t.ProfileId == loggedInUserId)
