@@ -13,14 +13,12 @@ namespace Amethyst.Models
         [Column("reminder_id")]
         public long ReminderId { get; set; }
 
-        [Required]
         [Column("profile_id")]
-        public string ProfileId { get; set; } = string.Empty;
+        public string ProfileId { get; set; }
 
         
-        [Required]
         [Column("target_type")]
-        public string TargetType { get; set; } = string.Empty;
+        public string TargetType { get; set; }
 
         [Column("assignment_id")]
         public int? AssignmentId { get; set; }
@@ -33,13 +31,13 @@ namespace Amethyst.Models
         public DateTime RemindAt { get; set; }
 
         // Navigation properties
-        [ForeignKey(nameof(ProfileId))]
-        public Profile? Profile { get; set; }
+        [ForeignKey("ProfileId")]
+        public Profile Profile { get; set; }
 
-        [ForeignKey(nameof(AssignmentId))]
-        public Assignment? Assignment { get; set; }
+        [ForeignKey("AssignmentId")]
+        public Assignment Assignment { get; set; }
 
-        [ForeignKey(nameof(TaskId))]
-        public UserTask? TaskItem { get; set; }
+        [ForeignKey("TaskId")]
+        public UserTask TaskItem { get; set; }
     }
 }

@@ -1,7 +1,9 @@
 ﻿@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <base href="~/" />
     <base href="~/" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,12 +13,28 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="icon" type="image/png" href="~/favicon.png" asp-append-version="true" />
+    <link rel="shortcut icon" href="~/favicon.png" asp-append-version="true" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Amethyst.styles.css" asp-append-version="true" />
 </head>
 <body>
     <header>
+        <nav class="navbar navbar-expand-lg amethyst-navbar">
+            <div class="container amethyst-navbar-inner">
+
+                <!-- Brand / Logo -->
+                <a class="navbar-brand amethyst-brand" asp-area="" asp-page="/Index">
+                    <img src="~/images/amethyst-logo.png" alt="Amethyst logo" class="amethyst-logo" />
+                    <span>Amethyst</span>
+                </a>
+
+                <!-- Mobile Toggle -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#amethystNavbar"
+                        aria-controls="amethystNavbar" aria-expanded="false" aria-label="Toggle navigation">
         <nav class="navbar navbar-expand-lg amethyst-navbar">
             <div class="container amethyst-navbar-inner">
 
@@ -37,6 +55,10 @@
 
                     <ul class="navbar-nav amethyst-nav-links mx-auto">
 
+                        @* <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-page="/Index">Dashboard</a>
+                        </li> *@
+
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="dropdown nav-item">
@@ -52,9 +74,6 @@
 
                         @if (User.IsInRole("Student"))
                         {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-page="/Index">Dashboard</a>
-                            </li>
                             <li class="dropdown nav-item">
                                 <a class="nav-link dropdown-toggle" href="#" id="workItemsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     View Work Items
@@ -78,15 +97,12 @@
                                 <a class="nav-link" asp-area="" asp-page="">Statistics</a>
                             </li>*@
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-page="/EditProfile/EditProfile">My Profile</a>
+                                <a class="nav-link" asp-area="" asp-page="">My Profile</a>
                             </li>
                         }
 
                         @if (User.IsInRole("User"))
                         {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-page="/Index">Dashboard</a>
-                            </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-page="/Task_Pages/Index">View Tasks</a>
                             </li>
@@ -97,23 +113,21 @@
                                 <a class="nav-link" asp-area="" asp-page="">Statistics</a>
                             </li>*@
                             <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-page="/EditProfile/EditProfile">My Profile</a>
+                                <a class="nav-link" asp-area="" asp-page="">My Profile</a>
                             </li>
                         }
-
-                       @*  @if (!User.IsInRole("Admin") && !User.IsInRole("Student") && !User.IsInRole("User"))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-page="/Index">Dashboard</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-page="/EditProfile/EditProfile">My Profile</a>
-                            </li>
-                        } *@
                     </ul>
 
                     @if (User.Identity != null && User.Identity.IsAuthenticated)
                     {
+                        <div class="amethyst-logout-wrap">
+                            <a class="amethyst-logout-btn" asp-area="Identity" asp-page="/Account/Logout">Logout</a>
+                        </div>
+                    }
+
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        
                         <div class="amethyst-logout-wrap">
                             <a class="amethyst-logout-btn" asp-area="Identity" asp-page="/Account/Logout">Logout</a>
                         </div>

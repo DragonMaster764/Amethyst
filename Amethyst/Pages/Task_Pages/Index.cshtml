@@ -66,7 +66,7 @@
                             <th>Time</th>
                             <th>Created</th>
                             <th>Updated</th>
-                            <th>Profile</th>
+                            @* <th>Profile</th> *@
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -108,11 +108,11 @@
                                 @item.UpdatedAt.ToString("M/d/yy")
                             </td>
 
-                            <td>
+                            @* <td>
                                 <span class="profile-chip">
-                                    @(item.Profile?.ProfileId ?? "--")
+                                    @(item.Profile?.DisplayName ?? "--")
                                 </span>
-                            </td>
+                            </td> *@
 
                             <td>
                                 <div class="task-actions">
