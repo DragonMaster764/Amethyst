@@ -24,6 +24,7 @@ namespace Amethyst.Pages
         public bool IsAdmin { get; set; }
         public bool IsGeneralUser { get; set; }
 
+        // Student dashboard data
         public List<UserTask> TodayTasks { get; set; } = new();
         public List<Assignment> UpcomingAssignments { get; set; } = new();
         public List<StudySession> UpcomingStudySessions { get; set; } = new();
@@ -44,7 +45,26 @@ namespace Amethyst.Pages
 
         public int RemainingActiveCoursesCount =>
             Math.Max(0, ActiveCourses.Count - 4);
-        
+
+        // Admin dashboard data
+        public int TotalUsersCount { get; set; }
+        public int TotalStudentsCount { get; set; }
+        public int TotalGeneralUsersCount { get; set; }
+        public int TotalAdminsCount { get; set; }
+        public int TotalStudySessionsCount { get; set; }
+
+        // General user dashboard data
+        public List<UserTask> GeneralUserTasks { get; set; } = new();
+        public List<Reminder> GeneralUserReminders { get; set; } = new();
+
+        public int GeneralUserTaskCount { get; set; }
+        public int GeneralUserReminderCount { get; set; }
+        public int GeneralUserCompletedTaskCount { get; set; }
+        public int GeneralUserOpenTaskCount { get; set; }
+
+        public int GeneralUserTaskCompletionPercentage =>
+            GeneralUserTaskCount == 0 ? 0 : (int)Math.Round((double)GeneralUserCompletedTaskCount / GeneralUserTaskCount * 100);
+
         public async Task OnGetAsync()
         {
             await LoadDashboardDataAsync();
@@ -80,11 +100,6 @@ namespace Amethyst.Pages
             IsStudent = User.IsInRole("Student");
             IsGeneralUser = !IsAdmin && !IsStudent;
 
-            if (!IsStudent)
-            {
-                return;
-            }
-
             var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (string.IsNullOrEmpty(loggedInUserId))
@@ -92,6 +107,26 @@ namespace Amethyst.Pages
                 return;
             }
 
+            if (IsStudent)
+            {
+                await LoadStudentDashboardAsync(loggedInUserId);
+                return;
+            }
+
+            if (IsAdmin)
+            {
+                await LoadAdminDashboardAsync();
+                return;
+            }
+
+            if (IsGeneralUser)
+            {
+                await LoadGeneralUserDashboardAsync(loggedInUserId);
+            }
+        }
+
+        private async Task LoadStudentDashboardAsync(string loggedInUserId)
+        {
             TodayTasks = await _context.TaskItems
                 .Where(t => t.ProfileId == loggedInUserId)
                 .Where(t => t.Status != "Completed")
@@ -180,6 +215,63 @@ namespace Amethyst.Pages
             CompletedTasksCount = await _context.TaskItems
                 .Where(t => t.ProfileId == loggedInUserId)
                 .Where(t => t.Status == "Completed")
+                .CountAsync();
+        }
+
+        private async Task LoadAdminDashboardAsync()
+        {
+            TotalUsersCount = await _context.Users.CountAsync();
+
+            var userRoles = await (
+                from user in _context.Users
+                join userRole in _context.UserRoles on user.Id equals userRole.UserId
+                join role in _context.Roles on userRole.RoleId equals role.Id
+                select role.Name
+            ).ToListAsync();
+
+            TotalStudentsCount = userRoles.Count(r => r == "Student");
+            TotalAdminsCount = userRoles.Count(r => r == "Admin");
+            TotalGeneralUsersCount = userRoles.Count(r => r == "User");
+
+            TotalAssignmentsCount = await _context.Assignments.CountAsync();
+            TotalTasksDashboardCount = await _context.TaskItems.CountAsync();
+            ActiveCoursesCount = await _context.Courses.CountAsync();
+            ReminderCount = await _context.Reminders.CountAsync();
+            TotalStudySessionsCount = await _context.StudySessions.CountAsync();
+        }
+
+        private async Task LoadGeneralUserDashboardAsync(string loggedInUserId)
+        {
+            GeneralUserTasks = await _context.TaskItems
+                .Where(t => t.ProfileId == loggedInUserId)
+                .Where(t => t.Status != "Completed")
+                .OrderBy(t => t.DueAt ?? DateTime.MaxValue)
+                .Take(6)
+                .ToListAsync();
+
+            GeneralUserReminders = await _context.Reminders
+                .Include(r => r.TaskItem)
+                .Where(r => r.ProfileId == loggedInUserId)
+                .OrderBy(r => r.RemindAt)
+                .Take(4)
+                .ToListAsync();
+
+            GeneralUserTaskCount = await _context.TaskItems
+                .Where(t => t.ProfileId == loggedInUserId)
+                .CountAsync();
+
+            GeneralUserReminderCount = await _context.Reminders
+                .Where(r => r.ProfileId == loggedInUserId)
+                .CountAsync();
+
+            GeneralUserCompletedTaskCount = await _context.TaskItems
+                .Where(t => t.ProfileId == loggedInUserId)
+                .Where(t => t.Status == "Completed")
+                .CountAsync();
+
+            GeneralUserOpenTaskCount = await _context.TaskItems
+                .Where(t => t.ProfileId == loggedInUserId)
+                .Where(t => t.Status != "Completed")
                 .CountAsync();
         }
     }
