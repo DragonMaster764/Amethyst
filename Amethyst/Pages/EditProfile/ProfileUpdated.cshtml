@@ -1,0 +1,51 @@
+﻿@page
+@model Amethyst.Pages.EditProfile.ProfileUpdatedModel
+@{
+}
+
+<br />
+<br />
+<br />
+<br />
+<h1 style="text-align:center">Your Profile Has Been Updated!</h1>
+
+<div class="button-row">
+    <a class="account-btn" asp-page="/Index">
+        Go Back To Dashboard
+    </a>
+</div>
+<style>
+    .userType-container {
+        text-align: center;
+        margin-top: 80px;
+    }
+
+    .button-row {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        margin-top: 40px;
+    }
+
+    .account-btn,
+    .account-btn:link,
+    .account-btn:visited {
+        background-color: #7C5BA7;
+        padding: 15px 30px;
+        font-size: 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.2s ease-in-out;
+        text-decoration: none !important; /* override underline */
+        color: #FFFDFC !important; /* override blue link color */
+        display: inline-block;
+    }
+
+        .account-btn:hover {
+            background-color: #B9A3E3;
+            text-decoration: none !important;
+            color: #FFFDFC !important;
+        }
+
+</style>

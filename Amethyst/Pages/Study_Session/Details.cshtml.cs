@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -12,14 +9,31 @@ namespace Amethyst.Pages.Study_Session
 {
     public class DetailsModel : PageModel
     {
-        private readonly Amethyst.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public DetailsModel(Amethyst.Data.ApplicationDbContext context)
+        public DetailsModel(ApplicationDbContext context)
         {
             _context = context;
         }
 
         public StudySession StudySession { get; set; } = default!;
+
+        public bool IsPastSession =>
+            StudySession.EndTime.HasValue && StudySession.EndTime.Value < DateTime.Now;
+
+        public int? SessionLengthMinutes
+        {
+            get
+            {
+                if (!StudySession.EndTime.HasValue)
+                {
+                    return null;
+                }
+
+                var totalMinutes = (int)(StudySession.EndTime.Value - StudySession.StartTime).TotalMinutes;
+                return totalMinutes > 0 ? totalMinutes : null;
+            }
+        }
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -28,15 +42,19 @@ namespace Amethyst.Pages.Study_Session
                 return NotFound();
             }
 
-            var studysession = await _context.StudySessions.FirstOrDefaultAsync(m => m.SessionId == id);
+            var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var studysession = await _context.StudySessions
+                .Include(s => s.Course)
+                .Include(s => s.Profile)
+                .FirstOrDefaultAsync(s => s.SessionId == id && s.ProfileId == loggedInUserId);
+
             if (studysession == null)
             {
                 return NotFound();
             }
-            else
-            {
-                StudySession = studysession;
-            }
+
+            StudySession = studysession;
             return Page();
         }
     }

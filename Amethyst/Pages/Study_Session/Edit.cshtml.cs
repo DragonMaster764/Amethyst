@@ -1,27 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Security.Claims;
+using Amethyst.Data;
+using Amethyst.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Amethyst.Data;
-using Amethyst.Models;
 
 namespace Amethyst.Pages.Study_Session
 {
     public class EditModel : PageModel
     {
-        private readonly Amethyst.Data.ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public EditModel(Amethyst.Data.ApplicationDbContext context)
+        public EditModel(ApplicationDbContext context)
         {
             _context = context;
         }
 
         [BindProperty]
         public StudySession StudySession { get; set; } = default!;
+
+        public SelectList CourseOptions { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -30,50 +29,57 @@ namespace Amethyst.Pages.Study_Session
                 return NotFound();
             }
 
-            var studysession =  await _context.StudySessions.FirstOrDefaultAsync(m => m.SessionId == id);
-            if (studysession == null)
+            var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var session = await _context.StudySessions
+                .FirstOrDefaultAsync(s => s.SessionId == id && s.ProfileId == loggedInUserId);
+
+            if (session == null)
             {
                 return NotFound();
             }
-            StudySession = studysession;
-           ViewData["CourseId"] = new SelectList(_context.Courses, "CourseId", "ProfileId");
-           ViewData["ProfileId"] = new SelectList(_context.Set<Profile>(), "ProfileId", "ProfileId");
+
+            StudySession = session;
+            await LoadCourseOptionsAsync(loggedInUserId);
+
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more information, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            var loggedInUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var existingSession = await _context.StudySessions
+                .FirstOrDefaultAsync(s => s.SessionId == StudySession.SessionId && s.ProfileId == loggedInUserId);
+
+            if (existingSession == null)
+            {
+                return NotFound();
+            }
+
             if (!ModelState.IsValid)
             {
+                await LoadCourseOptionsAsync(loggedInUserId);
                 return Page();
             }
 
-            _context.Attach(StudySession).State = EntityState.Modified;
+            existingSession.CourseId = StudySession.CourseId;
+            existingSession.StartTime = StudySession.StartTime;
+            existingSession.EndTime = StudySession.EndTime;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!StudySessionExists(StudySession.SessionId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
         }
 
-        private bool StudySessionExists(int id)
+        private async Task LoadCourseOptionsAsync(string? loggedInUserId)
         {
-            return _context.StudySessions.Any(e => e.SessionId == id);
+            var courses = await _context.Courses
+                .Where(c => c.ProfileId == loggedInUserId)
+                .OrderBy(c => c.Title)
+                .ToListAsync();
+
+            CourseOptions = new SelectList(courses, "CourseId", "Title");
         }
     }
 }

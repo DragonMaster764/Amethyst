@@ -2,59 +2,163 @@
 @model Amethyst.Pages.Reminders.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "My Reminders";
 }
 
-<h1>Index</h1>
+<link rel="stylesheet" href="~/css/reminders.css" asp-append-version="true" />
 
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Reminder[0].TargetType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Reminder[0].RemindAt)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Reminder[0].Profile)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Reminder[0].Assignment)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Reminder[0].TaskItem)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.Reminder) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.TargetType)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RemindAt)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Profile.ProfileId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Assignment.Priority)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TaskItem.TaskId)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.ReminderId">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.ReminderId">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.ReminderId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="reminders-page">
+    <div class="reminders-header amethyst-panel">
+        <div class="reminders-header-text">
+            <h1>My Reminders</h1>
+            <p>Stay on top of important tasks and assignments with reminders organized by time.</p>
+        </div>
+
+        <div class="reminders-header-action">
+            <a asp-page="Create" class="amethyst-btn-primary">+ Create Reminder</a>
+        </div>
+    </div>
+
+    @if (Model.Reminder == null || !Model.Reminder.Any())
+    {
+        <div class="reminders-empty amethyst-card">
+            <h2>No reminders yet</h2>
+            <p>Create your first reminder to keep track of what matters most.</p>
+        </div>
+    }
+    else
+    {
+        var now = DateTime.Now;
+        var today = Model.Reminder
+            .Where(r => r.RemindAt.Date == now.Date)
+            .OrderBy(r => r.RemindAt)
+            .ToList();
+
+        var upcoming = Model.Reminder
+            .Where(r => r.RemindAt.Date > now.Date)
+            .OrderBy(r => r.RemindAt)
+            .ToList();
+
+        var past = Model.Reminder
+            .Where(r => r.RemindAt.Date < now.Date)
+            .OrderByDescending(r => r.RemindAt)
+            .ToList();
+
+        @if (today.Any())
+        {
+            <section class="reminder-section">
+                <div class="section-heading">
+                    <h2>Today</h2>
+                </div>
+
+                <div class="reminder-list">
+                    @foreach (var item in today)
+                    {
+                        var displayTitle = item.Assignment != null
+                            ? item.Assignment.Title
+                            : item.TaskItem != null
+                                ? item.TaskItem.Title
+                                : "Untitled Reminder";
+
+                        <article class="reminder-card amethyst-card today-card">
+                            <div class="reminder-main">
+                                <div class="reminder-type-pill @(item.TargetType == "Assignment" ? "assignment-pill" : "task-pill")">
+                                    @item.TargetType
+                                </div>
+
+                                <div class="reminder-text">
+                                    <h3>@displayTitle</h3>
+                                    <p>@item.RemindAt.ToString("dddd, MMMM d, yyyy • h:mm tt")</p>
+                                </div>
+                            </div>
+
+                            <div class="reminder-actions">
+                                <a asp-page="./Details" asp-route-id="@item.ReminderId" class="reminder-view-btn">View</a>
+                                <a asp-page="./Edit" asp-route-id="@item.ReminderId" class="reminder-modify-btn">Modify</a>
+                                <a asp-page="./Delete" asp-route-id="@item.ReminderId" class="reminder-complete-btn">Mark as Complete</a>
+                            </div>
+                        </article>
+                    }
+                </div>
+            </section>
+        }
+
+        @if (upcoming.Any())
+        {
+            <section class="reminder-section">
+                <div class="section-heading">
+                    <h2>Upcoming</h2>
+                </div>
+
+                <div class="reminder-list">
+                    @foreach (var item in upcoming)
+                    {
+                        var displayTitle = item.Assignment != null
+                            ? item.Assignment.Title
+                            : item.TaskItem != null
+                                ? item.TaskItem.Title
+                                : "Untitled Reminder";
+
+                        <article class="reminder-card amethyst-card">
+                            <div class="reminder-main">
+                                <div class="reminder-type-pill @(item.TargetType == "Assignment" ? "assignment-pill" : "task-pill")">
+                                    @item.TargetType
+                                </div>
+
+                                <div class="reminder-text">
+                                    <h3>@displayTitle</h3>
+                                    <p>@item.RemindAt.ToString("dddd, MMMM d, yyyy • h:mm tt")</p>
+                                </div>
+                            </div>
+
+                            <div class="reminder-actions">
+                                <a asp-page="./Details" asp-route-id="@item.ReminderId" class="reminder-view-btn">View</a>
+                                <a asp-page="./Edit" asp-route-id="@item.ReminderId" class="reminder-modify-btn">Modify</a>
+                                <a asp-page="./Delete" asp-route-id="@item.ReminderId" class="reminder-complete-btn">Mark as Complete</a>
+                            </div>
+                        </article>
+                    }
+                </div>
+            </section>
+        }
+
+        @if (past.Any())
+        {
+            <section class="reminder-section">
+                <div class="section-heading">
+                    <h2>Past</h2>
+                </div>
+
+                <div class="reminder-list">
+                    @foreach (var item in past)
+                    {
+                        var displayTitle = item.Assignment != null
+                            ? item.Assignment.Title
+                            : item.TaskItem != null
+                                ? item.TaskItem.Title
+                                : "Untitled Reminder";
+
+                        <article class="reminder-card amethyst-card past-card">
+                            <div class="reminder-main">
+                                <div class="reminder-type-pill @(item.TargetType == "Assignment" ? "assignment-pill" : "task-pill")">
+                                    @item.TargetType
+                                </div>
+
+                                <div class="reminder-text">
+                                    <h3>@displayTitle</h3>
+                                    <p>@item.RemindAt.ToString("dddd, MMMM d, yyyy • h:mm tt")</p>
+                                </div>
+                            </div>
+
+                            <div class="reminder-actions">
+                                <a asp-page="./Details" asp-route-id="@item.ReminderId" class="reminder-view-btn">View</a>
+                                <a asp-page="./Edit" asp-route-id="@item.ReminderId" class="reminder-modify-btn">Modify</a>
+                                <a asp-page="./Delete" asp-route-id="@item.ReminderId" class="reminder-complete-btn">Mark as Complete</a>
+                            </div>
+                        </article>
+                    }
+                </div>
+            </section>
+        }
+    }
+</div>

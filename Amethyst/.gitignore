@@ -1,0 +1,9 @@
+env
+.env
+Amethyst/env
+<<<<<<< HEAD
+.env
+env
+=======
+>>>>>>> 4318b20 (dashboard stuff)
+Amethyst/.env

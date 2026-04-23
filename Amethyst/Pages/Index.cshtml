@@ -4,140 +4,202 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="dashboard-page">
+<link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
 
-    <!-- Welcome Banner -->
-    <section class="dashboard-banner amethyst-panel">
-        <div class="dashboard-banner-text">
-            <h1>
-                Welcome, @(User.Identity?.Name?.Split('@')[0] ?? "Micah")!
-            </h1>
-            <p>Let’s make today productive!</p>
-        </div>
+@if (Model.IsAdmin)
+{
+    <link rel="stylesheet" href="~/css/admin-dashboard.css" asp-append-version="true" />
+}
+
+@if (Model.IsGeneralUser)
+{
+    <link rel="stylesheet" href="~/css/general-dashboard.css" asp-append-version="true" />
+}
+
+@if (Model.IsStudent)
+{
+    <div class="dashboard-page">
+
+        <!-- Welcome Banner -->
+        <section class="dashboard-banner amethyst-panel">
+            <div class="dashboard-banner-text">
+                <h1>
+                    Welcome, @(User.Identity?.Name?.Split('@')[0] ?? "Micah")!
+                </h1>
+                <p>Let’s make today productive!</p>
+            </div>
 
         <div class="dashboard-banner-action">
-            <a href="#" class="amethyst-btn-primary">Chat with Amy</a>
+            <a asp-page="/AI/Amy" class="amethyst-btn-primary">Chat with Amy</a>
         </div>
     </section>
 
-    <!-- Summary Cards -->
-    <section class="dashboard-summary amethyst-panel">
-        <div class="summary-grid">
+        <!-- Summary Cards -->
+        <section class="dashboard-summary amethyst-panel">
+            <div class="summary-grid">
 
-            <div class="summary-card amethyst-card">
-                <h3>Assignments Due<br />This Week</h3>
-                <div class="summary-value">2</div>
-                <a href="/Assignments/Index" class="summary-link">View</a>
-            </div>
-
-            <div class="summary-card amethyst-card">
-                <h3>Tasks Due Today</h3>
-                <div class="summary-value">3</div>
-                <a href="/Task_Pages/Index" class="summary-link">View</a>
-            </div>
-
-            <div class="summary-card amethyst-card">
-                <h3>Active Courses</h3>
-                <div class="summary-value">5</div>
-                <a href="/Courses/Index" class="summary-link">View</a>
-            </div>
-
-            <div class="summary-card amethyst-card">
-                <h3>Upcoming Study<br />Sessions</h3>
-                <div class="study-session-list">
-                    <div class="session-pill">Sat 3:00 pm - 5:00 pm</div>
-                    <div class="session-pill">Tue 9:15 am - 10:30 am</div>
+                <div class="summary-card amethyst-card">
+                    <h3>Total<br />Assignments</h3>
+                    <div class="summary-value">@Model.TotalAssignmentsCount</div>
+                    <a href="/Assignments/Index" class="summary-link">View</a>
                 </div>
-                @* <a href="/Study_Session/Index" class="summary-link">View</a> *@
-            </div>
 
-            <div class="summary-card amethyst-card no-action-card">
-                <h3>Reminders</h3>
-                <div class="summary-value">3</div>
-                @* <span class="summary-link summary-link-placeholder">View</span> *@
-                @* <a href="/Reminders/Index" class="summary-link">View</a> *@
-            </div>
-
-            <div class="summary-card amethyst-card progress-card">
-                <h3>Weekly Progress</h3>
-                <div class="progress-circle">
-                    <span>78%</span>
+                <div class="summary-card amethyst-card">
+                    <h3>Total Tasks Due</h3>
+                    <div class="summary-value">@Model.TotalTasksDashboardCount</div>
+                    <a href="/Task_Pages/Index" class="summary-link">View</a>
                 </div>
+
+                <div class="summary-card amethyst-card courses-summary-card">
+                    <h3>Active Courses</h3>
+
+                    @if (Model.ActiveCourses.Any())
+                    {
+                        <div class="course-pill-list">
+                            @foreach (var course in Model.VisibleActiveCourses)
+                            {
+                                var bgColor = string.IsNullOrWhiteSpace(course.ColorLabel) ? "#e6ddf7" : course.ColorLabel;
+                                var textColor = GetContrastTextColor(bgColor);
+
+                                <span class="course-pill"
+                                    style="background-color: @bgColor; color: @textColor;">
+                                    @course.Title
+                                </span>
+                            }
+
+                            @if (Model.RemainingActiveCoursesCount > 0)
+                            {
+                                <span class="course-pill course-pill-more">
+                                    +@Model.RemainingActiveCoursesCount more
+                                </span>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="summary-empty-text">No courses yet</div>
+                    }
+
+                    <a href="/Courses/Index" class="summary-link">View</a>
+                </div>
+
+                <div class="summary-card amethyst-card">
+                    <h3>Upcoming Study<br />Sessions</h3>
+
+                    @if (Model.UpcomingStudySessions.Any())
+                    {
+                        <div class="study-session-list">
+                            @foreach (var session in Model.UpcomingStudySessions)
+                            {
+                                <div class="session-pill">
+                                    @session.StartTime.ToString("ddd h:mm tt")
+                                    @if (session.EndTime.HasValue)
+                                    {
+                                        <span> - @session.EndTime.Value.ToString("h:mm tt")</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="summary-empty-text">No upcoming sessions</div>
+                    }
+
+                    <a href="/Study_Session/Index" class="summary-link">View</a>
+                </div>
+
+                <div class="summary-card amethyst-card">
+                    <h3>Reminders</h3>
+                    <div class="summary-value">@Model.ReminderCount</div>
+                    <a href="/Reminders/Index" class="summary-link">View</a>
+                </div>
+
+                <div class="summary-card amethyst-card progress-card">
+                    <h3>Tasks Completed</h3>
+
+                    <div class="progress-circle"
+                        style="background: conic-gradient(var(--primary-color) 0% @($"{Model.CompletedTasksPercentage}%"), #eadff7 @($"{Model.CompletedTasksPercentage}%") 100%);">
+                        <span>@Model.CompletedTasksPercentage%</span>
+                    </div>
+
+                    <p class="progress-caption">@Model.CompletedTasksCount of @Model.TotalTasksCount completed</p>
+                </div>
+
             </div>
+        </section>
 
-        </div>
-    </section>
+        <!-- Main Content -->
+        <section class="dashboard-main amethyst-panel">
+            <div class="dashboard-main-grid">
 
-    <!-- Main Content -->
-    <section class="dashboard-main amethyst-panel">
-        <div class="dashboard-main-grid">
-
-            <!-- Upcoming Assignments -->
-            <div class="dashboard-block amethyst-card">
-                <h2>Upcoming Assignments</h2>
-
-                <div class="assignment-grid">
-                    <div class="assignment-item lilac-box">
-                        <p><strong>Assignment 1</strong></p>
-                        <p>Course A</p>
-                        <p>Due: 4/7/26</p>
-                        <a href="/Assignments/Index" class="mini-view">View</a>
-                    </div>
-
-                    <div class="assignment-item lilac-box">
-                        <p><strong>Assignment 2</strong></p>
-                        <p>Course B</p>
-                        <p>Due: 4/10/26</p>
-                        <a href="/Assignments/Index" class="mini-view">View</a>
-                    </div>
-
-                    <div class="assignment-item lilac-box">
-                        <p><strong>Assignment 3</strong></p>
-                        <p>Course B</p>
-                        <p>Due: 4/22/26</p>
-                        <a href="/Assignments/Index" class="mini-view">View</a>
-                    </div>
-
-                    <div class="assignment-item lilac-box">
-                        <p><strong>Assignment 4</strong></p>
-                        <p>Course C</p>
-                        <p>Due: 5/1/26</p>
-                        <a href="/Assignments/Index" class="mini-view">View</a>
+                <!-- Upcoming Assignments -->
+                <div class="dashboard-block amethyst-card task-dashboard-block">
+                    <h2>Assignments Due</h2>
+                    <div class="task-list">
+                        @if (Model.UpcomingAssignments.Any())
+                        {
+                            @foreach (var assignment in Model.UpcomingAssignments)
+                            {
+                                <div class="assignment-item lilac-box">
+                                    <p><strong>@assignment.Title</strong></p>
+                                    <p>@(assignment.Course?.Title ?? "Course")</p>
+                                    <p>Due: @(assignment.DueDate?.ToString("M/d/yy h:mm tt") ?? "--")</p>
+                                    <a href="/Assignments/Index" class="mini-view">View</a>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="assignment-empty-state">
+                                <p>No upcoming assignments right now.</p>
+                                <a href="/Assignments/Create" class="empty-assignment-btn">Create Assignment</a>
+                            </div>
+                        }
                     </div>
                 </div>
-            </div>
 
-            <!-- Today's Tasks -->
-            <div class="dashboard-block amethyst-card">
-                <h2>Today’s Tasks</h2>
+                <!-- Today's Tasks -->
+                <div class="dashboard-block amethyst-card task-dashboard-block">
+                    <h2>Today’s Tasks</h2>
 
-                <div class="task-list">
-                    <div class="task-row">
-                        <input type="checkbox" />
-                        <span>Task 1 - Blah Blah Blah</span>
-                    </div>
-                    <div class="task-row">
-                        <input type="checkbox" />
-                        <span>Task 2 - Blah Blah Blah</span>
-                    </div>
-                    <div class="task-row">
-                        <input type="checkbox" />
-                        <span>Task 3 - Blah Blah Blah</span>
-                    </div>
-                    <div class="task-row">
-                        <input type="checkbox" />
-                        <span>Task 4 - Blah Blah Blah</span>
-                    </div>
-                    <div class="task-row">
-                        <input type="checkbox" />
-                        <span>Task 5 - Blah Blah Blah</span>
-                    </div>
-                    <div class="task-row">
-                        <input type="checkbox" />
-                        <span>Task 6 - Blah Blah Blah</span>
+                    <div class="task-list">
+                        @if (Model.TodayTasks.Any())
+                        {
+                            @foreach (var task in Model.TodayTasks)
+                            {
+                                <form method="post"
+                                    asp-page-handler="CompleteTask"
+                                    class="task-row-form">
+                                    <input type="hidden" name="taskId" value="@task.TaskId" />
+
+                                    <label class="task-row task-row-clickable">
+                                        <input type="checkbox"
+                                            class="task-check"
+                                            onchange="this.form.submit()" />
+
+                                        <span>
+                                            @task.Title
+                                            @if (task.DueAt.HasValue)
+                                            {
+                                                <small class="task-due-inline">
+                                                    — @task.DueAt.Value.ToString("M/d h:mm tt")
+                                                </small>
+                                            }
+                                        </span>
+                                    </label>
+                                </form>
+                            }
+                        }
+                        else
+                        {
+                            <div class="task-empty-state">
+                                <p>No tasks to show right now.</p>
+                                <a href="/Task_Pages/Create" class="empty-task-btn">Create Task</a>
+                            </div>
+                        }
                     </div>
                 </div>
-            </div>
 
             <!-- Study Music -->
             <div class="dashboard-block amethyst-card study-music-card">
@@ -145,16 +207,343 @@
                     <h2>Study Music</h2>
                     <div class="study-music-helper">
                         <p>Need help choosing study music?</p>
-                        <a href="#" class="helper-btn">Open Playlist Helper</a>
+                        <a asp-page="/AI/StudySongChatbot" class="helper-btn">Open Playlist Helper</a>
                     </div>
                 </div>
 
-                <div class="music-player-mockup">
-                    <img src="~/images/spotify-mockup.png" alt="Study playlist player" />
+                    <div class="music-player-mockup">
+                        <img src="~/images/spotify-mockup.png" alt="Study playlist player" />
+                    </div>
                 </div>
+
+            </div>
+        </section>
+
+    </div>
+}
+else if (Model.IsAdmin)
+{
+    <div class="dashboard-page admin-dashboard-page">
+
+        <section class="dashboard-banner admin-banner amethyst-panel">
+            <div class="dashboard-banner-text">
+                <p class="dashboard-kicker">Administration</p>
+                <h1>Admin Dashboard</h1>
+                <p>Manage users, monitor platform activity, and oversee the Amethyst experience.</p>
             </div>
 
-        </div>
-    </section>
+            <div class="dashboard-banner-action">
+                <a href="/Admin/UserList" class="amethyst-btn-primary">Manage Users</a>
+            </div>
+        </section>
 
-</div>
+        <section class="dashboard-summary amethyst-panel admin-summary-panel">
+            <div class="summary-grid admin-summary-grid">
+
+                <div class="summary-card amethyst-card admin-summary-card">
+                    <h3>Total Users</h3>
+                    <div class="summary-value">@Model.TotalUsersCount</div>
+                    <a href="/Admin/UserList" class="summary-link">View</a>
+                </div>
+
+                <div class="summary-card amethyst-card admin-summary-card">
+                    <h3>Students</h3>
+                    <div class="summary-value">@Model.TotalStudentsCount</div>
+                    <a href="/Admin/UserList?roleFilter=Student" class="summary-link">View</a>
+                </div>
+
+                <div class="summary-card amethyst-card admin-summary-card">
+                    <h3>General Users</h3>
+                    <div class="summary-value">@Model.TotalGeneralUsersCount</div>
+                    <a href="/Admin/UserList?roleFilter=User" class="summary-link">View</a>
+                </div>
+
+                <div class="summary-card amethyst-card admin-summary-card">
+                    <h3>Admins</h3>
+                    <div class="summary-value">@Model.TotalAdminsCount</div>
+                    <a href="/Admin/UserList?roleFilter=Admin" class="summary-link">View</a>
+                </div>
+
+                <div class="summary-card amethyst-card admin-summary-card static-card">
+                    <h3>Total Courses</h3>
+                    <div class="summary-value">@Model.ActiveCoursesCount</div>
+                </div>
+
+                <div class="summary-card amethyst-card admin-summary-card static-card">
+                    <h3>Total Reminders</h3>
+                    <div class="summary-value">@Model.ReminderCount</div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="dashboard-main amethyst-panel admin-main-panel">
+            <div class="admin-main-grid">
+
+                <div class="dashboard-block amethyst-card admin-feature-card">
+                    <div class="admin-card-top">
+                        <p class="admin-card-kicker">Management</p>
+                        <h2>User Management</h2>
+                    </div>
+
+                    <p class="admin-card-text">
+                        Review accounts, manage roles, and keep platform access organized.
+                    </p>
+
+                    <div class="admin-action-list">
+                        <a href="/Admin/UserList" class="admin-action-link">View All Users</a>
+                        <a href="/Admin/UserList" class="admin-action-link">Manage Roles</a>
+                        <a href="/Admin/UserList" class="admin-action-link">Review Profiles</a>
+                    </div>
+                </div>
+
+                <div class="dashboard-block amethyst-card admin-feature-card">
+                    <div class="admin-card-top">
+                        <p class="admin-card-kicker">Oversight</p>
+                        <h2>Platform Overview</h2>
+                    </div>
+
+                    <div class="admin-metric-list">
+                        <div class="admin-metric-row">
+                            <span>Assignments Stored</span>
+                            <strong>@Model.TotalAssignmentsCount</strong>
+                        </div>
+                        <div class="admin-metric-row">
+                            <span>Tasks Stored</span>
+                            <strong>@Model.TotalTasksDashboardCount</strong>
+                        </div>
+                        <div class="admin-metric-row">
+                            <span>Courses Stored</span>
+                            <strong>@Model.ActiveCoursesCount</strong>
+                        </div>
+                        <div class="admin-metric-row">
+                            <span>Reminders Stored</span>
+                            <strong>@Model.ReminderCount</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-block amethyst-card admin-feature-card">
+                    <div class="admin-card-top">
+                        <p class="admin-card-kicker">Tools</p>
+                        <h2>Admin Tools</h2>
+                    </div>
+
+                    <p class="admin-card-text">
+                        Access content management and assistant tools used across the platform.
+                    </p>
+
+                    <div class="admin-action-list">
+                        <a href="/Admin/StudySongList" class="admin-action-link">Manage Study Music</a>
+                        <a href="/AI/Amy" class="admin-action-link">Open Amy</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="dashboard-main amethyst-panel admin-secondary-panel">
+            <div class="admin-secondary-grid">
+
+                <div class="dashboard-block amethyst-card admin-secondary-card">
+                    <h2>Admin Notes</h2>
+                    <p>
+                        This space can later show flagged issues, recent signups, or pending admin actions.
+                    </p>
+                </div>
+
+                <div class="dashboard-block amethyst-card admin-secondary-card">
+                    <h2>System Snapshot</h2>
+                    <p>
+                        Add lightweight platform insights here later, such as active usage trends or content review needs.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+}
+else
+{
+    <div class="dashboard-page general-dashboard-page">
+
+        <section class="dashboard-banner general-banner amethyst-panel">
+            <div class="dashboard-banner-text">
+                <p class="dashboard-kicker">Personal Productivity</p>
+                <h1>Welcome back!</h1>
+                <p>Stay organized, manage your tasks, and keep your day moving.</p>
+            </div>
+
+            <div class="dashboard-banner-action">
+                <a href="/AI/Amy" class="amethyst-btn-primary">Chat with Amy</a>
+            </div>
+        </section>
+
+        <section class="dashboard-summary amethyst-panel general-summary-panel">
+            <div class="summary-grid general-summary-grid">
+
+                <div class="summary-card amethyst-card general-summary-card">
+                    <h3>Total Tasks</h3>
+                    <div class="summary-value">@Model.GeneralUserTaskCount</div>
+                    <a href="/Task_Pages/Index" class="summary-link">View</a>
+                </div>
+
+                <div class="summary-card amethyst-card general-summary-card">
+                    <h3>Open Tasks</h3>
+                    <div class="summary-value">@Model.GeneralUserOpenTaskCount</div>
+                    <a href="/Task_Pages/Index" class="summary-link">View</a>
+                </div>
+
+                <div class="summary-card amethyst-card general-summary-card">
+                    <h3>Reminders</h3>
+                    <div class="summary-value">@Model.GeneralUserReminderCount</div>
+                    <a href="/Reminders/Index" class="summary-link">View</a>
+                </div>
+
+                <div class="summary-card amethyst-card progress-card general-progress-card">
+                    <h3>Tasks Completed</h3>
+
+                    <div class="progress-circle"
+                         style="background: conic-gradient(var(--primary-color) 0% @($"{Model.GeneralUserTaskCompletionPercentage}%"), #eadff7 @($"{Model.GeneralUserTaskCompletionPercentage}%") 100%);">
+                        <span>@Model.GeneralUserTaskCompletionPercentage%</span>
+                    </div>
+
+                    <p class="progress-caption">
+                        @Model.GeneralUserCompletedTaskCount of @Model.GeneralUserTaskCount completed
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="dashboard-main amethyst-panel general-main-panel">
+            <div class="general-main-grid">
+
+                <div class="dashboard-block amethyst-card general-feature-card task-dashboard-block">
+                    <div class="general-card-top">
+                        <p class="general-card-kicker">Focus</p>
+                        <h2>Your Tasks</h2>
+                    </div>
+
+                    <div class="task-list">
+                        @if (Model.GeneralUserTasks.Any())
+                        {
+                            @foreach (var task in Model.GeneralUserTasks)
+                            {
+                                <form method="post"
+                                      asp-page-handler="CompleteTask"
+                                      class="task-row-form">
+                                    <input type="hidden" name="taskId" value="@task.TaskId" />
+
+                                    <label class="task-row task-row-clickable">
+                                        <input type="checkbox"
+                                               class="task-check"
+                                               onchange="this.form.submit()" />
+
+                                        <span>
+                                            @task.Title
+                                            @if (task.DueAt.HasValue)
+                                            {
+                                                <small class="task-due-inline">
+                                                    — @task.DueAt.Value.ToString("M/d h:mm tt")
+                                                </small>
+                                            }
+                                        </span>
+                                    </label>
+                                </form>
+                            }
+                        }
+                        else
+                        {
+                            <div class="task-empty-state">
+                                <p>No tasks to show right now.</p>
+                                <a href="/Task_Pages/Create" class="empty-task-btn">Create Task</a>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="dashboard-block amethyst-card general-feature-card">
+                    <div class="general-card-top">
+                        <p class="general-card-kicker">Stay On Track</p>
+                        <h2>Upcoming Reminders</h2>
+                    </div>
+
+                    <div class="task-list">
+                        @if (Model.GeneralUserReminders.Any())
+                        {
+                            @foreach (var reminder in Model.GeneralUserReminders)
+                            {
+                                <div class="assignment-item lilac-box">
+                                    <p><strong>@(reminder.TaskItem?.Title ?? "Reminder")</strong></p>
+                                    <p>@reminder.TargetType</p>
+                                    <p>@reminder.RemindAt.ToString("M/d/yy h:mm tt")</p>
+                                    <a href="/Reminders/Index" class="mini-view">View</a>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="assignment-empty-state">
+                                <p>No reminders right now.</p>
+                                <a href="/Reminders/Create" class="empty-assignment-btn">Create Reminder</a>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="dashboard-block amethyst-card general-feature-card general-helper-card">
+                    <div class="general-card-top">
+                        <p class="general-card-kicker">Support</p>
+                        <h2>Productivity Helper</h2>
+                    </div>
+
+                    <p class="general-helper-text">
+                        Need a boost getting started? Amy can help you think through your next steps and stay focused.
+                    </p>
+
+                    <div class="general-helper-actions">
+                        <a href="/AI/Amy" class="helper-btn">Open Amy</a>
+                        <a href="/Task_Pages/Create" class="mini-view">Create Task</a>
+                        <a href="/Reminders/Create" class="mini-view">Create Reminder</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+}
+
+@functions {
+    public string GetContrastTextColor(string? hexColor)
+    {
+        if (string.IsNullOrWhiteSpace(hexColor))
+        {
+            return "#2f2440";
+        }
+
+        var color = hexColor.Trim().TrimStart('#');
+
+        if (color.Length != 6)
+        {
+            return "#2f2440";
+        }
+
+        try
+        {
+            var r = Convert.ToInt32(color.Substring(0, 2), 16);
+            var g = Convert.ToInt32(color.Substring(2, 2), 16);
+            var b = Convert.ToInt32(color.Substring(4, 2), 16);
+
+            var luminance = (0.299 * r) + (0.587 * g) + (0.114 * b);
+
+            return luminance > 186 ? "#2f2440" : "#ffffff";
+        }
+        catch
+        {
+            return "#2f2440";
+        }
+    }
+}

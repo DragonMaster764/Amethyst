@@ -1,61 +1,85 @@
 ﻿@page
 @model Amethyst.Pages.CreateProfile.StudentFormModel
 @{
+    ViewData["Title"] = "Create Student Profile";
 }
 
-<div class="studentForm">
+<link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
 
-    <form method="post" class="_studentForm">
+<div class="auth-page">
+    <div class="auth-shell auth-shell-wide">
+        <div class="auth-card amethyst-card">
+            <div class="auth-header">
+                <p class="auth-kicker">Create Profile</p>
+                <h1>Student Profile</h1>
+                <p class="auth-subtext">Tell us a little about how you want to use Amethyst.</p>
+            </div>
 
-        <!-- Show validation errors -->
-        <div asp-validation-summary="All" class="text-danger"></div>
+            <form method="post" class="auth-form">
+                <div asp-validation-summary="All" class="text-danger validation-summary"></div>
 
-        <!-- Hidden timezone field -->
-        <input type="hidden" id="timezoneField" asp-for="InputProfile.Timezone" />
+                <input type="hidden" id="timezoneField" asp-for="InputProfile.Timezone" />
 
-        <h6>What would you like your username to be?</h6>
-        <input asp-for="InputProfile.DisplayName" placeholder="User Name" required />
-        <span asp-validation-for="InputProfile.DisplayName" class="text-danger"></span>
-        <br><br>
+                <div class="auth-field">
+                    <label asp-for="InputProfile.DisplayName" class="auth-label">Username</label>
+                    <input asp-for="InputProfile.DisplayName" class="auth-input" placeholder="User Name" required />
+                    <span asp-validation-for="InputProfile.DisplayName" class="text-danger"></span>
+                </div>
 
-        <h6>Please type your nickname below:</h6>
-        <input asp-for="InputProfile.Name" placeholder="Name / Nickname" required />
-        <span asp-validation-for="InputProfile.Name" class="text-danger"></span>
-        <br><br>
+                <div class="auth-field">
+                    <label asp-for="InputProfile.Name" class="auth-label">Name / Nickname</label>
+                    <input asp-for="InputProfile.Name" class="auth-input" placeholder="Name / Nickname" required />
+                    <span asp-validation-for="InputProfile.Name" class="text-danger"></span>
+                </div>
 
-        <h6>Select your current academic school year:</h6>
-        <input asp-for="InputProfile.AcademicYear" placeholder="Academic Year" />
-        <span asp-validation-for="InputProfile.AcademicYear" class="text-danger"></span>
-        <br><br>
+                <div class="auth-field">
+                    <label asp-for="InputProfile.AcademicYear" class="auth-label">Academic Year</label>
+                    <select asp-for="InputProfile.AcademicYear" class="auth-input auth-select">
+                        <option value="">Select academic year</option>
+                        <option value="Freshman">Freshman</option>
+                        <option value="Sophomore">Sophomore</option>
+                        <option value="Junior">Junior</option>
+                        <option value="Senior">Senior</option>
+                        <option value="Graduate">Graduate</option>
+                    </select>
+                    <span asp-validation-for="InputProfile.AcademicYear" class="text-danger"></span>
+                </div>
 
-        <h6>Please select your notification preferences below:</h6>
-        <select asp-for="InputProfile.NotificationPreferences" required>
-            <option value="">-- Select Preference --</option>
-            <option value="instant">Instant</option>
-            <option value="daily_digest">Daily Digest</option>
-            <option value="urgent-only">Urgent Only</option>
-            <option value="none">No Notifications</option>
-        </select>
-        <span asp-validation-for="InputProfile.NotificationPreferences" class="text-danger"></span>
-        <br><br>
+                <div class="auth-field">
+                    <label asp-for="InputProfile.NotificationPreferences" class="auth-label">Notification Preferences</label>
+                    <select asp-for="InputProfile.NotificationPreferences" class="auth-input auth-select" required>
+                        <option value="">-- Select Preference --</option>
+                        <option value="instant">Instant</option>
+                        <option value="daily_digest">Daily Digest</option>
+                        <option value="urgent-only">Urgent Only</option>
+                        <option value="none">No Notifications</option>
+                    </select>
+                    <span asp-validation-for="InputProfile.NotificationPreferences" class="text-danger"></span>
+                </div>
 
-        <h6>Quiet Hours</h6>
-        <p>During quiet hours, you are to not be disturbed...</p>
+                <div class="auth-info-block">
+                    <h3>Quiet Hours</h3>
+                    <p>During quiet hours, Amethyst will avoid sending interruptions unless they are important.</p>
+                </div>
 
-        <h6>When would you like your quiet hours to start?</h6>
-        <input asp-for="InputProfile.QuietHoursStart" type="time" required />
-        <span asp-validation-for="InputProfile.QuietHoursStart" class="text-danger"></span>
-        <br><br>
+                <div class="auth-two-col">
+                    <div class="auth-field">
+                        <label asp-for="InputProfile.QuietHoursStart" class="auth-label">Quiet Hours Start</label>
+                        <input asp-for="InputProfile.QuietHoursStart" type="time" class="auth-input" required />
+                        <span asp-validation-for="InputProfile.QuietHoursStart" class="text-danger"></span>
+                    </div>
 
-        <h6>When would you like your quiet hours to end?</h6>
-        <input asp-for="InputProfile.QuietHoursEnd" type="time" required />
-        <span asp-validation-for="InputProfile.QuietHoursEnd" class="text-danger"></span>
-        <br><br>
+                    <div class="auth-field">
+                        <label asp-for="InputProfile.QuietHoursEnd" class="auth-label">Quiet Hours End</label>
+                        <input asp-for="InputProfile.QuietHoursEnd" type="time" class="auth-input" required />
+                        <span asp-validation-for="InputProfile.QuietHoursEnd" class="text-danger"></span>
+                    </div>
+                </div>
 
-        <button type="submit">Okay</button>
-
-    </form>
-
+                <button type="submit" class="auth-submit-btn">Create Profile</button>
+            </form>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
@@ -69,7 +93,41 @@
         });
     </script>
 }
+<style>
+    .userType-container {
+        text-align: center;
+        margin-top: 80px;
+    }
 
+    .button-row {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        margin-top: 40px;
+    }
+
+    .account-btn,
+    .account-btn:link,
+    .account-btn:visited {
+        background-color: #7C5BA7;
+        padding: 15px 30px;
+        font-size: 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.2s ease-in-out;
+        text-decoration: none !important; /* override underline */
+        color: #FFFDFC !important; /* override blue link color */
+        display: inline-block;
+    }
+
+        .account-btn:hover {
+            background-color: #B9A3E3;
+            text-decoration: none !important;
+            color: #FFFDFC !important;
+        }
+
+</style>
 
 
 

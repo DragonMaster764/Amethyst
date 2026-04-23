@@ -2,71 +2,718 @@
 @model Amethyst.Pages.Study_Session.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "My Study Sessions";
 }
 
-<h1>Index</h1>
+<link rel="stylesheet" href="~/css/study_sessions.css" asp-append-version="true" />
 
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.StudySession[0].StartTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StudySession[0].EndTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StudySession[0].PlannedMinutes)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StudySession[0].ActualMinutes)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StudySession[0].Notes)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StudySession[0].Profile)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StudySession[0].Course)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.StudySession) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PlannedMinutes)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ActualMinutes)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Notes)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Profile.ProfileId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Course.ProfileId)
-            </td>
-            <td>
-                <a asp-page="./Edit" asp-route-id="@item.SessionId">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.SessionId">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.SessionId">Delete</a>
-            </td>
-        </tr>
+<div class="study-sessions-page">
+    <div class="study-sessions-header amethyst-panel">
+        <div>
+            <h1>My Study Sessions</h1>
+            <p>Plan your study time and keep track of what you actually completed.</p>
+        </div>
+
+        <a asp-page="Create" class="amethyst-btn-primary">+ Create New Session</a>
+    </div>
+
+    @{
+        var minuteOptions = new int[] { 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 75, 90, 105, 120, 135, 150, 165, 180 };
+    }
+
+    @if (Model.StudySession == null || !Model.StudySession.Any())
+    {
+        <div class="study-empty-state amethyst-card">
+            <h2>No study sessions yet</h2>
+            <p>Create your first study session to get started.</p>
+        </div>
+    }
+    else
+    {
+        <div class="study-session-list">
+            @foreach (var item in Model.StudySession)
+            {
+                var isPast = item.EndTime.HasValue && item.EndTime.Value < DateTime.Now;
+
+                <section class="study-session-card amethyst-card @(isPast ? "past-session" : "upcoming-session")">
+                    <div class="study-session-topbar">
+                        <div class="session-top-actions">
+                            <a asp-page="./Details" asp-route-id="@item.SessionId" class="session-view-btn">View</a>
+                            <a asp-page="./Edit" asp-route-id="@item.SessionId" class="session-modify-btn">Modify</a>
+                        </div>
+
+                        <div class="session-status-chip @(isPast ? "past-chip" : "upcoming-chip")">
+                            @(isPast ? "Past Session" : "Upcoming Session")
+                        </div>
+                    </div>
+
+                    <div class="study-session-main">
+                        <div class="study-session-content">
+                            <div class="study-session-title-wrap">
+                                <p class="session-kicker">Course</p>
+                                <h2 class="session-course">
+                                    @(item.Course != null ? item.Course.Title : "General Study Session")
+                                </h2>
+                            </div>
+
+                            <div class="study-session-details">
+                                <div class="detail-box time-detail-box">
+                                    <div class="time-box-layout">
+                                        <div class="time-box-left">
+                                            <span class="detail-label detail-label-strong">Start Time</span>
+                                            <span class="time-date">@item.StartTime.ToString("dddd, MMMM d, yyyy")</span>
+                                        </div>
+
+                                        <div class="time-box-right">
+                                            <span class="time-box-caption">Begins</span>
+                                            <span class="time-pill large">@item.StartTime.ToString("h:mm tt")</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="detail-box time-detail-box">
+                                    @if (item.EndTime.HasValue)
+                                    {
+                                        <div class="time-box-layout">
+                                            <div class="time-box-left">
+                                                <span class="detail-label detail-label-strong">End Time</span>
+                                                <span class="time-date">@item.EndTime.Value.ToString("dddd, MMMM d, yyyy")</span>
+                                            </div>
+
+                                            <div class="time-box-right">
+                                                <span class="time-box-caption">Ends</span>
+                                                <span class="time-pill large">@item.EndTime.Value.ToString("h:mm tt")</span>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="detail-label detail-label-strong">End Time</span>
+                                        <span class="detail-value">No end time</span>
+                                    }
+                                </div>
+
+                                <div class="detail-box">
+                                    <div class="detail-header-row">
+                                        <span class="detail-label detail-label-strong">Planned Minutes</span>
+                                        <button type="button" class="minutes-toggle-btn" onclick="toggleMinutesPicker('planned-@item.SessionId')">
+                                            Update
+                                        </button>
+                                    </div>
+
+                                    <span class="detail-value detail-minutes-value">
+                                        @(item.PlannedMinutes.HasValue ? $"{item.PlannedMinutes} minutes" : "Not set")
+                                    </span>
+
+                                    <div id="planned-@item.SessionId" class="minutes-picker-panel">
+                                        <form method="post" asp-page-handler="UpdatePlannedMinutes" class="minutes-update-form">
+                                            <input type="hidden" name="SessionId" value="@item.SessionId" />
+                                            <input type="hidden" name="PlannedMinutesInput" id="planned-input-@item.SessionId" value="@(item.PlannedMinutes.HasValue ? item.PlannedMinutes.ToString() : "")" />
+
+                                            <div class="minutes-button-grid">
+                                                @foreach (var minute in minuteOptions)
+                                                {
+                                                    <button type="button"
+                                                            class="minute-choice-btn"
+                                                            onclick="selectMinuteOption('planned-input-@item.SessionId', this, @minute)">
+                                                        @minute min
+                                                    </button>
+                                                }
+                                            </div>
+
+                                            <div class="custom-minutes-wrap">
+                                                <button type="button"
+                                                        class="minutes-toggle-btn"
+                                                        onclick="toggleCustomMinutes('planned-custom-@item.SessionId', 'planned-save-wrap-@item.SessionId')">
+                                                    Custom
+                                                </button>
+
+                                                <div id="planned-custom-@item.SessionId" class="custom-minutes-panel">
+                                                    <div class="custom-minutes-inputs">
+                                                        <div class="custom-minutes-field">
+                                                            <label for="planned-hours-@item.SessionId">Hours</label>
+                                                            <input type="number"
+                                                                id="planned-hours-@item.SessionId"
+                                                                min="0"
+                                                                max="12"
+                                                                value="0"
+                                                                class="custom-minutes-input" />
+                                                        </div>
+
+                                                        <div class="custom-minutes-field">
+                                                            <label for="planned-minutes-@item.SessionId">Minutes</label>
+                                                            <input type="number"
+                                                                id="planned-minutes-@item.SessionId"
+                                                                min="0"
+                                                                max="59"
+                                                                value="0"
+                                                                class="custom-minutes-input" />
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="custom-minutes-actions">
+                                                        <button type="button"
+                                                                class="session-save-btn"
+                                                                onclick="applyCustomMinutesAndSave(this, 'planned-input-@item.SessionId', 'planned-custom-@item.SessionId', @item.SessionId, 'planned')">
+                                                            Apply Custom
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="minutes-picker-actions" id="planned-save-wrap-@item.SessionId">
+                                                <button type="submit" class="session-save-btn">Save</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <div class="detail-box">
+                                    <div class="detail-header-row">
+                                        <span class="detail-label detail-label-strong">Actual Minutes</span>
+
+                                        @if (isPast)
+                                        {
+                                            <button type="button" class="minutes-toggle-btn" onclick="toggleMinutesPicker('actual-@item.SessionId')">
+                                                Update
+                                            </button>
+                                        }
+                                    </div>
+
+                                    <span class="detail-value detail-minutes-value">
+                                        @(item.ActualMinutes.HasValue ? $"{item.ActualMinutes} minutes" : "Not entered yet")
+                                    </span>
+
+                                    @if (isPast)
+                                    {
+                                        <div id="actual-@item.SessionId" class="minutes-picker-panel">
+                                            <form method="post" asp-page-handler="UpdateActualMinutes" class="minutes-update-form">
+                                                <input type="hidden" name="SessionId" value="@item.SessionId" />
+                                                <input type="hidden" name="ActualMinutesInput" id="actual-input-@item.SessionId" value="@(item.ActualMinutes.HasValue ? item.ActualMinutes.ToString() : "")" />
+
+                                                <div class="minutes-button-grid">
+                                                    @foreach (var minute in minuteOptions)
+                                                    {
+                                                        <button type="button"
+                                                                class="minute-choice-btn"
+                                                                onclick="selectMinuteOption('actual-input-@item.SessionId', this, @minute)">
+                                                            @minute min
+                                                        </button>
+                                                    }
+                                                </div>
+
+                                                <div class="custom-minutes-wrap">
+                                                    <button type="button"
+                                                            class="minutes-toggle-btn"
+                                                            onclick="toggleCustomMinutes('actual-custom-@item.SessionId', 'actual-save-wrap-@item.SessionId')">
+                                                        Custom
+                                                    </button>
+
+                                                    <div id="actual-custom-@item.SessionId" class="custom-minutes-panel">
+                                                        <div class="custom-minutes-inputs">
+                                                            <div class="custom-minutes-field">
+                                                                <label for="actual-hours-@item.SessionId">Hours</label>
+                                                                <input type="number"
+                                                                    id="actual-hours-@item.SessionId"
+                                                                    min="0"
+                                                                    max="12"
+                                                                    value="0"
+                                                                    class="custom-minutes-input" />
+                                                            </div>
+
+                                                            <div class="custom-minutes-field">
+                                                                <label for="actual-minutes-@item.SessionId">Minutes</label>
+                                                                <input type="number"
+                                                                    id="actual-minutes-@item.SessionId"
+                                                                    min="0"
+                                                                    max="59"
+                                                                    value="0"
+                                                                    class="custom-minutes-input" />
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="custom-minutes-actions">
+                                                            <button type="button"
+                                                                    class="session-save-btn"
+                                                                    onclick="applyCustomMinutesAndSave(this, 'actual-input-@item.SessionId', 'actual-custom-@item.SessionId', @item.SessionId, 'actual')">
+                                                                Apply Custom
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="minutes-picker-actions" id="actual-save-wrap-@item.SessionId">
+                                                    <button type="submit" class="session-save-btn">Save</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="study-session-notes">
+                                <div class="notes-header-row">
+                                    <span class="detail-label detail-label-strong">Session Notes</span>
+                                </div>
+
+                                <form method="post" asp-page-handler="UpdateNotes" class="notes-form">
+                                    <input type="hidden" name="SessionId" value="@item.SessionId" />
+
+                                    <textarea
+                                        name="NotesInput"
+                                        id="notes-@item.SessionId"
+                                        class="session-notes-textarea"
+                                        maxlength="500"
+                                        rows="5"
+                                        oninput="updateCharacterCount('notes-@item.SessionId', 'notes-count-@item.SessionId', 500)">@(item.Notes ?? "")</textarea>
+
+                                    <div class="notes-footer-row">
+                                        <span id="notes-count-@item.SessionId" class="notes-character-count">
+                                            @(500 - ((item.Notes ?? "").Length)) characters remaining
+                                        </span>
+
+                                        <button type="submit" class="session-save-btn">Save Notes</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <aside class="pomodoro-panel" data-session-id="@item.SessionId">
+                            <div class="pomodoro-card">
+                                <p class="pomodoro-kicker">Focus Timer</p>
+                                <h3 class="pomodoro-title">Pomodoro</h3>
+
+                                <div class="pomodoro-mode-row">
+                                    <button type="button"
+                                            class="pomodoro-mode-btn active"
+                                            onclick="setPomodoroMode(@item.SessionId, 25 * 60, 'Work', this)">
+                                        Work
+                                    </button>
+                                    <button type="button"
+                                            class="pomodoro-mode-btn"
+                                            onclick="setPomodoroMode(@item.SessionId, 5 * 60, 'Short Break', this)">
+                                        Short Break
+                                    </button>
+                                    <button type="button"
+                                            class="pomodoro-mode-btn"
+                                            onclick="setPomodoroMode(@item.SessionId, 15 * 60, 'Long Break', this)">
+                                        Long Break
+                                    </button>
+                                    <button type="button"
+                                            class="pomodoro-mode-btn"
+                                            onclick="toggleCustomPomodoro(@item.SessionId, this)">
+                                        Custom
+                                    </button>
+                                </div>
+
+                                <button type="button"
+                                        class="pomodoro-use-planned-btn"
+                                        onclick="usePlannedMinutes(@item.SessionId, @(item.PlannedMinutes ?? 0))">
+                                    Use Planned Minutes
+                                </button>
+
+                                <div id="pomodoro-custom-@item.SessionId" class="pomodoro-custom-panel">
+                                    <div class="pomodoro-custom-inputs">
+                                        <div class="pomodoro-custom-field">
+                                            <label for="pomodoro-hours-@item.SessionId">Hours</label>
+                                            <input type="number"
+                                                id="pomodoro-hours-@item.SessionId"
+                                                min="0"
+                                                max="12"
+                                                value="0"
+                                                class="pomodoro-custom-input" />
+                                        </div>
+
+                                        <div class="pomodoro-custom-field">
+                                            <label for="pomodoro-minutes-@item.SessionId">Minutes</label>
+                                            <input type="number"
+                                                id="pomodoro-minutes-@item.SessionId"
+                                                min="0"
+                                                max="59"
+                                                value="25"
+                                                class="pomodoro-custom-input" />
+                                        </div>
+                                    </div>
+
+                                    <div class="pomodoro-custom-actions">
+                                        <button type="button"
+                                                class="pomodoro-action-btn primary"
+                                                onclick="applyCustomPomodoro(@item.SessionId, this)">
+                                            Set Timer
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="pomodoro-timer-wrap">
+                                    <svg class="pomodoro-progress-ring" width="220" height="220" viewBox="0 0 220 220">
+                                        <circle class="pomodoro-ring-bg" cx="110" cy="110" r="88"></circle>
+                                        <circle class="pomodoro-ring-progress"
+                                                id="pomodoro-progress-@item.SessionId"
+                                                cx="110" cy="110" r="88"></circle>
+                                    </svg>
+
+                                    <div class="pomodoro-timer-center">
+                                        <p class="pomodoro-mode-label" id="pomodoro-mode-label-@item.SessionId">Work</p>
+                                        <div class="pomodoro-time-display" id="pomodoro-time-@item.SessionId">25:00</div>
+                                    </div>
+                                </div>
+
+                                <div class="pomodoro-controls">
+                                    <button type="button"
+                                            class="pomodoro-action-btn primary"
+                                            onclick="startPomodoro(@item.SessionId)">
+                                        Start
+                                    </button>
+                                    <button type="button"
+                                            class="pomodoro-action-btn"
+                                            onclick="pausePomodoro(@item.SessionId)">
+                                        Pause
+                                    </button>
+                                    <button type="button"
+                                            class="pomodoro-action-btn"
+                                            onclick="resetPomodoro(@item.SessionId)">
+                                        Reset
+                                    </button>
+                                </div>
+                            </div>
+                        </aside>
+                    </div>
+                    <div class="study-session-actions">
+                        <a asp-page="./Delete" asp-route-id="@item.SessionId" class="session-action-link delete-link">Delete</a>
+                    </div>
+                </section>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        const pomodoroTimers = {};
+        const POMODORO_RADIUS = 88;
+        const POMODORO_CIRCUMFERENCE = 2 * Math.PI * POMODORO_RADIUS;
+
+        function toggleMinutesPicker(panelId) {
+            const panel = document.getElementById(panelId);
+            if (panel) {
+                panel.classList.toggle('show');
+            }
+        }
+
+        function selectMinuteOption(hiddenInputId, buttonElement, minuteValue) {
+            const hiddenInput = document.getElementById(hiddenInputId);
+            if (hiddenInput) {
+                hiddenInput.value = minuteValue;
+            }
+
+            const grid = buttonElement.closest('.minutes-button-grid');
+            if (grid) {
+                const buttons = grid.querySelectorAll('.minute-choice-btn');
+                buttons.forEach(btn => btn.classList.remove('selected'));
+            }
+
+            buttonElement.classList.add('selected');
+        }
+
+        function updateCharacterCount(textareaId, counterId, maxLength) {
+            const textarea = document.getElementById(textareaId);
+            const counter = document.getElementById(counterId);
+
+            if (!textarea || !counter) return;
+
+            const remaining = maxLength - textarea.value.length;
+            counter.textContent = `${remaining} characters remaining`;
+        }
+
+        function formatPomodoroTime(totalSeconds) {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function ensurePomodoroTimer(sessionId) {
+            if (!pomodoroTimers[sessionId]) {
+                pomodoroTimers[sessionId] = {
+                    totalSeconds: 25 * 60,
+                    remainingSeconds: 25 * 60,
+                    modeLabel: 'Work',
+                    intervalId: null,
+                    isRunning: false
+                };
+            }
+
+            const progressCircle = document.getElementById(`pomodoro-progress-${sessionId}`);
+            if (progressCircle) {
+                progressCircle.style.strokeDasharray = `${POMODORO_CIRCUMFERENCE}`;
+                progressCircle.style.strokeDashoffset = `0`;
+            }
+
+            updatePomodoroUI(sessionId);
+        }
+
+        function updatePomodoroUI(sessionId) {
+            const timer = pomodoroTimers[sessionId];
+            if (!timer) return;
+
+            const timeDisplay = document.getElementById(`pomodoro-time-${sessionId}`);
+            const modeLabel = document.getElementById(`pomodoro-mode-label-${sessionId}`);
+            const progressCircle = document.getElementById(`pomodoro-progress-${sessionId}`);
+
+            if (timeDisplay) {
+                timeDisplay.textContent = formatPomodoroTime(timer.remainingSeconds);
+            }
+
+            if (modeLabel) {
+                modeLabel.textContent = timer.modeLabel;
+            }
+
+            if (progressCircle) {
+                const progressRatio = timer.remainingSeconds / timer.totalSeconds;
+                const dashOffset = POMODORO_CIRCUMFERENCE * (1 - progressRatio);
+                progressCircle.style.strokeDasharray = `${POMODORO_CIRCUMFERENCE}`;
+                progressCircle.style.strokeDashoffset = `${dashOffset}`;
+            }
+        }
+
+        function setPomodoroMode(sessionId, seconds, modeLabel, buttonElement) {
+            ensurePomodoroTimer(sessionId);
+
+            const timer = pomodoroTimers[sessionId];
+
+            if (timer.intervalId) {
+                clearInterval(timer.intervalId);
+                timer.intervalId = null;
+            }
+
+            timer.totalSeconds = seconds;
+            timer.remainingSeconds = seconds;
+            timer.modeLabel = modeLabel;
+            timer.isRunning = false;
+
+            const modeRow = buttonElement.closest('.pomodoro-mode-row');
+            if (modeRow) {
+                const buttons = modeRow.querySelectorAll('.pomodoro-mode-btn');
+                buttons.forEach(btn => btn.classList.remove('active'));
+            }
+
+            buttonElement.classList.add('active');
+
+            const customPanel = document.getElementById(`pomodoro-custom-${sessionId}`);
+            if (customPanel) {
+                customPanel.classList.remove('show');
+            }
+
+            updatePomodoroUI(sessionId);
+        }
+
+        function toggleCustomPomodoro(sessionId, buttonElement) {
+            ensurePomodoroTimer(sessionId);
+
+            const customPanel = document.getElementById(`pomodoro-custom-${sessionId}`);
+            if (customPanel) {
+                customPanel.classList.toggle('show');
+            }
+
+            const modeRow = buttonElement.closest('.pomodoro-mode-row');
+            if (modeRow) {
+                const buttons = modeRow.querySelectorAll('.pomodoro-mode-btn');
+                buttons.forEach(btn => btn.classList.remove('active'));
+            }
+
+            buttonElement.classList.add('active');
+        }
+
+        function applyCustomPomodoro(sessionId) {
+            ensurePomodoroTimer(sessionId);
+
+            const hoursInput = document.getElementById(`pomodoro-hours-${sessionId}`);
+            const minutesInput = document.getElementById(`pomodoro-minutes-${sessionId}`);
+            const customPanel = document.getElementById(`pomodoro-custom-${sessionId}`);
+
+            const hours = hoursInput ? parseInt(hoursInput.value || "0", 10) : 0;
+            const minutes = minutesInput ? parseInt(minutesInput.value || "0", 10) : 0;
+
+            const safeHours = isNaN(hours) ? 0 : Math.max(0, Math.min(hours, 12));
+            const safeMinutes = isNaN(minutes) ? 0 : Math.max(0, Math.min(minutes, 59));
+
+            const totalSeconds = (safeHours * 60 * 60) + (safeMinutes * 60);
+
+            if (totalSeconds <= 0) {
+                alert("Please enter at least 1 minute for a custom timer.");
+                return;
+            }
+
+            const timer = pomodoroTimers[sessionId];
+
+            if (timer.intervalId) {
+                clearInterval(timer.intervalId);
+                timer.intervalId = null;
+            }
+
+            timer.totalSeconds = totalSeconds;
+            timer.remainingSeconds = totalSeconds;
+            timer.modeLabel = 'Custom';
+            timer.isRunning = false;
+
+            if (customPanel) {
+                customPanel.classList.remove('show');
+            }
+
+            updatePomodoroUI(sessionId);
+        }
+
+        function startPomodoro(sessionId) {
+            ensurePomodoroTimer(sessionId);
+
+            const timer = pomodoroTimers[sessionId];
+            if (timer.isRunning) return;
+
+            timer.isRunning = true;
+
+            timer.intervalId = setInterval(() => {
+                if (timer.remainingSeconds > 0) {
+                    timer.remainingSeconds -= 1;
+                    updatePomodoroUI(sessionId);
+                } else {
+                    clearInterval(timer.intervalId);
+                    timer.intervalId = null;
+                    timer.isRunning = false;
+                    updatePomodoroUI(sessionId);
+                }
+            }, 1000);
+        }
+
+        function pausePomodoro(sessionId) {
+            const timer = pomodoroTimers[sessionId];
+            if (!timer) return;
+
+            if (timer.intervalId) {
+                clearInterval(timer.intervalId);
+                timer.intervalId = null;
+            }
+
+            timer.isRunning = false;
+        }
+
+        function resetPomodoro(sessionId) {
+            ensurePomodoroTimer(sessionId);
+
+            const timer = pomodoroTimers[sessionId];
+
+            if (timer.intervalId) {
+                clearInterval(timer.intervalId);
+                timer.intervalId = null;
+            }
+
+            timer.remainingSeconds = timer.totalSeconds;
+            timer.isRunning = false;
+            updatePomodoroUI(sessionId);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.pomodoro-panel').forEach(panel => {
+                const sessionId = panel.getAttribute('data-session-id');
+                if (sessionId) {
+                    ensurePomodoroTimer(sessionId);
+                }
+            });
+        });
+        function toggleCustomMinutes(panelId) {
+            const panel = document.getElementById(panelId);
+            if (panel) {
+                panel.classList.toggle('show');
+            }
+        }
+
+        function toggleCustomMinutes(panelId, saveWrapId) {
+            const panel = document.getElementById(panelId);
+            const saveWrap = document.getElementById(saveWrapId);
+
+            if (!panel) return;
+
+            const isOpening = !panel.classList.contains('show');
+            panel.classList.toggle('show');
+
+            if (saveWrap) {
+                if (isOpening) {
+                    saveWrap.style.display = 'none';
+                } else {
+                    saveWrap.style.display = 'flex';
+                }
+            }
+        }
+
+        function applyCustomMinutesAndSave(buttonElement, hiddenInputId, customPanelId, sessionId, type) {
+            let hoursInput;
+            let minutesInput;
+
+            if (type === 'planned') {
+                hoursInput = document.getElementById(`planned-hours-${sessionId}`);
+                minutesInput = document.getElementById(`planned-minutes-${sessionId}`);
+            } else {
+                hoursInput = document.getElementById(`actual-hours-${sessionId}`);
+                minutesInput = document.getElementById(`actual-minutes-${sessionId}`);
+            }
+
+            const hiddenInput = document.getElementById(hiddenInputId);
+            const customPanel = document.getElementById(customPanelId);
+
+            const hours = hoursInput ? parseInt(hoursInput.value || "0", 10) : 0;
+            const minutes = minutesInput ? parseInt(minutesInput.value || "0", 10) : 0;
+
+            const safeHours = isNaN(hours) ? 0 : Math.max(0, Math.min(hours, 12));
+            const safeMinutes = isNaN(minutes) ? 0 : Math.max(0, Math.min(minutes, 59));
+
+            const totalMinutes = (safeHours * 60) + safeMinutes;
+
+            if (totalMinutes <= 0) {
+                alert("Please enter at least 1 minute.");
+                return;
+            }
+
+            if (hiddenInput) {
+                hiddenInput.value = totalMinutes;
+            }
+
+            if (customPanel) {
+                customPanel.classList.remove('show');
+            }
+
+            const form = buttonElement.closest('form');
+            if (form) {
+                form.submit();
+            }
+        }
+
+        function usePlannedMinutes(sessionId, plannedMinutes) {
+            ensurePomodoroTimer(sessionId);
+
+            if (!plannedMinutes || plannedMinutes <= 0) {
+                alert("This study session does not have planned minutes set yet.");
+                return;
+            }
+
+            const timer = pomodoroTimers[sessionId];
+
+            if (timer.intervalId) {
+                clearInterval(timer.intervalId);
+                timer.intervalId = null;
+            }
+
+            timer.totalSeconds = plannedMinutes * 60;
+            timer.remainingSeconds = plannedMinutes * 60;
+            timer.modeLabel = 'Planned Session';
+            timer.isRunning = false;
+
+            const customPanel = document.getElementById(`pomodoro-custom-${sessionId}`);
+            if (customPanel) {
+                customPanel.classList.remove('show');
+            }
+
+            const modeButtons = document.querySelectorAll(`[data-session-id="${sessionId}"] .pomodoro-mode-btn`);
+            modeButtons.forEach(btn => btn.classList.remove('active'));
+
+            updatePomodoroUI(sessionId);
+        }
+    </script>
 }
-    </tbody>
-</table>

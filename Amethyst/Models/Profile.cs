@@ -23,7 +23,7 @@ namespace Amethyst.Models
         public string Name { get; set; } = string.Empty;
 
         [Column("user_creation_date", TypeName = "datetime2(3)")]
-        public DateTime UserCreationDate { get; set; }
+        public DateTime? UserCreationDate { get; set; }
 
         [Column("last_login_time", TypeName = "datetime2(3)")]
         public DateTime? LastLoginTime { get; set; }
@@ -34,11 +34,11 @@ namespace Amethyst.Models
 
         [MaxLength(50)]
         [Column("timezone")]
-        public string Timezone { get; set; } = "UTC";
+        public string? Timezone { get; set; } = "UTC";
 
         [Column("notification_preferences", TypeName = "varchar(20)")]
         [MaxLength(20)]
-        public string NotificationPreferences { get; set; } = "instant";
+        public string? NotificationPreferences { get; set; } = "instant";
 
         [Column("quiet_hours_start", TypeName = "time")]
         public TimeSpan? QuietHoursStart { get; set; }

@@ -1,17 +1,31 @@
 ﻿@page
 @model Amethyst.Pages.CreateProfile.ProfileMadeModel
+@{
+    ViewData["Title"] = "Profile Created";
+}
 
-<div class="alert alert-success" role="alert">
-    <h4>Your Profile Has Been Created Successfully!</h4>
-    <p>You will be redirected to the login page shortly.</p>
+<link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+
+<div class="auth-page">
+    <div class="auth-shell">
+        <div class="auth-card amethyst-card auth-message-card">
+            <div class="auth-header">
+                <p class="auth-kicker">Profile Setup</p>
+                <h1>Profile Created</h1>
+                <p class="auth-subtext">Your profile has been created successfully. You’ll be redirected to the login page shortly.</p>
+            </div>
+
+            <div class="auth-action-center">
+                <div class="auth-status-pill success-pill">Success</div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <form id="logoutForm" method="post" asp-page-handler="Logout"></form>
 
 <script>
-    // Wait 3 seconds, then submit the logout form
     setTimeout(() => {
         document.getElementById('logoutForm').submit();
     }, 3000);
 </script>
-
