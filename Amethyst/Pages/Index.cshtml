@@ -249,31 +249,29 @@ else if (Model.IsAdmin)
                 <div class="summary-card amethyst-card admin-summary-card">
                     <h3>Students</h3>
                     <div class="summary-value">@Model.TotalStudentsCount</div>
-                    <a href="/Admin/UserList" class="summary-link">View</a>
+                    <a href="/Admin/UserList?roleFilter=Student" class="summary-link">View</a>
                 </div>
 
                 <div class="summary-card amethyst-card admin-summary-card">
                     <h3>General Users</h3>
                     <div class="summary-value">@Model.TotalGeneralUsersCount</div>
-                    <a href="/Admin/UserList" class="summary-link">View</a>
+                    <a href="/Admin/UserList?roleFilter=User" class="summary-link">View</a>
                 </div>
 
                 <div class="summary-card amethyst-card admin-summary-card">
                     <h3>Admins</h3>
                     <div class="summary-value">@Model.TotalAdminsCount</div>
-                    <a href="/Admin/UserList" class="summary-link">View</a>
+                    <a href="/Admin/UserList?roleFilter=Admin" class="summary-link">View</a>
                 </div>
 
-                <div class="summary-card amethyst-card admin-summary-card">
+                <div class="summary-card amethyst-card admin-summary-card static-card">
                     <h3>Total Courses</h3>
                     <div class="summary-value">@Model.ActiveCoursesCount</div>
-                    <a href="/Courses/Index" class="summary-link">View</a>
                 </div>
 
-                <div class="summary-card amethyst-card admin-summary-card">
+                <div class="summary-card amethyst-card admin-summary-card static-card">
                     <h3>Total Reminders</h3>
                     <div class="summary-value">@Model.ReminderCount</div>
-                    <a href="/Reminders/Index" class="summary-link">View</a>
                 </div>
 
             </div>

@@ -173,3 +173,20 @@
     grid-template-columns: 1fr;
   }
 }
+
+.admin-summary-card.static-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.65rem;
+  text-align: center;
+}
+
+.admin-summary-card.static-card h3 {
+  margin: 0;
+}
+
+.admin-summary-card.static-card .summary-value {
+  margin: 0;
+}
