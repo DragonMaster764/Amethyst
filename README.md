@@ -30,4 +30,4 @@ The primary benefit of this product for the student is the added balance to the 
 
 ### Student Dashboard
 <img width="1258" height="673" alt="dashboard" src="https://github.com/user-attachments/assets/dd69b7f7-7b27-47f1-8a6a-10a9abe78733" />
-Here, students can see data specific to them. This includes upcoming assignments, tasks to complete, what current courses you are taking, and more. On every card on the dashboard, it is quick and easy to view more details by clicking on different buttons to get more information. This is also where we link the access to our Gemini-API powered AI studybot, Amy, and our study playlist creator.
+Here, students can see data specific to them. This includes upcoming assignments, tasks to complete, what current courses you are taking, and more. Every card on the dashboard has buttons for quick and easy access to view more details, by taking the student to that respective webpage. This is also where we link the access to our Gemini-API powered AI studybot, Amy, and our study playlist creator.
