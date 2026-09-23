@@ -10,7 +10,7 @@ The rationale behind this application is that as students, we see the need to ha
 
 The primary benefit of this product for the student is the added balance to the various areas of life, especially at a time where they are continually learning new and big things. The goal for this product is to address the stressful challenge of balancing academics, home life, and personal life.
 
-## Screenshots
+## Screenshots (Highlights)
 ### General
 
 ---
@@ -31,3 +31,19 @@ The primary benefit of this product for the student is the added balance to the 
 ### Student Dashboard
 <img width="1258" height="673" alt="dashboard" src="https://github.com/user-attachments/assets/dd69b7f7-7b27-47f1-8a6a-10a9abe78733" />
 Here, students can see data specific to them. This includes upcoming assignments, tasks to complete, what current courses you are taking, and more. Every card on the dashboard has buttons for quick and easy access to view more details, by taking the student to that respective webpage. This is also where we link the access to our Gemini-API powered AI studybot, Amy, and our study playlist creator.
+
+### Student Courses
+<img width="1257" height="673" alt="courses" src="https://github.com/user-attachments/assets/8697a3cb-9085-454b-912c-b6a85c09ff2c" />
+On this page, students can add courses, update course information, and remove courses. All courses are grouped and ordered by the school term, which helps the student see what courses they are currently taking, and their course history.
+
+### Student Assignments
+<img width="1250" height="680" alt="assignments" src="https://github.com/user-attachments/assets/01e38603-d7f5-4fa3-a7bc-cc4f345cc975" />
+This page allows the student to get a brief overview of their current overall status on assignments, and keep track of metrics such as grades, priority, and deadlines on each assignment. These assignments are added and updated by the student.
+
+### Student Study Sessions
+<img width="1254" height="671" alt="study_sessions" src="https://github.com/user-attachments/assets/ff79e230-ce7c-49ca-abdc-eeeabaadc26f" />
+This page is where the student can set aside a time to study for an assignment, test, or other course work. This page uses a Pomodoro inspired timer to help students accomplish productive studying habits.
+
+### Amy (Our Gemini-API powered studybot)
+<img width="1258" height="667" alt="amy" src="https://github.com/user-attachments/assets/94ff445b-1d46-44d4-998b-43db287a3b17" />
+Amy is our studybot powered by Google's Gemini-API. We send some student data such as courses, assignments, tasks, etc. so Gemini can provide tailored insights to the student. Amy is designed to help boost the student, and help them in their productive journey.
